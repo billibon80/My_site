@@ -1,0 +1,42 @@
+        <section id="team" class="pb-5">
+    <div class="container">
+        <h5 class="section-title h1">MY NEWS</h5>
+        <div class="row">
+            {% for new in news %}
+            <!-- Block news -->
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="image-flip" ontouchstart="this.classList.toggle('hover');">
+                    <div class="mainflip">
+                        <div class="frontside">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <p><img class=" img-fluid" src="{{ url_for('static', filename='assets/img-news/' +  new.img ) }}" alt="card image"></p>
+                                    <h4 class="card-title">{{ new.title }}</h4>
+                                    <p class="card-text">{{ new.subtitle }}</p>
+                                    <a href="" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="backside">
+                            <div class="card">
+                                <div class="card-body text-center mt-4">
+                                    <h4 class="card-title">{{ new.title }}</h4>
+                                    <p class="card-text">{{ new.body }}</p>
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item">
+                                            <i> {{ new.date }} </i>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ./Block news -->
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+<!-- ./Team -->

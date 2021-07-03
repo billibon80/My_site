@@ -1,0 +1,45 @@
+{% include 'header.html' %}
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url({{ url_for('static', filename='assets/img-stories/'
+        + post['main_img']|string)}})">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="post-heading">
+                            <h1>{{ post['chapter'] }}</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by
+                                on {{ dt.fromisoformat(post['date']).strftime('%B %d, %Y') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <h2 class="section-heading">{{ post['title'] }}</h2>
+                        <div class="row">
+                         <div class="col-lg-6 col-md-12 mx-auto">
+                            <img class="img-fluid" src="{{ url_for('static', filename='assets/img-stories/'
+                            + post['img']|string)}}" alt="..." />
+                         </div>
+                         <div class="col-lg-6 col-md-12 mx-auto">
+                            <span class="caption text-muted">{{ post['subtitle'] }}</span>
+                         </div>
+                        </div>
+                        {% for text in post["body"].split("\n") %}
+                        <p>{{ text }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </article>
+        <hr />
+        <!-- Footer-->
+ {% include 'footer.html' %}

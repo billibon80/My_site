@@ -1,0 +1,50 @@
+{% include 'header_admin.html' %}
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url({{ url_for('static', filename='assets/img/home-bg.jpg') }})">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="site-heading">
+                            <h1>My Blog</h1>
+                            <span class="subheading">Admin Edit Version</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Main Content-->
+
+        <!-- Team "News block" -->
+        {% include 'news_admin.html' %}
+        <!-- ./"News block" -->
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto" >
+                    {% for post in all_posts %}
+
+                    <div class="masthead post-preview" id="{{ post['id'] }}" style="background-image:linear-gradient( rgba(0 0 0 / 65%), rgba(0, 0, 0, 0.5) ), url({{ url_for('static', filename='assets/img-stories/' +  post['img']|string) }})">
+                        <a href="{{ url_for('show_post', index=post['id']) }}">
+                            <h2 class="post-title">{{ post['chapter'] + ' ' + post['title'] }}</h2>
+                            <h3 class="post-subtitle">{{ post['subtitle'] }}</h3>
+                        </a>
+                        <p class="post-meta">
+                            Posted
+                            on {{ dt.fromisoformat(post['date']).strftime('%B %d, %Y') }}
+                        </p>
+                        <a href="{{ url_for('update_story', id=post.id ) }}" class="btn btn-outline-primary">Edit Story</a>
+                        <a href="{{ url_for('delete_story', id=post.id ) }}" class="btn btn-outline-danger float-right">Delete Story</a>
+                    </div>
+
+                    <hr />
+
+                    {% endfor %}
+                    <!-- Pager-->
+                    <div class="clearfix"><a class="btn btn-primary float-right" href="{{ url_for('add_stories') }}">Add Stories</a></div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <!-- Footer-->
+{% include 'footer_admin.html' %}

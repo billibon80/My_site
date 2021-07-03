@@ -1,0 +1,46 @@
+{% include 'header.html' %}
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url({{ url_for('static', filename='assets/img/home-bg.jpg') }})">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="site-heading">
+                            <h1>My Blog</h1>
+                            <span class="subheading">Story For My Love</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Main Content-->
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto" >
+                    {% for post in all_posts %}
+
+                    {% if post['new_story'] %}
+                        <div class="new-icon" style="background-image: url({{ url_for('static', filename='assets/img/new-icon.png') }})"></div>
+                    {% endif %}
+
+                    <div class="masthead post-preview" id="{{ post['id'] }}" style="background-image:linear-gradient( rgba(0 0 0 / 65%), rgba(0, 0, 0, 0.5) ), url({{ url_for('static', filename='assets/img-stories/' +  post['img']|string) }})">
+                        <a href="{{ url_for('show_post', index=post['id']) }}">
+                            <h2 class="post-title">{{ post['chapter'] + ' ' + post['title'] }}</h2>
+                            <h3 class="post-subtitle">{{ post['subtitle'] }}</h3>
+                        </a>
+                        <p class="post-meta">
+                            Posted
+                            on {{ dt.fromisoformat(post['date']).strftime('%B %d, %Y') }}
+                        </p>
+                    </div>
+                    <hr />
+                    {% endfor %}
+                    <!-- Pager-->
+                    <div class="clearfix"><a class="btn btn-primary float-right" href="{{ url_for('get_old_posts', index=story_page) }}">{{ name_button }}</a></div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <!-- Footer-->
+{% include 'footer.html' %}

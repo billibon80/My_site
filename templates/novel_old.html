@@ -1,0 +1,36 @@
+{% include 'header.html' %}
+        <!-- Page Header-->
+
+
+        <header class="masthead" style="background-image: url({{ url_for('static', filename='assets/img-novel/'+ novel['img']) }})">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="post-heading">
+                            <h1>{{ novel['title'] }}</h1>
+                            <h2 class="subheading">{{ novel['subtitle'] }}</h2>
+                            <span class="meta">
+                                Posted by
+                                on {{ dt.fromisoformat(novel['date']).strftime('%B %d, %Y') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        {% for text in novel["body"].split("\n") %}
+                        <p class="novel">{{ text }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </article>
+        <hr />
+        <!-- Footer-->
+ {% include 'footer.html' %}

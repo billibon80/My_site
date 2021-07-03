@@ -1,0 +1,147 @@
+
+/*  bhoechie tab */
+#novel div.bhoechie-tab-container{
+  z-index: 10;
+  background-color: #ffffff;
+  padding: 10% 8% !important;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  border:1px solid #ddd;
+  /*margin-top: 20px;
+  margin-left: 50px;*/
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  background-clip: padding-box;
+  opacity: 0.97;
+  filter: alpha(opacity=97);
+}
+#novel div.bhoechie-tab-menu{
+  padding-right: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+}
+#novel div.bhoechie-tab-menu div.list-group{
+  margin-bottom: 0;
+}
+#novel div.bhoechie-tab-menu div.list-group>a{
+  margin-bottom: 0;
+}
+#novel div.bhoechie-tab-menu div.list-group>a .glyphicon,
+#novel div.bhoechie-tab-menu div.list-group>a .fa {
+  color: #5A55A3;
+}
+#novel div.bhoechie-tab-menu div.list-group>a:first-child{
+  border-top-right-radius: 0;
+  -moz-border-top-right-radius: 0;
+}
+#novel div.bhoechie-tab-menu div.list-group>a:last-child{
+  border-bottom-right-radius: 0;
+  -moz-border-bottom-right-radius: 0;
+}
+#novel div.bhoechie-tab-menu div.list-group>a.active,
+#novel div.bhoechie-tab-menu div.list-group>a.active .glyphicon,
+#novel div.bhoechie-tab-menu div.list-group>a.active .fa{
+  background-color: #5A55A3;
+  background-image: #5A55A3;
+  color: #fff0 !important;
+  background-image: url('/static/assets/img-novel/1.jpg') !important;
+  border: none;
+}
+#novel div.bhoechie-tab-menu div.list-group>a.active:after{
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  margin-top: -13px;
+  border-left: 0;
+  border-bottom: 13px solid transparent;
+  border-top: 13px solid transparent;
+  border-left: 10px solid rgb(0 0 0 / 20%);
+  background-image: none !important;
+}
+
+#novel div.bhoechie-tab-content{
+  background-color: #ffffff;
+  /* border: 1px solid #eeeeee; */
+  /*padding-left: 20px;*/
+  padding-top: 10px;
+}
+
+#novel div.bhoechie-tab div.bhoechie-tab-content:not(.active){
+  display: none;
+}
+#novel div.bhoechie-tab-content:not(.active){
+  display: none;
+}
+
+#novel .bg-img {
+    background-size: cover;
+    background-position: center;
+    border: none;
+    color: #fff !important;
+    min-height: 135px;
+}
+
+#novel a.list-group-item.active,
+#novel a.list-group-item.active:hover,
+#novel a.list-group-item.active:focus {
+    z-index: 2;
+    color: #fff;
+    background-color: #428bca;
+    border-color: #428bca;
+}
+
+#novel a {
+    background: 0 0;
+    text-decoration: none;
+}
+
+#novel .caption {
+    /*font-size: 1.2rem !important;*/
+    text-align: justify;
+}
+
+#novel .list-group a {
+    border-bottom: 1px solid;
+    font-size: 1rem;
+}
+
+#novel p {
+ margin: 0.5rem auto;
+ text-align: center;
+}
+
+#novel .h-scr {
+    height: 300px;
+}
+
+#novel .btn-outline-primary:hover,
+#novel .btn-outline-danger:hover {
+    color: #0000008f;
+}
+
+@media (max-width: 576px) {
+  #novel .list-group a {
+    font-size: 15rem;
+  }
+}
+
+.fontMark {
+    font-family: 'Marck Script', cursive;
+}
+
+#novel img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+}
+
+#novel .gif-img {
+    max-height: 150px;
+    object-fit: contain !important;
+}
+
+#novel .carousel-caption span {
+    text-align: center !important;
+}

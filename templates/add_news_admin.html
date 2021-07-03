@@ -1,0 +1,97 @@
+{% extends 'bootstrap/base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,700">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,700">
+ <link rel="stylesheet" href="{{ url_for('static', filename='css-cleanBlog/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css-cleanBlog/styles-admin.css') }}">
+
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="{{ url_for('static', filename='js/admin-bar.js') }}"></script>
+{% endblock %}
+
+{% block title %}Add Stories{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1 class="heading">{{ button }}</h1>
+    <form action="{{ url_for(function, id=id, copy=copy) }}" method="post" role="form" class="was-validate" novalidate>
+         {{ form.hidden_tag() }}
+        <input type="hidden" id="formName" value="{{ function }}">
+
+        <div class="container">
+          <!-- row of data: date -->
+          <div class="row">
+            <div class="col-6 col-md-4">
+                {{ form.date.label }}
+                {{ form.date(placeholder="yyyy-mm-dd") }}
+<!--                {% if form.date.errors %}-->
+<!--                    {% for error in form.date.errors %}-->
+<!--                    <div class="invalid-feedback"> {{ error }}</div>-->
+<!--                    {% endfor %}-->
+<!--                {% endif %}-->
+            </div>
+            <div class="col-md-8"></div>
+          </div>
+
+          <!-- row of data: title, chapter, subtitle -->
+          <div class="row">
+            <div class="col-6 col-md-4">
+            </div>
+            <div class="col-6 col-md-4">
+                {{ form.title.label }}
+                {{ form.title }}
+                <div id="{{ function }}_title" class="invalid-feedback">this field is required</div>
+<!--                {% if form.title.errors %}-->
+<!--                    {% for error in form.title.errors %}-->
+<!--                    <div class="invalid-feedback" style="display: block"> {{ error }}</div>-->
+<!--                    {% endfor %}-->
+<!--                {% endif %}-->
+            </div>
+            <div class="col-6 col-md-4">
+                {{ form.subtitle.label }}
+                {{ form.subtitle(id="subtitle") }}
+                <div id="{{ function }}_subtitle" class="invalid-feedback">this field is required</div>
+<!--                {% if form.subtitle.errors %}-->
+
+<!--                    {% for error in form.subtitle.errors %}-->
+<!--                    <div class="invalid-feedback" style="display: block"> {{ error }}</div>-->
+<!--                    {% endfor %}-->
+<!--                {% endif %}-->
+            </div>
+          </div>
+          <!-- row of data: body, img, main_img-->
+          <div class="row">
+            <div class="col-8 col-md-8">
+                {{ form.body.label }}
+                {{ form.body }}
+                <div id="{{ function }}_body" class="invalid-feedback">this field is required</div>
+<!--                {% if form.body.errors %}-->
+<!--                    {% for error in form.body.errors %}-->
+<!--                    <div class="invalid-feedback" style="display: block"> {{ error }}</div>-->
+<!--                    {% endfor %}-->
+<!--                {% endif %}-->
+            </div>
+            <div class="col-4 col-md-4">
+                <div>{{ form.img.label }}</div> <div>{{ form.img(placeholder="name.(jpg, png)") }}</div>
+                {% if function[-5:] == "novel" %}
+                <div>{{ form.gif.label }}</div> <div>{{ form.gif(placeholder="name.(gif)") }}</div>
+                {% endif %}
+            </div>
+          </div>
+         <!-- row of data: checkbox new_story and button "add story, chapter, subtitle -->
+          <div class="row">
+              <div class="col-6 col-md-4"></div>
+            <div class="col-6 col-md-4"></div>
+            <div class="col-6 col-md-4"> </div>
+          </div>
+            {{ form.submit(value=button, style="margin-top: 1rem;") }}
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+

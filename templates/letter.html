@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>exploding letter - Bootsnipp.com</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+	<style type="text/css">
+
+<!------ Include the above in your HEAD tag ---------->
+
+@import url("https://fonts.googleapis.com/css?family=Caveat");
+@import url("https://fonts.googleapis.com/css?family=Ledger");
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+button,
+input {
+  font-family: "Ledger";
+}
+
+body {
+  background-color: #3a736c;
+  overflow: hidden;
+}
+
+#info {
+  position: absolute;
+  font-family: Caveat;
+  color: #F1CFA0;
+  padding-top: 15px;
+  font-size: 5vh;
+  opacity: 0.7;
+}
+
+.shaker {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+canvas {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: -10;
+}
+
+.dialog {
+  z-index: 10;
+  top: 30vh;
+  transform: translateY(30vh);
+  margin: 0 auto;
+  width: 30vw;
+  background-color: #f1cfa0;
+  text-align: center;
+  min-width: 200px;
+  box-shadow: 10px 10px #254f49;
+}
+
+.dialog:after {
+  content: "";
+  display: block;
+  padding-bottom: 0;
+}
+
+.shadow {
+  width: 100%;
+  height: 0;
+  padding-left: 50%;
+  padding-top: 30%;
+  overflow: hidden;
+}
+
+.shadow div {
+  width: 0;
+  height: 0;
+  margin-left: -1000px;
+  margin-top: -600px;
+  border-left: 1000px solid transparent;
+  border-right: 1000px solid transparent;
+  border-top: 600px solid #f2a71e;
+  /*    box-shadow: 10px 10px #c98510;*/
+}
+
+#stamp-envelope {
+  text-align: center;
+  border-radius: 100%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  width: 0;
+  height: 0;
+  padding-left: 13%;
+  padding-top: 14%;
+  margin-bottom: 20%;
+  /*    overflow:hidden;*/
+  margin-top: -12.5%;
+  background-color: #d34f27;
+  border: 2px solid #d34f27;
+  color: #f2a71e;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  outline: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  box-shadow: 2px 3px #93321a;
+}
+
+@media screen and (max-height: 400px) {
+  .dialog {
+    top: 20vh;
+    transform: translateY(20vh);
+    width: 20vw;
+  }
+
+  .stamp.hvr-buzz p {
+    font-size: 2vw;
+    margin-left: -2.2vw;
+    margin-top: -2.8vw;
+  }
+}
+
+.stamp-wrapper {
+  text-align: right;
+  margin-bottom: 20px;
+  margin-right: 20px;
+}
+
+#stamp-footer {
+  display: inline-block;
+  padding: 16px 25px;
+  color: #f2a71e;
+  font-size: 35px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border: 4px solid #d34f27;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+  outline: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: #d34f27;
+}
+
+.stamp:hover {
+  animation-name: hvr-buzz;
+}
+
+.stamp:active {
+}
+
+@-webkit-keyframes hvr-buzz {
+  50% {
+    -webkit-transform: translateX(3px) rotate(2deg);
+    transform: translateX(3px) rotate(2deg);
+  }
+  100% {
+    -webkit-transform: translateX(-3px) rotate(-2deg);
+    transform: translateX(-3px) rotate(-2deg);
+  }
+}
+@keyframes hvr-buzz {
+  50% {
+    -webkit-transform: translateX(3px) rotate(2deg);
+    transform: translateX(3px) rotate(2deg);
+  }
+  100% {
+    -webkit-transform: translateX(-3px) rotate(-2deg);
+    transform: translateX(-3px) rotate(-2deg);
+  }
+}
+.hvr-buzz {
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+.hvr-buzz:hover,
+.hvr-buzz:active {
+  -webkit-animation-name: hvr-buzz;
+  animation-name: hvr-buzz;
+  -webkit-animation-duration: 0.4s;
+  animation-duration: 0.4s;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+
+.message {
+  display: none;
+  position: absolute;
+  width: 400px;
+  max-height: 65vh;
+  margin-left: -200px;
+  left: 50vw;
+  top: 47vh;
+  margin-top: -30vh;
+}
+
+.part-one {
+  position: relative;
+  background-color: #f1cfa0;
+  max-height: 65vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.message-header {
+  width: inherit;
+  height: 5vh;
+  background-color: #f2a71e;
+}
+
+.message-text {
+  padding: 40px 30px;
+  padding-bottom: 0px;
+  letter-spacing: 1px;
+  line-height: 25px;
+  font-family: "Caveat", cursive;
+  color: #3a736c;
+}
+
+.message-footer {
+  /*    position: absolute;*/
+  bottom: 0;
+  background-color: #d34f27;
+  width: 400px;
+  height: 5vh;
+}
+
+#stamp-footer {
+  /*    position: absolute;*/
+  right: 30px;
+  bottom: 60px;
+  padding: 0 0;
+  padding-top: 10px;
+  width: 60px;
+  height: 60px;
+  margin-top: -34px;
+}
+
+#ui {
+  position: absolute;
+  left: calc(50vw - 40px);
+  top: calc(50vh - 40px);
+}
+
+.dg.ac {
+  z-index: 1000 !important;
+}
+
+/* Scrollbar edit for chrome just for fun. */
+#part-one-message::-webkit-scrollbar-track {
+  background-color: #254f49;
+}
+
+#part-one-message::-webkit-scrollbar {
+  width: 10px;
+}
+
+#part-one-message::-webkit-scrollbar-thumb {
+  background-color: #427f77;
+}
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        window.alert = function(){};
+        var defaultCSS = document.getElementById('bootstrap-css');
+        function changeCSS(css){
+            if(css) $('head > link').filter(':first').replaceWith('<link rel="stylesheet" href="'+ css +'" type="text/css" />');
+            else $('head > link').filter(':first').replaceWith(defaultCSS);
+        }
+        $( document ).ready(function() {
+          var iframe_height = parseInt($('html').height());
+          window.parent.postMessage( iframe_height, 'http://127.0.0.1:5000');
+        });
+    </script>
+	<style type="text/css">.dg {
+  /** Clear list styles */
+  /* Auto-place container */
+  /* Auto-placed GUI's */
+  /* Line items that don't contain folders. */
+  /** Folder names */
+  /** Hides closed items */
+  /** Controller row */
+  /** Name-half (left) */
+  /** Controller-half (right) */
+  /** Controller placement */
+  /** Shorter number boxes when slider is present. */
+  /** Ensure the entire boolean and function row shows a hand */ }
+  .dg ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    clear: both; }
+  .dg.ac {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    z-index: 0; }
+  .dg:not(.ac) .main {
+    /** Exclude mains in ac so that we don't hide close button */
+    overflow: hidden; }
+  .dg.main {
+    -webkit-transition: opacity 0.1s linear;
+    -o-transition: opacity 0.1s linear;
+    -moz-transition: opacity 0.1s linear;
+    transition: opacity 0.1s linear; }
+    .dg.main.taller-than-window {
+      overflow-y: auto; }
+      .dg.main.taller-than-window .close-button {
+        opacity: 1;
+        /* TODO, these are style notes */
+        margin-top: -1px;
+        border-top: 1px solid #2c2c2c; }
+    .dg.main ul.closed .close-button {
+      opacity: 1 !important; }
+    .dg.main:hover .close-button,
+    .dg.main .close-button.drag {
+      opacity: 1; }
+    .dg.main .close-button {
+      /*opacity: 0;*/
+      -webkit-transition: opacity 0.1s linear;
+      -o-transition: opacity 0.1s linear;
+      -moz-transition: opacity 0.1s linear;
+      transition: opacity 0.1s linear;
+      border: 0;
+      position: absolute;
+      line-height: 19px;
+      height: 20px;
+      /* TODO, these are style notes */
+      cursor: pointer;
+      text-align: center;
+      background-color: #000; }
+      .dg.main .close-button:hover {
+        background-color: #111; }
+  .dg.a {
+    float: right;
+    margin-right: 15px;
+    overflow-x: hidden; }
+    .dg.a.has-save > ul {
+      margin-top: 27px; }
+      .dg.a.has-save > ul.closed {
+        margin-top: 0; }
+    .dg.a .save-row {
+      position: fixed;
+      top: 0;
+      z-index: 1002; }
+  .dg li {
+    -webkit-transition: height 0.1s ease-out;
+    -o-transition: height 0.1s ease-out;
+    -moz-transition: height 0.1s ease-out;
+    transition: height 0.1s ease-out; }
+  .dg li:not(.folder) {
+    cursor: auto;
+    height: 27px;
+    line-height: 27px;
+    overflow: hidden;
+    padding: 0 4px 0 5px; }
+  .dg li.folder {
+    padding: 0;
+    border-left: 4px solid transparent; }
+  .dg li.title {
+    cursor: pointer;
+    margin-left: -4px; }
+  .dg .closed li:not(.title),
+  .dg .closed ul li,
+  .dg .closed ul li > * {
+    height: 0;
+    overflow: hidden;
+    border: 0; }
+  .dg .cr {
+    clear: both;
+    padding-left: 3px;
+    height: 27px; }
+  .dg .property-name {
+    cursor: default;
+    float: left;
+    clear: left;
+    width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+  .dg .c {
+    float: left;
+    width: 60%; }
+  .dg .c input[type=text] {
+    border: 0;
+    margin-top: 4px;
+    padding: 3px;
+    width: 100%;
+    float: right; }
+  .dg .has-slider input[type=text] {
+    width: 30%;
+    /*display: none;*/
+    margin-left: 0; }
+  .dg .slider {
+    float: left;
+    width: 66%;
+    margin-left: -5px;
+    margin-right: 0;
+    height: 19px;
+    margin-top: 4px; }
+  .dg .slider-fg {
+    height: 100%; }
+  .dg .c input[type=checkbox] {
+    margin-top: 9px; }
+  .dg .c select {
+    margin-top: 5px; }
+  .dg .cr.function,
+  .dg .cr.function .property-name,
+  .dg .cr.function *,
+  .dg .cr.boolean,
+  .dg .cr.boolean * {
+    cursor: pointer; }
+  .dg .selector {
+    display: none;
+    position: absolute;
+    margin-left: -9px;
+    margin-top: 23px;
+    z-index: 10; }
+  .dg .c:hover .selector,
+  .dg .selector.drag {
+    display: block; }
+  .dg li.save-row {
+    padding: 0; }
+    .dg li.save-row .button {
+      display: inline-block;
+      padding: 0px 6px; }
+  .dg.dialogue {
+    background-color: #222;
+    width: 460px;
+    padding: 15px;
+    font-size: 13px;
+    line-height: 15px; }
+
+/* TODO Separate style and structure */
+#dg-new-constructor {
+  padding: 10px;
+  color: #222;
+  font-family: Monaco, monospace;
+  font-size: 10px;
+  border: 0;
+  resize: none;
+  box-shadow: inset 1px 1px 1px #888;
+  word-wrap: break-word;
+  margin: 12px 0;
+  display: block;
+  width: 440px;
+  overflow-y: scroll;
+  height: 100px;
+  position: relative; }
+
+#dg-local-explain {
+  display: none;
+  font-size: 11px;
+  line-height: 17px;
+  border-radius: 3px;
+  background-color: #333;
+  padding: 8px;
+  margin-top: 10px; }
+  #dg-local-explain code {
+    font-size: 10px; }
+
+#dat-gui-save-locally {
+  display: none; }
+
+/** Main type */
+.dg {
+  color: #eee;
+  font: 11px 'Lucida Grande', sans-serif;
+  text-shadow: 0 -1px 0 #111;
+  /** Auto place */
+  /* Controller row, <li> */
+  /** Controllers */ }
+  .dg.main {
+    /** Scrollbar */ }
+    .dg.main::-webkit-scrollbar {
+      width: 5px;
+      background: #1a1a1a; }
+    .dg.main::-webkit-scrollbar-corner {
+      height: 0;
+      display: none; }
+    .dg.main::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+      background: #676767; }
+  .dg li:not(.folder) {
+    background: #1a1a1a;
+    border-bottom: 1px solid #2c2c2c; }
+  .dg li.save-row {
+    line-height: 25px;
+    background: #dad5cb;
+    border: 0; }
+    .dg li.save-row select {
+      margin-left: 5px;
+      width: 108px; }
+    .dg li.save-row .button {
+      margin-left: 5px;
+      margin-top: 1px;
+      border-radius: 2px;
+      font-size: 9px;
+      line-height: 7px;
+      padding: 4px 4px 5px 4px;
+      background: #c5bdad;
+      color: #fff;
+      text-shadow: 0 1px 0 #b0a58f;
+      box-shadow: 0 -1px 0 #b0a58f;
+      cursor: pointer; }
+      .dg li.save-row .button.gears {
+        background: #c5bdad url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANCAYAAAB/9ZQ7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQJJREFUeNpiYKAU/P//PwGIC/ApCABiBSAW+I8AClAcgKxQ4T9hoMAEUrxx2QSGN6+egDX+/vWT4e7N82AMYoPAx/evwWoYoSYbACX2s7KxCxzcsezDh3evFoDEBYTEEqycggWAzA9AuUSQQgeYPa9fPv6/YWm/Acx5IPb7ty/fw+QZblw67vDs8R0YHyQhgObx+yAJkBqmG5dPPDh1aPOGR/eugW0G4vlIoTIfyFcA+QekhhHJhPdQxbiAIguMBTQZrPD7108M6roWYDFQiIAAv6Aow/1bFwXgis+f2LUAynwoIaNcz8XNx3Dl7MEJUDGQpx9gtQ8YCueB+D26OECAAQDadt7e46D42QAAAABJRU5ErkJggg==) 2px 1px no-repeat;
+        height: 7px;
+        width: 8px; }
+      .dg li.save-row .button:hover {
+        background-color: #bab19e;
+        box-shadow: 0 -1px 0 #b0a58f; }
+  .dg li.folder {
+    border-bottom: 0; }
+  .dg li.title {
+    padding-left: 16px;
+    background: #000 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+  .dg .closed li.title {
+    background-image: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==); }
+  .dg .cr.boolean {
+    border-left: 3px solid #806787; }
+  .dg .cr.color {
+    border-left: 3px solid; }
+  .dg .cr.function {
+    border-left: 3px solid #e61d5f; }
+  .dg .cr.number {
+    border-left: 3px solid #2FA1D6; }
+    .dg .cr.number input[type=text] {
+      color: #2FA1D6; }
+  .dg .cr.string {
+    border-left: 3px solid #1ed36f; }
+    .dg .cr.string input[type=text] {
+      color: #1ed36f; }
+  .dg .cr.function:hover, .dg .cr.boolean:hover {
+    background: #111; }
+  .dg .c input[type=text] {
+    background: #303030;
+    outline: none; }
+    .dg .c input[type=text]:hover {
+      background: #3c3c3c; }
+    .dg .c input[type=text]:focus {
+      background: #494949;
+      color: #fff; }
+  .dg .c .slider {
+    background: #303030;
+    cursor: ew-resize; }
+  .dg .c .slider-fg {
+    background: #2FA1D6;
+    max-width: 100%; }
+  .dg .c .slider:hover {
+    background: #3c3c3c; }
+    .dg .c .slider:hover .slider-fg {
+      background: #44abda; }
+</style></head>
+<body>
+
+
+
+
+	<meta charset="UTF-8">
+	<title>Exploding letter</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+
+
+
+
+	<div class="shaker is-shaking">
+		<div id="template" class="dialog" style="display: none; z-index: 1;">
+			<div class="dialog-body">
+				<div id="triangle-wrapper">
+					<div class="shadow">
+						<div></div>
+					</div>
+				</div>
+				<button class="stamp hvr-buzz" id="stamp-envelope"></button>
+			</div>
+			<div id="info">open me</div>
+		</div>
+
+		<div class="message" style="display: block;">
+			<div class="part-one" id="part-one-message">
+				<div class="message-header"></div>
+				<div class="message-text">Dear Harry, <br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+					Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+					<br><br> I await your owl,<br><br> Klara
+				</div>
+				<div class="stamp-wrapper">
+					<div class="stamp hvr-buzz" id="stamp-footer">H</div>
+				</div>
+				<div class="message-footer"></div>
+			</div>
+
+		</div>
+	<canvas width="654" height="496"></canvas></div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.1/dat.gui.js"></script>
+	<script src="https://cdn.rawgit.com/josephg/noisejs/master/perlin.js">
+	</script>
+	<script src="letter-script.js"></script>
+
+
+	<script type="text/javascript">
+	var _createClass = (function() {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+  return function(Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+})();
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+var options = {
+  drag: 1,
+  gravity: 0,
+  lifespan: 161,
+  maxSpeed: 100,
+  maxParticles: 500,
+  particleColors: ["242, 167, 30", "241, 207, 160", "211, 79, 39"],
+  particlesPerPress: 400,
+  jitter: 0,
+  randomness: 1,
+  size: 10,
+  sizeRange: 10,
+  shrinkSpeed: 0.1
+};
+
+var ParticleSystem = (function() {
+  function ParticleSystem() {
+    _classCallCheck(this, ParticleSystem);
+    this.particles = [];
+  }
+  _createClass(ParticleSystem, [
+    {
+      key: "addParticle",
+      value: function addParticle(opts) {
+        for (var i = 0; i < opts.numToAdd; i++) {
+          this.particles.push(new Particle(opts));
+        }
+        while (this.particles.length > options.maxParticles) {
+          this.removeParticle();
+        }
+      }
+    },
+    {
+      key: "removeParticle",
+      value: function removeParticle() {
+        this.particles.shift();
+      }
+    },
+    {
+      key: "update",
+      value: function update() {
+        for (var i = 0; i < this.particles.length; i++) {
+          if (this.particles[i].lifespan > 0) {
+            this.particles[i].update();
+          }
+        }
+      }
+    },
+    {
+      key: "draw",
+      value: function draw() {
+        for (var i = 0; i < this.particles.length; i++) {
+          this.particles[i].draw();
+        }
+      }
+    }
+  ]);
+  return ParticleSystem;
+})();
+
+var Particle = (function() {
+  function Particle(opts) {
+    _classCallCheck(this, Particle);
+    // How many frames particle will live
+    this.lifespan = options.lifespan;
+
+    // Color
+    this.color =
+      options.particleColors[
+        Math.floor(Math.random() * options.particleColors.length)
+      ];
+
+    // Size
+    this.size = options.size;
+    this.size += Math.random() * options.sizeRange - options.sizeRange / 2;
+
+    // Position and velocity
+    this.x = opts.x;
+    this.y = opts.y;
+
+    var velXMin = -opts.leftSpread / (this.lifespan / 10);
+    var velXMax = opts.rightSpread / (this.lifespan / 10);
+    var velYMin = -opts.topSpread / (this.lifespan / 10);
+    var velYMax = opts.bottomSpread / (this.lifespan / 10);
+
+    var velXRange = velXMax - velXMin;
+    var velYRange = velYMax - velYMin;
+
+    var originLeftPercent =
+      opts.leftSpread / (opts.leftSpread + opts.rightSpread);
+    var originTopPercent =
+      opts.topSpread / (opts.topSpread + opts.bottomSpread);
+
+    this.velX = Math.random() * velXRange - velXRange * originLeftPercent;
+    this.velY = Math.random() * velYRange - velYRange * originTopPercent;
+
+    // Values for perlin noise
+    this.xOff = Math.random() * 6400;
+    this.yOff = Math.random() * 6400;
+
+    // Opacity is reduced as lifespan gets close to 0
+    this.opacity = 1;
+
+    // Added to velY every frame
+    this.gravity = options.gravity;
+
+    // Multiply with velocity every frame
+    this.drag = options.drag;
+    this.drag = options.drag;
+  }
+  _createClass(Particle, [
+    {
+      key: "update",
+      value: function update() {
+        // Add gravity force to the y velocity
+        this.velY += this.gravity;
+
+        // Add randomness with perlin noise
+        var randomX = noise.simplex2(this.xOff, 0);
+        var randomY = noise.simplex2(this.yOff, 0);
+        this.velX += randomX / (10 / options.randomness);
+        this.velY += randomY / (10 / options.randomness);
+        this.xOff += options.jitter;
+        this.yOff += options.jitter;
+
+        // // Apply drag
+        this.velX *= this.drag;
+        this.velY *= this.drag;
+
+        // And the velocity to the position
+        this.x += this.velX;
+        this.y += this.velY;
+
+        // Apply fade
+        this.opacity = this.lifespan / 100;
+
+        // Apply shrink
+        this.size -= options.shrinkSpeed;
+        this.size = Math.max(0, this.size);
+
+        // Update lifespan
+        this.lifespan -= 1;
+
+        if (this.size <= 0.1 || this.opacity <= 0.01) {
+          this.lifespan = 0;
+        }
+      }
+    },
+    {
+      key: "draw",
+      value: function draw() {
+        // set the fill style to have the right alpha
+        context.fillStyle = "rgba(" + this.color + ", " + this.opacity + ")";
+
+        // draw a circle of the required size
+        context.beginPath();
+        context.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        context.closePath();
+
+        // and fill it
+        context.fill();
+      }
+    }
+  ]);
+  return Particle;
+})();
+
+function loop() {
+  // Clear the canvas
+  context.clearRect(0, 0, screenWidth, screenHeight);
+
+  // Update and draw paricles
+  ps.update();
+  ps.draw();
+
+  // RAF
+  requestAnimationFrame(loop);
+}
+
+function explode(el, x, y) {
+  var dialog = document.querySelector(".dialog");
+  var rect = dialog.getBoundingClientRect();
+
+  dialog.classList.remove("is-in");
+  ps.addParticle({
+    numToAdd: options.particlesPerPress,
+    x: x,
+    y: y,
+    leftSpread: x - rect.left,
+    rightSpread: rect.right - x,
+    topSpread: y - rect.top,
+    bottomSpread: rect.bottom - y
+  });
+}
+
+// Globals
+var ps = void 0;
+var context = void 0;
+
+var mouseX = void 0;
+var mouseY = void 0;
+var isPointerPressed = false;
+
+// Get screen size variables
+var screenWidth = window.innerWidth;
+var screenHeight = window.innerHeight;
+var halfWidth = window.innerWidth / 2;
+var halfHeight = window.innerHeight / 2;
+
+function updateCanvasAndScreenVars() {
+  screenWidth = window.innerWidth;
+  screenHeight = window.innerHeight;
+  halfWidth = window.innerWidth / 2;
+  halfHeight = window.innerHeight / 2;
+  canvas.width = screenWidth;
+  canvas.height = screenHeight;
+}
+
+// Initialize
+console.clear();
+
+// Create Canvas element
+var canvas = document.createElement("canvas");
+context = canvas.getContext("2d");
+
+$(".shaker").append(canvas);
+
+updateCanvasAndScreenVars();
+
+$(window).on("resize", updateCanvasAndScreenVars);
+
+$("button").on("click", function(e) {
+  var shaker = document.querySelector(".shaker");
+  shaker.classList.add("is-shaking");
+  var dialog = document.querySelector(".dialog");
+
+  explode(dialog, e.pageX, e.pageY);
+  $(".dialog").hide();
+  $(".message").fadeIn(2000);
+
+  setTimeout(function() {
+    $(dialog).css("z-index", 1);
+  }, 200);
+});
+
+$("#stamp-footer").on("click", function(e) {
+  var message = document.getElementById("part-one-message");
+  message.scrollTop = 0;
+  $(".message").hide();
+  $(".dialog").show();
+});
+
+// Perlin Noise
+noise.seed(Math.floor(Math.random() * 64000));
+
+// Create Particle System
+ps = new ParticleSystem();
+
+loop();
+	</script>
+
+
+</body></html>
