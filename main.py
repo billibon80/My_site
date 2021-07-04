@@ -7,6 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length
+import os
+
+
 
 # import sqlite3
 #
@@ -38,9 +41,9 @@ story_page = 1
 
 # date = datetime.date.fromisoformat('2021-05-16')
 # print(date.strftime('%b ru_RU.UTF-8'))
-
+MAIL_CODE = os.environ.get("MAIL_CODE")
 app = Flask(__name__, static_folder='static')
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data-site.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 Bootstrap(app)
@@ -395,7 +398,7 @@ def get_contact():
         data = request.form
         msg = PostSomeself(data['name'], data['email'], data['phone'], data['message'])
         try:
-            msg.connection_mail_ru("billibon80@mail.ru", "******")
+            msg.connection_mail_ru("billibon80@mail.ru", MAIL_CODE)
         except:
             method = "ERROR"
 
