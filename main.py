@@ -395,7 +395,7 @@ def get_contact():
         data = request.form
         msg = PostSomeself(data['name'], data['email'], data['phone'], data['message'])
         try:
-            msg.connection_mail_ru("billibon80@mail.ru", "zm1392839")
+            msg.connection_mail_ru("billibon80@mail.ru", "******")
         except:
             method = "ERROR"
 
