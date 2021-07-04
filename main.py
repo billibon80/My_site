@@ -1,15 +1,17 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, abort, flash
+from flask_bootstrap import Bootstrap
+from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from flask_ckeditor import CKEditor
+from flask_gravatar import Gravatar
+from flask_sqlalchemy import SQLAlchemy
 from datetime import date as dt
 from datetime import datetime
 from smpt import PostSomeself
-from flask_bootstrap import Bootstrap
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired, Length
+from forms import FormatStories, FormatNovel, FormatNews
+from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import relationship
+from functools import wraps
 import os
-
-
 
 # import sqlite3
 #
@@ -32,9 +34,6 @@ import os
 #     connection.close()
 #
 # add_column('data-site.db', 'novel', 'gif', 'String')
-
-
-
 show_story = 0
 name_button = "Older Story →"
 story_page = 1
@@ -43,26 +42,32 @@ story_page = 1
 # print(date.strftime('%b ru_RU.UTF-8'))
 MAIL_CODE = os.environ.get("MAIL_CODE")
 app = Flask(__name__, static_folder='static')
+
+##CONNECT TO DB
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+ckeditor = CKEditor(app)
 Bootstrap(app)
+
 db = SQLAlchemy(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
 
-class FormatStories(FlaskForm):
-    date = StringField("Date Story", validators=[DataRequired(message=""), Length(min=10, max=10, message="")])
-    chapter = TextAreaField("Name Chapter", validators=[DataRequired(message=""), Length(max=250, message="")])
-    title = TextAreaField("Name Title", validators=[DataRequired(message=""), Length(max=250, message="")])
-    subtitle = TextAreaField("Your Subtitle", validators=[DataRequired(message=""), Length(max=250, message="")])
-    body = TextAreaField("Text Story", validators=[DataRequired(message="")])
-    img = StringField("Img for Story")
-    main_img = StringField("Img for Chapter")
-    new_story = BooleanField("It's New Story")
-    submit = SubmitField("Add Story")
+gravatar = Gravatar(app)
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+
+
+## CONFIGURE TABLES
 class Stories(db.Model):
+    __tablename__ = "stories"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String(10), nullable=False)
     title = db.Column(db.String(250), nullable=False)
@@ -74,17 +79,8 @@ class Stories(db.Model):
     new_story = db.Column(db.Boolean)
 
 
-class FormatNovel(FlaskForm):
-    date = StringField("Date Format yyyy-mm-dd", validators=[DataRequired(message=''), Length(max=10, min=10, message="")])
-    title = TextAreaField("Name Your Novel", validators=[DataRequired(message=''), Length(max=250, message="")])
-    subtitle = TextAreaField("Subtitle of Novel", validators=[DataRequired(message=''), Length(max=250, message="")])
-    body = TextAreaField("Text of Novel", validators=[DataRequired(message='')])
-    img = StringField("Img for Novel")
-    gif = StringField("Add Path of GIF")
-    submit = SubmitField("Add Novel")
-
-
 class Novel(db.Model):
+    __tablename__ = "novel"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String(10), nullable=False)
     title = db.Column(db.String(250), nullable=False)
@@ -94,16 +90,8 @@ class Novel(db.Model):
     gif = db.Column(db.String)
 
 
-class FormatNews(FlaskForm):
-    date = StringField("Date Format yyyy-mm-dd", validators=[DataRequired(), Length(max=10, min=10, message='')])
-    title = StringField("Your Name Title News", validators=[DataRequired(), Length(max=20, message='')])
-    subtitle = TextAreaField("Your Subtitle News", validators=[DataRequired(), Length(max=110, message='')])
-    body = TextAreaField("Text of News", validators=[DataRequired(), Length(max=250, message='')])
-    img = StringField("Img for News")
-    submit = SubmitField("Add News")
-
-
 class News(db.Model):
+    __tablename__ = "news"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String(10), nullable=False)
     title = db.Column(db.String(20), nullable=False)
@@ -112,23 +100,56 @@ class News(db.Model):
     img = db.Column(db.String)
 
 
+class User(UserMixin, db.Model):
+    __tablename__ = "user"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(100))
+    comments = relationship("Comment", back_populates="comment_author")
+
+
+class Comment(db.Model):
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    comment_author = relationship("User", back_populates="comments")
+
+
 db.create_all()
+
+print(current_user)
+def admin_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if current_user.id != 1:
+            return abort(404)
+        return f(*args, **kwargs)
+
+    return decorated_function()
 
 
 @app.route('/admin')
 def admin_panel():
-    global name_button
-    global story_page
-    global show_story
-    news = db.session.query(News).order_by(db.desc(News.date)).all()
-    posts = db.session.query(Stories).order_by(db.desc(Stories.date)).all()
+    if current_user.is_authenticated:
+        if current_user.id == 1:
+            global name_button
+            global story_page
+            global show_story
+            news = db.session.query(News).order_by(db.desc(News.date)).all()
+            posts = db.session.query(Stories).order_by(db.desc(Stories.date)).all()
 
-    return render_template("index_admin.html", all_posts=posts, dt=dt,
-                           story_page=story_page, datetime=datetime, news=news)
+            return render_template("index_admin.html", all_posts=posts, dt=dt,
+                                   story_page=story_page, datetime=datetime, news=news)
+        flash("You have no enough access rights")
+        return render_template("login_admin.html")
+    return redirect(url_for("login"))
 
 
 # page edit Story
 @app.route('/add_stories', methods=['GET', 'POST'])
+@admin_only
 def add_stories():
     form = FormatStories()
     button = "Add Story"
@@ -159,6 +180,7 @@ def add_stories():
 
 
 @app.route('/update_story', methods=['GET', 'POST'])
+@admin_only
 def update_story():
     form = FormatStories()
     id = request.args.get('id')
@@ -189,6 +211,7 @@ def update_story():
 
 
 @app.route('/delete_story')
+@admin_only
 def delete_story():
     id = request.args.get('id')
     story = Stories.query.get(id)
@@ -199,6 +222,7 @@ def delete_story():
 
 # page edit News
 @app.route('/add_news', methods=['GET', 'POST'])
+@admin_only
 def add_news():
     form = FormatNews()
     button = "Add News"
@@ -221,6 +245,7 @@ def add_news():
 
 
 @app.route('/update_news', methods=['GET', 'POST'])
+@admin_only
 def update_news():
     form = FormatNews()
     id = request.args.get('id')
@@ -263,6 +288,7 @@ def update_news():
 
 
 @app.route('/delete_news')
+@admin_only
 def delete_news():
     id = request.args.get('id')
     story = News.query.get(id)
@@ -271,14 +297,16 @@ def delete_news():
     return redirect(url_for('admin_panel'))
 
 
-#novel edit
+# novel edit
 @app.route('/novel_admin')
+@admin_only
 def novel_admin():
     novels = db.session.query(Novel).order_by(db.desc(Novel.date)).all()
     return render_template('novel_admin.html', novels=novels, datetime=datetime, dt=dt)
 
 
 @app.route('/add_novel', methods=['GET', 'POST'])
+@admin_only
 def add_novel():
     form = FormatNovel()
     button = "Add Novel"
@@ -301,6 +329,7 @@ def add_novel():
 
 
 @app.route('/update_novel', methods=['GET', 'POST'])
+@admin_only
 def update_novel():
     form = FormatNovel()
     id = request.args.get('id')
@@ -329,6 +358,7 @@ def update_novel():
 
 
 @app.route('/delete_novel')
+@admin_only
 def delete_novel():
     id = request.args.get('id')
     story = Novel.query.get(id)
@@ -336,7 +366,8 @@ def delete_novel():
     db.session.commit()
     return redirect(url_for('novel_admin'))
 
-#home page
+
+# home page
 @app.route('/')
 @app.route('/home')
 def get_new_posts():
