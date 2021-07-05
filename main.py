@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import date as dt
 from datetime import datetime
 from smpt import PostSomeself
-from forms import FormatStories, FormatNovel, FormatNews
+from forms import FormatStories, FormatNovel, FormatNews, LoginForm, RegisterForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
 from functools import wraps
@@ -119,15 +119,15 @@ class Comment(db.Model):
 
 db.create_all()
 
-print(current_user)
+
 def admin_only(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.id != 1:
+        if current_user.id == None:
             return abort(404)
         return f(*args, **kwargs)
 
-    return decorated_function()
+    return decorated_function
 
 
 @app.route('/admin')
@@ -143,8 +143,42 @@ def admin_panel():
             return render_template("index_admin.html", all_posts=posts, dt=dt,
                                    story_page=story_page, datetime=datetime, news=news)
         flash("You have no enough access rights")
-        return render_template("login_admin.html")
+        return redirect(url_for("login"))
     return redirect(url_for("login"))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if current_user.is_authenticated:
+        if current_user.id == 1:
+            return redirect(url_for("admin_panel"))
+        return redirect(url_for('home'))
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            if check_password_hash(user.password, form.password.data):
+                login_user(user)
+                return redirect(url_for('login'))
+        return redirect(url_for("login"))
+
+    return render_template("login.html", form=form)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(
+            name=form.name.data,
+            email=form.email.data,
+            password=generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=8)
+        )
+        db.session.add(user)
+        db.session.commit()
+        load_user(user)
+        return redirect(url_for('login'))
+    return render_template("register.html", form=form)
 
 
 # page edit Story
@@ -335,7 +369,6 @@ def update_novel():
     id = request.args.get('id')
     story = Novel.query.get(id)
     button = "Update Novel"
-    print('update_novel'[-5:-1])
     if request.method == "GET":
         form.date.data = story.date
         form.title.data = story.title

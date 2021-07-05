@@ -34,3 +34,16 @@ class FormatNews(FlaskForm):
     body = TextAreaField("Text of News", validators=[DataRequired(), Length(max=250, message='')])
     img = StringField("Img for News")
     submit = SubmitField("Add News")
+
+
+class LoginForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Logged In")
+
+
+class RegisterForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(message="Required fields")])
+    password = PasswordField("Password", validators=[DataRequired(message="Required fields")])
+    name = StringField("Name", validators=[DataRequired(message="Required fields")])
+    submit = SubmitField("Sign Me Up")
