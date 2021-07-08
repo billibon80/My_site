@@ -21,7 +21,7 @@
         <link href="{{ url_for('static', filename='css-cleanBlog/team.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css-cleanBlog/novel.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css-cleanBlog/letter.css') }}">
-
+        <link rel="stylesheet" href="{{ url_for('static', filename='css-cleanBlog/clean-blog.min.css') }}">
     </head>
     <body>
         <!-- Navigation-->
@@ -38,6 +38,12 @@
                         <li class="nav-item"><a class="nav-link" href="{{ '/about' }}">About</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ '/novel' }}">Novel</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ '/contact' }}">Contact</a></li>
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

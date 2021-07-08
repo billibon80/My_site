@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, url_for, redirect, abort, flash
+import smtplib
+
+from flask import Flask, render_template, request, url_for, redirect, abort, flash, Response
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_ckeditor import CKEditor
@@ -7,11 +9,12 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import date as dt
 from datetime import datetime
 from smpt import PostSomeself
-from forms import FormatStories, FormatNovel, FormatNews, LoginForm, RegisterForm
+from forms import FormatStories, FormatNovel, FormatNews, LoginForm, RegisterForm, Comments, ContactForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
 from functools import wraps
 import os
+import urllib
 
 # import sqlite3
 #
@@ -63,8 +66,6 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-
-
 ## CONFIGURE TABLES
 class Stories(db.Model):
     __tablename__ = "stories"
@@ -77,6 +78,8 @@ class Stories(db.Model):
     img = db.Column(db.String)
     main_img = db.Column(db.String)
     new_story = db.Column(db.Boolean)
+
+    comments = relationship("Comment", back_populates="parent_stories")
 
 
 class Novel(db.Model):
@@ -112,9 +115,12 @@ class User(UserMixin, db.Model):
 class Comment(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.Text, nullable=False)
+    text = db.Column(db.String(200), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     comment_author = relationship("User", back_populates="comments")
+
+    stories_id = db.Column(db.Integer, db.ForeignKey("stories.id"))
+    parent_stories = relationship("Stories", back_populates="comments")
 
 
 db.create_all()
@@ -150,17 +156,20 @@ def admin_panel():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if current_user.is_authenticated:
-        if current_user.id == 1:
-            return redirect(url_for("admin_panel"))
-        return redirect(url_for('home'))
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
-                return redirect(url_for('login'))
-        return redirect(url_for("login"))
+                if user.id == 1:
+                    return redirect(url_for("admin_panel"))
+                page = request.args.get('page')
+                if page:
+                    return redirect(url_for('show_post', index=page[page.find('/') + 1:], _anchor='text'))
+                return redirect(url_for('get_new_posts'))
+            flash("Invalid password")
+        else:
+            flash("That Email doesn't exist")
 
     return render_template("login.html", form=form)
 
@@ -181,13 +190,18 @@ def register():
     return render_template("register.html", form=form)
 
 
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('get_new_posts'))
+
+
 # page edit Story
 @app.route('/add_stories', methods=['GET', 'POST'])
 @admin_only
 def add_stories():
     form = FormatStories()
     button = "Add Story"
-    print('')
     if request.method == "GET":
         if form.date.data is None:
             form.date.data = datetime.now().strftime('%Y-%m-%d')
@@ -400,6 +414,16 @@ def delete_novel():
     return redirect(url_for('novel_admin'))
 
 
+@app.route('/post/<int:index>/delete_comment')
+@login_required
+def delete_comment(index):
+    id = request.args.get('comment_id')
+    comment = Comment.query.get(id)
+    db.session.delete(comment)
+    db.session.commit()
+    return redirect(url_for('show_post', index=index, _anchor='submit'))
+
+
 # home page
 @app.route('/')
 @app.route('/home')
@@ -413,29 +437,16 @@ def get_new_posts():
     show_story = 1
     story_page = 1
     name_button = "Older Story →"
-
     return render_template("index.html", all_posts=posts, dt=dt, name_button=name_button,
-                           story_page=story_page, datetime=datetime, news=news[:3])
+                           story_page=posts[-1].id - 2, datetime=datetime, news=news[:3])
 
 
-@app.route('/<int:index>')
+@app.route('/story/<int:index>')
 def get_old_posts(index):
-    global show_story
-    global name_button
-    global story_page
-
-    story_page = index + 1
-    number_open_stories = 2
+    print(index)
     posts = db.session.query(Stories).filter_by(new_story=False).order_by(db.desc(Stories.date)).all()
 
-    if show_story + number_open_stories < len(posts):
-        show_story += number_open_stories
-    else:
-        show_story = len(posts)
-        story_page -= 1
-        name_button = "The End of Stories"
-    return render_template("previous_story.html", all_posts=posts[0:show_story], dt=dt,
-                           name_button=name_button, story_page=story_page, datetime=datetime)
+    return render_template("previous_story.html", posts=posts, dt=dt, datetime=datetime, index=index - 1)
 
 
 @app.route('/about')
@@ -449,24 +460,36 @@ def get_novel():
     return render_template('novel_1.html', novels=novels, datetime=datetime, dt=dt)
 
 
-@app.route('/post/<int:index>')
+@app.route('/post/<int:index>', methods=['POST', 'GET'])
 def show_post(index):
+    form = Comments()
+    stories = Stories.query.get(index)
     requested_post = Stories.query.get(index)
-    return render_template('post.html', post=requested_post, datetime=datetime, dt=dt)
+    if form.validate_on_submit():
+        comment = Comment(
+            text=form.text.data,
+            author_id=current_user.id,
+            stories_id=stories.id
+        )
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('show_post', index=index, _anchor="submit"))
+    return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form)
 
 
 @app.route('/contact', methods=['POST', 'GET'])
 def get_contact():
-    method = request.method
-    if method == "POST":
-        data = request.form
-        msg = PostSomeself(data['name'], data['email'], data['phone'], data['message'])
+    form = ContactForm()
+    if form.validate_on_submit():
+        msg = PostSomeself(form.name.data, form.email.data,
+                           form.phone.data, form.text.data)
         try:
             msg.connection_mail_ru("billibon80@mail.ru", MAIL_CODE)
         except:
-            method = "ERROR"
+            flash("What wrong! 😞😞😞 Your message don't send, sorry for this attempt!")
+        return redirect(url_for("get_contact"))
 
-    return render_template('contact.html', datetime=datetime, method=method)
+    return render_template('contact.html', datetime=datetime, form=form)
 
 
 if __name__ == "__main__":

@@ -81,3 +81,9 @@ html {
 #login .form-group {
     margin-bottom: 0.5rem;
 }
+
+#login .error {
+    text-align: center;
+    color: red;
+
+}

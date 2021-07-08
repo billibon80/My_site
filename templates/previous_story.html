@@ -18,26 +18,38 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-md-10 mx-auto" >
-                    {% for post in all_posts %}
-
-                    {% if post['new_story'] %}
-                        <div class="new-icon" style="background-image: url({{ url_for('static', filename='assets/img/new-icon.png') }})"></div>
-                    {% endif %}
-
-                    <div class="masthead post-preview" id="{{ post['id'] }}" style="background-image:linear-gradient( rgba(0 0 0 / 65%), rgba(0, 0, 0, 0.5) ), url({{ url_for('static', filename='assets/img-stories/' +  post['img']|string) }})">
-                        <a href="{{ url_for('show_post', index=post['id']) }}">
-                            <h2 class="post-title">{{ post['chapter'] + ' ' + post['title'] }}</h2>
-                            <h3 class="post-subtitle">{{ post['subtitle'] }}</h3>
+                    <div class="masthead post-preview" id="{{ posts[::-1][index]['id'] }}"
+                         style="background-image:linear-gradient( rgba(0 0 0 / 65%),
+                         rgba(0, 0, 0, 0.5) ), url({{ url_for('static', filename='assets/img-stories/'
+                         +  posts[::-1][index]['img']|string) }})">
+                        <a href="{{ url_for('show_post', index=posts[::-1][index]['id']) }}">
+                            <h2 class="post-title">{{ posts[::-1][index]['chapter'] + ' ' + posts[::-1][index]['title'] }}</h2>
+                            <h3 class="post-subtitle">{{ posts[::-1][index]['subtitle'] }}</h3>
                         </a>
                         <p class="post-meta">
                             Posted
-                            on {{ dt.fromisoformat(post['date']).strftime('%B %d, %Y') }}
+                            on {{ dt.fromisoformat(posts[::-1][index]['date']).strftime('%B %d, %Y') }}
                         </p>
                     </div>
                     <hr />
-                    {% endfor %}
+
+                    <!-- button group for previous story -->
+                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups"
+                         style="justify-content: center">
+                          {% for post in posts %}
+                          <div class="btn-group mr-2" role="group" aria-label="First group">
+                            {% if post.id - 1 == index: %}
+                              <a href="{{ url_for('get_old_posts', index=post.id, _anchor=post.id) }}" id="{{post.id}}" type="button"
+                                 class="btn btn-secondary">{{post.id}}</a>
+                            {% else %}
+                              <a href="{{ url_for('get_old_posts', index=post.id, _anchor=post.id) }}" id="{{post.id}}" type="button"
+                                 class="btn btn-outline-secondary">{{post.id}}</a>
+                            {% endif %}
+                          </div>
+                          {% endfor %}
+                    </div>
                     <!-- Pager-->
-                    <div class="clearfix"><a class="btn btn-primary float-right" href="{{ url_for('get_old_posts', index=story_page) }}">{{ name_button }}</a></div>
+
                 </div>
             </div>
         </div>
