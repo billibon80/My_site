@@ -445,7 +445,7 @@ def get_new_posts():
 def get_old_posts(index):
     posts = db.session.query(Stories).filter_by(new_story=False).order_by(db.desc(Stories.date)).all()
 
-    return render_template("previous_story.html", posts=posts, dt=dt, datetime=datetime, index=index)
+    return render_template("previous_story.html", posts=posts, dt=dt, datetime=datetime, index=index-1)
 
 
 @app.route('/about')
