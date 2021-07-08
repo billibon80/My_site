@@ -12,7 +12,51 @@
                     </div>
                 </div>
             </div>
+            <button type="button" class="btn btn-outline-danger" id="letterOpenButton">Вам Письмо</button>
         </header>
+<!-- Letter For My Love -->
+	<div id="letter" class="shaker">
+		<div class="message">
+			<div class="part-one" id="part-one-message">
+				<div class="message-header">
+                    <button type="button" class="close" aria-label="Close" id="letterCloseButton">
+                    <span aria-hidden="true"><i class=" fas fa-times"></i></span>
+                    </button>
+                </div>
+				<div class="message-text">Дорогая Аня К.,
+                    <br><br>
+                    {% if letter: %}
+                    {% for row in letter.text.split('\n') %}
+                    {{row}} <br>
+                    {% endfor %}
+
+                    <br>
+                    Мне пора мой дорогой читатель,
+					<br><br> P.s. Я тоже тебя люблю,<br><br> ZhM 🙃
+                    {{dt.fromisoformat(letter.date).strftime('%d/%m/%Y')}}
+                    {% endif %}
+				</div>
+				<div class="stamp-wrapper">
+					<div class="stamp hvr-buzz" id="stamp-footer">H</div>
+				</div>
+				<div class="message-footer">
+                     <div class="row" style="text-align: center;">
+                                     <div class="col-lg-4 col-md-4 sm-4 col-4" >
+                                      <a href="{{ url_for('add_letter', type_edit='update', _id=letter.id) }}" class="btn btn-outline-primary p-1 m-sm-1">Update</a>
+                                     </div>
+                                    <div class="col-lg-4 col-md-4 sm-4 col-4" >
+                                      <a href="{{ url_for('add_letter', type_edit='add') }}" class="btn btn-outline-success p-1 m-sm-1">Add Letter</a>
+                                     </div>
+                                     <div class="col-lg-4 col-md-4 sm-4 col-4" >
+                                      <a href="{{ url_for('add_letter', type_edit='delete', _id=letter.id )}}" class="btn btn-outline-warning p-1 m-sm-1">Delete</a>
+                                     </div>
+                                    </div>
+
+                </div>
+			</div>
+
+		</div>
+	</div>
         <!-- Main Content-->
 
         <!-- Team "News block" -->
@@ -47,4 +91,4 @@
         </div>
         <hr />
         <!-- Footer-->
-{% include 'footer_admin.html' %}
+{% include 'footer.html' %}

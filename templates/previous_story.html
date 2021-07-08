@@ -36,12 +36,13 @@
                     <!-- button group for previous story -->
                     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups"
                          style="justify-content: center">
+
                           {% for post in posts %}
                           <div class="btn-group mr-2" role="group" aria-label="First group">
 
                               <a href="{{ url_for('get_old_posts', index=post.id, _anchor=post.id) }}" id="{{post.id}}" type="button"
                              {% if post.id - 1 == index: %}
-                                 class="btn btn-secondary"
+                                 class="btn btn-outline-secondary active"
                             {% else %}
                                  class="btn btn-outline-secondary"
                             {% endif %}

@@ -123,15 +123,23 @@ class Comment(db.Model):
     parent_stories = relationship("Stories", back_populates="comments")
 
 
+class Letter(db.Model):
+    __tablename__ = "letters"
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String(10), nullable=False)
+    text = db.Column(db.String, nullable=False)
+
+
 db.create_all()
 
 
 def admin_only(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.id == None:
-            return abort(404)
-        return f(*args, **kwargs)
+        if current_user.is_authenticated:
+            if current_user.id == 1:
+                return f(*args, **kwargs)
+        return abort(404)
 
     return decorated_function
 
@@ -145,9 +153,10 @@ def admin_panel():
             global show_story
             news = db.session.query(News).order_by(db.desc(News.date)).all()
             posts = db.session.query(Stories).order_by(db.desc(Stories.date)).all()
+            letter = db.session.query(Letter).order_by(db.desc(Letter.date)).first()
 
             return render_template("index_admin.html", all_posts=posts, dt=dt,
-                                   story_page=story_page, datetime=datetime, news=news)
+                                   story_page=story_page, datetime=datetime, news=news, letter=letter)
         flash("You have no enough access rights")
         return redirect(url_for("login"))
     return redirect(url_for("login"))
@@ -424,6 +433,46 @@ def delete_comment(index):
     return redirect(url_for('show_post', index=index, _anchor='submit'))
 
 
+@app.route('/letter_add', methods=['GET', 'POST'])
+@admin_only
+def add_letter():
+    form = FormatStories()
+    type_edit = request.args.get('type_edit')
+    _id = request.args.get('_id')
+
+    if form.validate_on_submit():
+        if type_edit == 'add':
+            new_letter = Letter(
+                date=form.date.data,
+                text=form.body.data
+            )
+            db.session.add(new_letter)
+            db.session.commit()
+        elif type_edit == 'update':
+            letter = Letter.query.get(_id)
+            letter.date = form.date.data
+            letter.text = form.body.data
+            db.session.commit()
+        return redirect(url_for('admin_panel'))
+
+    if type_edit == "delete":
+        letter = Letter.query.get(_id)
+        db.session.delete(letter)
+        db.session.commit()
+        return redirect(url_for('admin_panel'))
+    elif type_edit == "add":
+        form.date.data = datetime.now().strftime('%Y-%m-%d')
+        button = "Add Letter"
+    elif type_edit == "update":
+        letter = Letter.query.get(_id)
+        form.date.data = letter.date
+        form.body.data = letter.text
+        button = "Update Letter"
+
+    return render_template('add_letter_admin.html', form=form, type_edit=type_edit, copy="copy",
+                           _id=_id, button=button, function='story')
+
+
 # home page
 @app.route('/')
 @app.route('/home')
@@ -434,11 +483,10 @@ def get_new_posts():
 
     news = db.session.query(News).order_by(db.desc(News.date)).all()
     posts = Stories.query.filter_by(new_story=True).order_by(db.desc(Stories.date)).all()
-    show_story = 1
-    story_page = 1
+    letter = Letter.query.order_by(db.desc(Letter.date)).first()
     name_button = "Older Story →"
     return render_template("index.html", all_posts=posts, dt=dt, name_button=name_button,
-                           story_page=posts[-1].id - 1, datetime=datetime, news=news[:3])
+                           story_page=posts[-1].id - 1, datetime=datetime, news=news[:3], letter=letter)
 
 
 @app.route('/story/<int:index>')
