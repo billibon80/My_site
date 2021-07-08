@@ -438,7 +438,7 @@ def get_new_posts():
     story_page = 1
     name_button = "Older Story →"
     return render_template("index.html", all_posts=posts, dt=dt, name_button=name_button,
-                           story_page=posts[-1].id - 2, datetime=datetime, news=news[:3])
+                           story_page=posts[-1].id - 1, datetime=datetime, news=news[:3])
 
 
 @app.route('/story/<int:index>')

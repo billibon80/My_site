@@ -38,13 +38,15 @@
                          style="justify-content: center">
                           {% for post in posts %}
                           <div class="btn-group mr-2" role="group" aria-label="First group">
-                            {% if post.id - 1 == index: %}
+
                               <a href="{{ url_for('get_old_posts', index=post.id, _anchor=post.id) }}" id="{{post.id}}" type="button"
-                                 class="btn btn-secondary">{{post.id}}</a>
+                             {% if post.id - 1 == index: %}
+                                 class="btn btn-secondary"
                             {% else %}
-                              <a href="{{ url_for('get_old_posts', index=post.id, _anchor=post.id) }}" id="{{post.id}}" type="button"
-                                 class="btn btn-outline-secondary">{{post.id}}</a>
+                                 class="btn btn-outline-secondary"
                             {% endif %}
+                                 title="{{ post.title }}">{{post.id}}</a>
+
                           </div>
                           {% endfor %}
                     </div>
