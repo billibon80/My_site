@@ -481,12 +481,15 @@ def get_new_posts():
     global story_page
     global show_story
 
+    posts_id = 0
     news = db.session.query(News).order_by(db.desc(News.date)).all()
     posts = Stories.query.filter_by(new_story=True).order_by(db.desc(Stories.date)).all()
+    if posts:
+        posts_id = posts[-1].id - 1
     letter = Letter.query.order_by(db.desc(Letter.date)).first()
     name_button = "Older Story →"
     return render_template("index.html", all_posts=posts, dt=dt, name_button=name_button,
-                           story_page=posts[-1].id - 1, datetime=datetime, news=news[:3], letter=letter)
+                           story_page=posts_id, datetime=datetime, news=news[:3], letter=letter)
 
 
 @app.route('/story/<int:index>')
