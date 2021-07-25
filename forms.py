@@ -10,6 +10,7 @@ class FormatStories(FlaskForm):
     chapter = TextAreaField("Name Chapter", validators=[DataRequired(message=""), Length(max=250, message="")])
     title = TextAreaField("Name Title", validators=[DataRequired(message=""), Length(max=250, message="")])
     subtitle = TextAreaField("Your Subtitle", validators=[DataRequired(message=""), Length(max=250, message="")])
+    # body = CKEditorField("Text Story", validators=[DataRequired(message="")])
     body = TextAreaField("Text Story", validators=[DataRequired(message="")])
     img = StringField("Img for Story")
     main_img = StringField("Img for Chapter")
