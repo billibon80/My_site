@@ -11,7 +11,29 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
-
+.card-answer img {
+    max-height: 12rem;
+    object-fit: cover;
+}
+textarea::placeholder {
+  font-size: 0.8em;
+}
+.button-msg {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    background-color: rgba(86,61,124,0.15);
+    border: 1px solid rgba(86,61,124,0.2);
+    text-align: center;
+    font-size: 1.2rem;
+    color:
+}
+.button-msg a:hover {
+    text-decoration: none;
+    color: #eff4f5;
+}
+.button-msg:hover {
+    background-color: rgba(67,57,82,0.26);
+}
 :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -10399,7 +10421,7 @@ header.masthead .post-heading .meta a {
 }
 .post-preview > a:focus, .post-preview > a:hover {
   text-decoration: none;
-  color: #97c9d4;
+  color: #e4ebec;
 }
 .post-preview > a > .post-title {
   font-size: 30px;

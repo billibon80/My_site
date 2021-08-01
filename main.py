@@ -496,7 +496,7 @@ def get_new_posts():
 def get_old_posts(index):
     posts = db.session.query(Stories).filter_by(new_story=False).order_by(db.desc(Stories.date)).all()
 
-    return render_template("previous_story.html", posts=posts, dt=dt, datetime=datetime, index=index-1)
+    return render_template("previous_story.html", posts=posts, dt=dt, datetime=datetime, index=index - 1)
 
 
 @app.route('/about')
@@ -515,6 +515,49 @@ def show_post(index):
     form = Comments()
     stories = Stories.query.get(index)
     requested_post = Stories.query.get(index)
+    msg_id = request.args.get('msg_id')
+    answer = request.args.get('answer')
+    further = request.args.get('further')
+    all_row = requested_post.body.split("\n")
+    msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
+
+    if msg_id:
+
+        msg_id = int(msg_id.replace('msg_', ''))
+
+        if msg_index.index(msg_id) + 1 == len(msg_index):
+            if all_row.index(all_row[msg_index[msg_index.index(msg_id)]]) != len(all_row):
+                _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] + 1])
+            else:
+                _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] - 1])
+        else:
+            _anchor = msg_index[msg_index.index(msg_id) + 1] - (msg_index[msg_index.index(msg_id) + 1] - msg_id) + 1
+
+        if further:
+            if further == '0':
+                return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
+                                       msg_index=msg_index[0] + 1, answer=answer)
+
+        if msg_index[-1] != msg_id:
+            msg_index = msg_index[msg_index.index(msg_id) + 1]
+        else:
+            msg_index = len(all_row) - 1
+
+        if answer:
+            return redirect(url_for('show_post', index=index, _anchor=_anchor,
+                                    msg_index=msg_index, answer=int(answer)))
+        # _anchor = msg_index
+        # if further in ['3']:
+        #     _anchor = _anchor + 1
+        return redirect(url_for('show_post', index=index, _anchor=_anchor, msg_index=msg_index))
+    elif request.args.get('msg_index'):
+        msg_index = int(request.args.get('msg_index')) + 1
+    else:
+
+        if msg_index:
+            msg_index = msg_index[0] + 1
+        else:
+            msg_index = len(all_row) + 1
     if form.validate_on_submit():
         comment = Comment(
             text=form.text.data,
@@ -524,7 +567,8 @@ def show_post(index):
         db.session.add(comment)
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
-    return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form)
+    return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
+                           msg_index=msg_index, answer=answer)
 
 
 @app.route('/contact', methods=['POST', 'GET'])

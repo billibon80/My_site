@@ -51,7 +51,9 @@ class RegisterForm(FlaskForm):
 
 
 class Comments(FlaskForm):
-    text = TextAreaField("Comment", validators=[Length(min=5)])
+    text = TextAreaField("Comment",
+                         validators=[Length(min=5)],
+                         render_kw={'placeholder': "Добавьте комментарий более чем в 5 знаков"})
     submit = SubmitField("Add Comment")
 
 
