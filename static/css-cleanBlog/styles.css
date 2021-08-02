@@ -11,6 +11,31 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+.further .main {
+    font-size: 1.0rem;
+}
+.further .ico {
+    width: 3.5rem;
+}
+.further .action > div {
+    width: 10rem;
+}
+.further .action > div .btn {
+    border-radius: 70px !important;
+}
+.further .action a {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+.further .main > a {
+    color: #007bff;
+    text-decoration: none;
+    background-color: transparent;
+    -webkit-text-decoration-skip: objects;
+}
+
+
+
 .card-answer img {
     max-height: 12rem;
     object-fit: cover;
@@ -21,11 +46,10 @@ textarea::placeholder {
 .button-msg {
     padding-top: .75rem;
     padding-bottom: .75rem;
-    background-color: rgba(86,61,124,0.15);
     border: 1px solid rgba(86,61,124,0.2);
     text-align: center;
     font-size: 1.2rem;
-    color:
+
 }
 .button-msg a:hover {
     text-decoration: none;
