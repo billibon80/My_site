@@ -518,8 +518,19 @@ def show_post(index):
     msg_id = request.args.get('msg_id')
     answer = request.args.get('answer')
     further = request.args.get('further')
+    show_message = request.args.get('show_message')
     all_row = requested_post.body.split("\n")
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
+    show = request.args.get('show')
+
+    if show_message:
+        print(answer)
+        if msg_id in msg_index:
+            msg_id = msg_index[msg_index.index(int(msg_id))]
+        else:
+            msg_id = int(msg_id) - 1
+        return redirect(url_for('show_post', index=index, _anchor=show_message, show=show_message,
+                                msg_index=msg_id, answer=int(answer)))
 
     if msg_id:
 
@@ -568,7 +579,7 @@ def show_post(index):
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
     return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
-                           msg_index=msg_index, answer=answer)
+                           msg_index=msg_index, answer=answer, show=show)
 
 
 @app.route('/contact', methods=['POST', 'GET'])

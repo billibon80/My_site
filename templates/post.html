@@ -36,7 +36,8 @@
                          </div>
                         </div>
                             {% set all_rows_story = post["body"].split("\n") %}
-                            {% set show_msg_class = ['toast fade hide', 'toast fade show'] %}
+                            {% set show_msg_class = ['toast fade hide', 'fade show'] %}
+                            {% set last_row = msg_index %}
                             {% for i in  range(msg_index) %}
                                 {% set text = all_rows_story[i] %}
                                 {% set msg_id = i %}
@@ -117,6 +118,14 @@
                                                       {{text_media[1]|safe }}
                                                     </p>
                                                   </div>
+                                                     <div class="col-sm button-msg" >
+                                                         <a href="{{ url_for('show_post',
+                                                         index=post.id,
+                                                         msg_id='msg_' + msg_id|string,
+                                                         further=further) }}"
+                                                            class="btn btn-outlined btn-theme btn-lg"
+                                                            data-wow-delay="0.7s">Продолжить </a>
+                                                     </div>
                                                 </div>
                                                 <br>
                                             {% else %}
@@ -129,6 +138,14 @@
                                                       {{answer_msg.replace('{end}', '')|safe }}
                                                     </p>
                                                   </div>
+                                                    <div class="col-sm button-msg" >
+                                                         <a href="{{ url_for('show_post',
+                                                         index=post.id,
+                                                         msg_id='msg_' + msg_id|string,
+                                                         further=further) }}"
+                                                            class="btn btn-outlined btn-theme btn-lg"
+                                                            data-wow-delay="0.7s">Продолжить </a>
+                                                     </div>
                                                 </div>
                                                 <br>
                                             {% endif %}
@@ -137,12 +154,7 @@
                                             {% else %}
                                                 {% set further = 1 %}
                                             {% endif %}
-                                            <div id = "{{ msg_id }}" class="col-sm button-msg">
-                                                   <a href="{{ url_for('show_post',
-                                                index=post.id, msg_id='msg_' + msg_id|string, further=further) }}" class="stretched-link">
-                                                    <small class="fontMark"> Дальше >> </small>
-                                                   </a>
-                                            </div>
+
                                         {% else %}
                                             {% set show_msg = 'toast fade show' %}
                                         {% endif %}
@@ -222,7 +234,31 @@
                             {% else %}
                              <div id="{{ msg_id }}">
                                  {% if '<small' in text %}
-                                 <p style="line-height: 1.0;">{{ text|safe }}</p>
+                                 {% if msg_id|int == show|int  %}
+                                     {% if answer|int == 1 %}
+                                        {% set answer = 0 %}
+                                        {% set title = 'открыть письмо' %}
+                                     {% else %}
+                                        {% set answer = 1 %}
+                                        {% set title = 'закрыть письмо' %}
+                                     {% endif %}
+                                 {% else %}
+                                 {% set answer = 0 %}
+                                 {% endif %}
+                                 {% set show_class = show_msg_class[answer] %}
+                                 <a href="{{url_for('show_post',
+                                                 index=post.id,
+                                                 msg_id=last_row,
+                                                 answer = answer,
+                                                 show_message=msg_id)}}" title = '{{ title }}'>
+
+                                 <img style='width: 10%; margin-bottom: 10px;' src="{{url_for('static', filename='/assets/img-stories/message.svg')}}"
+                                 style="size: 10%;">
+                                  </a>
+
+
+
+                                 <p class="{{show_class}}" style="line-height: 1.0;">{{ text|safe }}</p>
                                  {% else %}
                                  <p>{{ text|safe }}</p>
                                  {% endif %}
