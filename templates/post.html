@@ -38,9 +38,16 @@
                             {% set all_rows_story = post["body"].split("\n") %}
                             {% set show_msg_class = ['toast fade hide', 'fade show'] %}
                             {% set last_row = msg_index %}
+                            {% set anchor_msg_n = anchor_msg %}
                             {% for i in  range(msg_index) %}
                                 {% set text = all_rows_story[i] %}
                                 {% set msg_id = i %}
+                                {% if anchor_msg_n|int == (i|int) and '{old}' not in text %}
+                                        <div class="m-3 pt-3"><span id='newstring' class="badge badge-danger">New</span></div>
+                                {% elif anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int] %}
+                                        <div class="m-3 pt-3"><span id='newstring' class="badge badge-danger">New</span></div>
+                                {% endif %}
+                                 {% set text = text.replace('{old}', '') %}
                              {% if "{message}" in text: %}
                                     {% if msg_index - 1 == msg_id: %}
                                         {% set show_msg = 'toast fade hide' %}
@@ -68,10 +75,10 @@
                                                                     <div>
                                                                         {% set link = button_text[2].replace(' ','').replace('\r','') %}
                                                                           {% if 'http' in  link %}
-                                                                                <img src="{{link}}" class="img-fluid" style="max-height: 7rem" alt="...">
+                                                                                <img src="{{link}}" class="img-fluid"  alt="...">
                                                                            {% else %}
                                                                                  <img src="{{url_for('static', filename='assets/img-stories/'
-                                                                                + link|string)}}" class="img-fluidp" style="max-height: 7rem" alt="...">
+                                                                                + link|string)}}" class="img-fluidp"  alt="...">
                                                                            {% endif %}
 <!--                                                                        <a href="#!" class="btn btn-outline-danger btn-block btn-sm">Close</a>-->
 <!--                                                                        <a href="#!" class="btn btn-outline-success btn-block btn-sm">Okay</a>-->
@@ -113,6 +120,7 @@
                                                   <div class="card-body">
                                                     {% if '{end}' in answer_msg %}
                                                     <h5 class="card-title">Конец Путешествия</h5>
+                                                      {% set further = 0 %}
                                                      {% endif %}
                                                     <p class="card-text">
                                                       {{text_media[1]|safe }}
@@ -188,7 +196,7 @@
                                 </div>
                             {% elif '{img}' in text: %}
                                 {% set link = text.replace('{img}', '').replace(' ', '').replace('\r', '') %}
-                                <div id="{{ msg_id }}" class="text-center">
+                                <div id="{{ msg_id }}" class="text-center img-fit">
                                 {% if 'http' in  link %}
                                         <img src="{{link}}" class="rounded" alt="...">
                                 {% else %}
@@ -232,8 +240,10 @@
                                 <br>
 
                             {% else %}
+
                              <div id="{{ msg_id }}">
-                                 {% if '<small' in text %}
+                                 {% if '{message_pack}' in text %}
+                                    {% set text = text.replace('{message_pack}', '') %}
                                  {% if msg_id|int == show|int  %}
                                      {% if answer|int == 1 %}
                                         {% set answer = 0 %}
@@ -269,7 +279,7 @@
                 </div>
             </div>
         </article>
-        <hr />
+        <hr style="margin-top: 15rem" />
         <!--           Comments Area -->
         {% if current_user.is_authenticated %}
         <div class="container">

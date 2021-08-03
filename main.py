@@ -283,7 +283,6 @@ def delete_story():
 def add_news():
     form = FormatNews()
     button = "Add News"
-    print(form.validate_on_submit())
     if request.method == "GET":
         if form.date.data is None:
             form.date.data = datetime.now().strftime('%Y-%m-%d')
@@ -519,19 +518,24 @@ def show_post(index):
     answer = request.args.get('answer')
     further = request.args.get('further')
     show_message = request.args.get('show_message')
+    _anchor = request.args.get('anchor')
     all_row = requested_post.body.split("\n")
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
     show = request.args.get('show')
 
+
     if show_message:
-        print(answer)
+
         if msg_id in msg_index:
             msg_id = msg_index[msg_index.index(int(msg_id))]
         else:
             msg_id = int(msg_id) - 1
         return redirect(url_for('show_post', index=index, _anchor=show_message, show=show_message,
                                 msg_index=msg_id, answer=int(answer)))
-
+    if further:
+        if further == '0':
+            return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
+                                   msg_index=msg_index[0] + 1, answer=answer)
     if msg_id:
 
         msg_id = int(msg_id.replace('msg_', ''))
@@ -544,23 +548,20 @@ def show_post(index):
         else:
             _anchor = msg_index[msg_index.index(msg_id) + 1] - (msg_index[msg_index.index(msg_id) + 1] - msg_id) + 1
 
-        if further:
-            if further == '0':
-                return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
-                                       msg_index=msg_index[0] + 1, answer=answer)
-
         if msg_index[-1] != msg_id:
             msg_index = msg_index[msg_index.index(msg_id) + 1]
         else:
             msg_index = len(all_row) - 1
 
         if answer:
-            return redirect(url_for('show_post', index=index, _anchor=_anchor,
+            return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor,
                                     msg_index=msg_index, answer=int(answer)))
         # _anchor = msg_index
         # if further in ['3']:
         #     _anchor = _anchor + 1
-        return redirect(url_for('show_post', index=index, _anchor=_anchor, msg_index=msg_index))
+
+        return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor,
+                                msg_index=msg_index))
     elif request.args.get('msg_index'):
         msg_index = int(request.args.get('msg_index')) + 1
     else:
@@ -578,8 +579,9 @@ def show_post(index):
         db.session.add(comment)
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
+
     return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
-                           msg_index=msg_index, answer=answer, show=show)
+                           msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor)
 
 
 @app.route('/contact', methods=['POST', 'GET'])

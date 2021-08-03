@@ -3,8 +3,9 @@ $(document).ready(function() {
         e.preventDefault();
         $("#letter>.message").eq(0).addClass("active");
     });
- $("#letterCloseButton").click(function(e) {
+    $("#letterCloseButton").click(function(e) {
         e.preventDefault();
         $("#letter>.message").removeClass("active");
     });
+
 });

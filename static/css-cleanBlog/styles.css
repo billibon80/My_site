@@ -11,6 +11,28 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+
+.action img {
+    width: 100%
+}
+.img-fit {
+    padding: 10px 15px;
+    margin: auto;
+}
+.img-fit img {
+    width: 100%;
+    max-width: 33rem;
+}
+.further {
+    max-width: 457px !important;
+}
+
+.further .content {
+    padding-right: 0.5rem;
+}
+.further .action {
+    width: 8rem;
+}
 .further .main {
     font-size: 1.0rem;
 }
