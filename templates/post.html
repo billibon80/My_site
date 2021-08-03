@@ -109,7 +109,7 @@
                                             {% set answer_msg = text.replace('{message}', '').replace('{answer}', '').split('|')[answer|int] %}
                                             {% if '{media}' in answer_msg: %}
                                                 {% set text_media = answer_msg.replace('{media}', '').replace('{end}', '').split(';') %}
-                                                <div id="{{ msg_id }}" class="card card-answer" style=" margin: auto;">
+                                                <div id="{{ msg_id }}" class="shadow card card-answer" >
                                                     {% set link = text_media[0].replace(' ','') %}
                                                   {% if 'http' in  link %}
                                                         <img src="{{link}}" class="card-img-top" alt="...">
@@ -137,7 +137,7 @@
                                                 </div>
                                                 <br>
                                             {% else %}
-                                                <div id="{{ msg_id }}" class="card card-answer" >
+                                                <div id="{{ msg_id }}" class="shadow card card-answer" >
                                                   <div class="card-body">
                                                     {% if '{end}' in answer_msg %}
                                                     <h5 class="card-title">Конец Путешествия</h5>

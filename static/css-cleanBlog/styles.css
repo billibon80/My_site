@@ -677,8 +677,11 @@ pre code {
   margin-left: auto;
 }
 @media (max-width: 576px) {
-    .further .action {
+  .further .action {
     display: none !important;
+  }
+  .card-answer {
+    width: 90%;
   }
 }
 
