@@ -55,7 +55,10 @@
     background-color: transparent;
     -webkit-text-decoration-skip: objects;
 }
-
+.card-answer {
+    margin: auto;
+    width: 60%;
+}
 
 
 .card-answer img {
@@ -673,8 +676,14 @@ pre code {
   margin-right: auto;
   margin-left: auto;
 }
+@media (max-width: 576px) {
+    .further .action {
+    display: none !important;
+  }
+}
 
 @media (min-width: 576px) {
+
   .container-sm, .container {
     max-width: 540px;
   }
@@ -2217,6 +2226,7 @@ select.form-control[size], select.form-control[multiple] {
 
 textarea.form-control {
   height: auto;
+  max-width: 600px;
 }
 
 .form-group {
