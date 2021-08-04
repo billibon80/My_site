@@ -521,8 +521,8 @@ def show_post(index):
     _anchor = request.args.get('anchor')
     all_row = requested_post.body.split("\n")
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
-    show = request.args.get('show')
 
+    show = request.args.get('show')
 
     if show_message:
 
@@ -572,7 +572,7 @@ def show_post(index):
         if msg_index:
             msg_index = msg_index[0] + 1
         else:
-            msg_index = len(all_row) + 1
+            msg_index = len(all_row)
     if form.validate_on_submit():
         comment = Comment(
             text=form.text.data,
@@ -582,6 +582,7 @@ def show_post(index):
         db.session.add(comment)
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
+
 
     return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
                            msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor)
