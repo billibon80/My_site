@@ -530,12 +530,15 @@ def show_post(index):
             msg_id = msg_index[msg_index.index(int(msg_id))]
         else:
             msg_id = int(msg_id) - 1
-        return redirect(url_for('show_post', index=index, _anchor=show_message, show=show_message,
+        return redirect(url_for('show_post', index=index, _anchor='newstring', show=show,
                                 msg_index=msg_id, answer=int(answer)))
     if further:
         if further == '0':
-            return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
-                                   msg_index=msg_index[0] + 1, answer=answer)
+            return redirect(url_for('show_post', index=index, _anchor='newstring', show=show,
+                                    msg_index=msg_index[0]))
+            # return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
+            #                        msg_index=msg_index[0] + 1, answer=answer, show=show, anchor_msg=0,
+            #                        _anchor='newstring')
     if msg_id:
 
         msg_id = int(msg_id.replace('msg_', ''))

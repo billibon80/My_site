@@ -54,7 +54,7 @@
                                         {% if '{button}' in text %}
                                             {% if '{further}' in text %}
                                             {% set button_text = text.replace('{message}', '').replace('{button}', '').replace('{further}', '').split(';') %}
-                                            <div id = "{{ msg_id }}" class="container my-5 further">
+                                            <div id = "{{ msg_id }}" class="shadow container my-5 further">
                                                 <div class="row">
                                                     <div class="col">
                                                         <div class="card">
@@ -92,18 +92,41 @@
 
                                             {% else %}
                                             {% set buttons = text.replace('{message}', '').replace('{button}', '').split('|') %}
-                                            <div id = "{{ msg_id }}" class="container">
-                                              <div class="row">
-                                                {% for button in buttons %}
-                                                <div  class="col-sm button-msg fontMark">
-                                                   <a href="{{ url_for('show_post',
-                                                index=post.id, msg_id='msg_' + msg_id|string, answer = buttons.index(button)) }}" class="stretched-link">
-                                                    {{ button }}
-                                                   </a>
-                                                </div>
-                                                {% endfor %}
-                                              </div>
-                                            </div>
+
+                                            	    <div id = "{{ msg_id }}" class="container">
+                                                    <div class="row">
+                                                    {% for button in buttons %}
+                                                        {% set answer = button.split(';') %}
+                                                    <!-- СardStart --->
+                                                    <div class="col-lg-{{(12|int / buttons|length)|int}}">
+                                                    <div class="shadow our-team-main">
+
+                                                    <div class="team-front">
+                                                    {% set link = answer[0].replace('\r', '') %}
+                                                    {% if 'http' in  link %}
+                                                            <img src="{{link}}" class="img-fluid" alt="...">
+                                                    {% else %}
+                                                             <img src="{{url_for('static', filename='assets/img-stories/'
+                                                            + link|string)}}" class="img-fluid" alt="...">
+                                                   {% endif %}
+                                                    <h3>{{answer[1]}}</h3>
+                                                    <p>{{answer[2]}}</p>
+                                                    </div>
+                                                        <a href="{{ url_for('show_post',
+                                                        index=post.id, msg_id='msg_' + msg_id|string, answer = buttons.index(button)) }}" class="stretched-link">
+
+                                                            <div class="team-back">
+                                                            <p >
+                                                                {{answer[3]}}
+                                                            </p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    </div>
+                                                    <!--EndCard--->
+                                                    {% endfor %}
+                                                    </div>
+	                                                </div>
                                             {% endif %}
                                         {% elif '{answer}' in text %}
                                             {% set answer_msg = text.replace('{message}', '').replace('{answer}', '').split('|')[answer|int] %}
@@ -216,7 +239,7 @@
                                 <br>
                             {% elif '{media}' in text: %}
                                 {% set text_media = text.replace('{media}', '').split(';') %}
-                                <div id="{{ msg_id }}" class="card card-answer" >
+                                <div id="{{ msg_id }}" class="shadow-lg card card-answer" >
                                     {% set link = text_media[0].replace(' ','') %}
                                   {% if 'http' in  link %}
                                         <img src="{{link}}" class="card-img-top" alt="...">
@@ -241,7 +264,7 @@
 
                             {% else %}
 
-                             <div id="{{ msg_id }}">
+                             <div  id="{{ msg_id }}">
                                  {% if '{message_pack}' in text %}
                                     {% set text = text.replace('{message_pack}', '') %}
                                  {% if msg_id|int == show|int  %}
@@ -256,19 +279,19 @@
                                  {% set answer = 0 %}
                                  {% endif %}
                                  {% set show_class = show_msg_class[answer] %}
-                                 <a href="{{url_for('show_post',
+                                 <a  href="{{url_for('show_post',
                                                  index=post.id,
                                                  msg_id=last_row,
                                                  answer = answer,
                                                  show_message=msg_id)}}" title = '{{ title }}'>
 
-                                 <img style='width: 10%; margin-bottom: 10px;' src="{{url_for('static', filename='/assets/img-stories/message.svg')}}"
+                                 <img  style='width: 10%; margin-bottom: 10px;' src="{{url_for('static', filename='/assets/img-stories/message.svg')}}"
                                  style="size: 10%;">
                                   </a>
 
 
 
-                                 <p class="{{show_class}}" style="line-height: 1.0;">{{ text|safe }}</p>
+                                 <p class="{{show_class}}" style=" line-height: 1.0;">{{ text|safe }}</p>
                                  {% else %}
                                  <p>{{ text|safe }}</p>
                                  {% endif %}
