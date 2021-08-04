@@ -42,9 +42,8 @@
                             {% for i in  range(msg_index) %}
                                 {% set text = all_rows_story[i] %}
                                 {% set msg_id = i %}
-                                {% if anchor_msg_n|int == (i|int) and '{old}' not in text %}
-                                        <div class="m-3 pt-3"><span id='newstring' class="badge badge-danger">New</span></div>
-                                {% elif anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int] %}
+                                {% if (anchor_msg_n|int == (i|int) and '{old}' not in text)
+                                    or (anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int]) %}
                                         <div class="m-3 pt-3"><span id='newstring' class="badge badge-danger">New</span></div>
                                 {% endif %}
                                  {% set text = text.replace('{old}', '') %}
@@ -74,14 +73,8 @@
                                                                 <div class="action border-left pl-3 d-flex align-items-center " >
                                                                     <div>
                                                                         {% set link = button_text[2].replace(' ','').replace('\r','') %}
-                                                                          {% if 'http' in  link %}
-                                                                                <img src="{{link}}" class="img-fluid"  alt="...">
-                                                                           {% else %}
-                                                                                 <img src="{{url_for('static', filename='assets/img-stories/'
-                                                                                + link|string)}}" class="img-fluidp"  alt="...">
-                                                                           {% endif %}
-<!--                                                                        <a href="#!" class="btn btn-outline-danger btn-block btn-sm">Close</a>-->
-<!--                                                                        <a href="#!" class="btn btn-outline-success btn-block btn-sm">Okay</a>-->
+                                                                                <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                                + link|string)}}" class="img-fluid"  alt="...">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -103,12 +96,8 @@
 
                                                     <div class="team-front">
                                                     {% set link = answer[0].replace('\r', '') %}
-                                                    {% if 'http' in  link %}
-                                                            <img src="{{link}}" class="img-fluid" alt="...">
-                                                    {% else %}
-                                                             <img src="{{url_for('static', filename='assets/img-stories/'
-                                                            + link|string)}}" class="img-fluid" alt="...">
-                                                   {% endif %}
+                                                    <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                                + link|string)}}" class="img-fluid"  alt="...">
                                                     <h3>{{answer[1]}}</h3>
                                                     <p>{{answer[2]}}</p>
                                                     </div>
@@ -134,12 +123,8 @@
                                                 {% set text_media = answer_msg.replace('{media}', '').replace('{end}', '').split(';') %}
                                                 <div id="{{ msg_id }}" class="shadow card card-answer" >
                                                     {% set link = text_media[0].replace(' ','') %}
-                                                  {% if 'http' in  link %}
-                                                        <img src="{{link}}" class="card-img-top" alt="...">
-                                                   {% else %}
-                                                         <img src="{{url_for('static', filename='assets/img-stories/'
-                                                        + link|string)}}" class="card-img-top" alt="...">
-                                                   {% endif %}
+                                                  <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                                + link|string)}}" class="img-fluid"  alt="...">
                                                   <div class="card-body">
                                                     {% if '{end}' in answer_msg %}
                                                     <h5 class="card-title">Конец Путешествия</h5>
@@ -220,12 +205,8 @@
                             {% elif '{img}' in text: %}
                                 {% set link = text.replace('{img}', '').replace(' ', '').replace('\r', '') %}
                                 <div id="{{ msg_id }}" class="text-center img-fit">
-                                {% if 'http' in  link %}
-                                        <img src="{{link}}" class="rounded" alt="...">
-                                {% else %}
-                                         <img src="{{url_for('static', filename='assets/img-stories/'
-                                        + link|string)}}" class="rounded" alt="...">
-                               {% endif %}
+                                <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                                + link|string)}}" class="img-fluid"  alt="...">
                                 </div>
                                 <br>
                             {% elif '{iframe}' in text: %}
@@ -241,12 +222,8 @@
                                 {% set text_media = text.replace('{media}', '').split(';') %}
                                 <div id="{{ msg_id }}" class="shadow-lg card card-answer" >
                                     {% set link = text_media[0].replace(' ','') %}
-                                  {% if 'http' in  link %}
-                                        <img src="{{link}}" class="card-img-top" alt="...">
-                                   {% else %}
-                                         <img src="{{url_for('static', filename='assets/img-stories/'
-                                        + link|string)}}" class="card-img-top" alt="...">
-                                   {% endif %}
+                                  <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                                + link|string)}}" class="img-fluid"  alt="...">
                                   <div class="card-body">
                                     {% if '{title}' in text_media[1] %}
                                     <h5 class="card-title">{{text_media[1].replace('{title}', '')}}</h5>

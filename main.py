@@ -521,8 +521,8 @@ def show_post(index):
     _anchor = request.args.get('anchor')
     all_row = requested_post.body.split("\n")
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
-
     show = request.args.get('show')
+
 
     if show_message:
 
@@ -530,15 +530,13 @@ def show_post(index):
             msg_id = msg_index[msg_index.index(int(msg_id))]
         else:
             msg_id = int(msg_id) - 1
-        return redirect(url_for('show_post', index=index, _anchor='newstring', show=show,
+        return redirect(url_for('show_post', index=index, _anchor=show_message, show=show_message,
                                 msg_index=msg_id, answer=int(answer)))
     if further:
         if further == '0':
-            return redirect(url_for('show_post', index=index, _anchor='newstring', show=show,
-                                    msg_index=msg_index[0]))
-            # return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
-            #                        msg_index=msg_index[0] + 1, answer=answer, show=show, anchor_msg=0,
-            #                        _anchor='newstring')
+            return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
+                                   msg_index=msg_index[0] + 1, answer=answer, show=show, anchor_msg=0,
+                                   _anchor='newstring')
     if msg_id:
 
         msg_id = int(msg_id.replace('msg_', ''))
@@ -572,7 +570,7 @@ def show_post(index):
         if msg_index:
             msg_index = msg_index[0] + 1
         else:
-            msg_index = len(all_row)
+            msg_index = len(all_row) + 1
     if form.validate_on_submit():
         comment = Comment(
             text=form.text.data,
@@ -582,7 +580,6 @@ def show_post(index):
         db.session.add(comment)
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
-
 
     return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
                            msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor)
