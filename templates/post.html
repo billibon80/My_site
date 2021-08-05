@@ -42,8 +42,10 @@
                             {% for i in  range(msg_index) %}
                                 {% set text = all_rows_story[i] %}
                                 {% set msg_id = i %}
+                                {{ _anchor }}
                                 {% if (anchor_msg_n|int == (i|int) and '{old}' not in text)
-                                    or (anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int]) %}
+                                    or (anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int]
+                                            and '{message_pack}' not in all_rows_story[(i-1)|int]) %}
                                         <div class="m-3 pt-3"><span id='newstring' class="badge badge-danger">New</span></div>
                                 {% endif %}
                                  {% set text = text.replace('{old}', '') %}
@@ -241,26 +243,27 @@
 
                             {% else %}
 
-                             <div  id="{{ msg_id }}">
+                             <div  id="{{ msg_id }} " class="{{ 'message_pack' if '{message_pack}' in text else ' ' }}">
                                  {% if '{message_pack}' in text %}
                                     {% set text = text.replace('{message_pack}', '') %}
-                                 {% if msg_id|int == show|int  %}
-                                     {% if answer|int == 1 %}
-                                        {% set answer = 0 %}
-                                        {% set title = 'открыть письмо' %}
-                                     {% else %}
-                                        {% set answer = 1 %}
-                                        {% set title = 'закрыть письмо' %}
-                                     {% endif %}
+                                {% if msg_id|int == show|int %}
+                                    {% set answer = (0 if answer|int == 1 else  1) %}
+                                    <div class="m-3 pt-3">
+                                        <span id='newstring' class="{{['badge badge-primary', 'badge badge-primary'][answer|int]}}">
+                                            {{['Open letter', 'Read letter'][answer|int]}}</span>
+                                    </div>
+                                 {% elif anchor_msg_n|int == (i|int)  %}
+                                    <div class="m-3 pt-3"><span id='newstring' class="badge badge-danger">New</span></div>
+                                    {% set answer = 0 %}
                                  {% else %}
-                                 {% set answer = 0 %}
+                                    {% set answer = 0 %}
                                  {% endif %}
-                                 {% set show_class = show_msg_class[answer] %}
                                  <a  href="{{url_for('show_post',
                                                  index=post.id,
                                                  msg_id=last_row,
                                                  answer = answer,
-                                                 show_message=msg_id)}}" title = '{{ title }}'>
+                                                 show_message=msg_id)}}" title = "{{ 'открыть письмо' if answer|int == 0
+                                                                                    else 'закрыть письмо' }}">
 
                                  <img  style='width: 10%; margin-bottom: 10px;' src="{{url_for('static', filename='/assets/img-stories/message.svg')}}"
                                  style="size: 10%;">
@@ -268,11 +271,12 @@
 
 
 
-                                 <p class="{{show_class}}" style=" line-height: 1.0;">{{ text|safe }}</p>
+                                 <p  class="{{show_msg_class[answer|int]}} letter shadow-sm" >{{ text|safe }}</p>
                                  {% else %}
                                  <p>{{ text|safe }}</p>
                                  {% endif %}
                              </div>
+
                             {% endif %}
                             {% endfor %}
                     </div>

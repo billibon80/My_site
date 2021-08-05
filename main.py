@@ -530,8 +530,9 @@ def show_post(index):
             msg_id = msg_index[msg_index.index(int(msg_id))]
         else:
             msg_id = int(msg_id) - 1
-        return redirect(url_for('show_post', index=index, _anchor=show_message, show=show_message,
-                                msg_index=msg_id, answer=int(answer)))
+
+        return redirect(url_for('show_post', index=index, _anchor='newstring', show=show_message,
+                                msg_index=msg_id, answer=int(answer), anchor=show_message))
     if further:
         if further == '0':
             return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
@@ -570,7 +571,7 @@ def show_post(index):
         if msg_index:
             msg_index = msg_index[0] + 1
         else:
-            msg_index = len(all_row) + 1
+            msg_index = len(all_row)
     if form.validate_on_submit():
         comment = Comment(
             text=form.text.data,
@@ -580,7 +581,7 @@ def show_post(index):
         db.session.add(comment)
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
-
+    print(_anchor)
     return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
                            msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor)
 

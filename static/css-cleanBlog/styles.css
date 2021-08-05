@@ -11,6 +11,16 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+
+
+.letter {
+
+    line-height: 1.0;
+    padding: 10px 20px;
+    border: 1px solid #bfbaba;
+    border-radius: 17px;
+
+}
 .our-team-main
 {
 	width:100%;
