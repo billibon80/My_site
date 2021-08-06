@@ -12,7 +12,7 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 .message_pack {
-    display:content
+    display:contents;
 }
 .message_pack:hover .toast.hide {
     display: block;
