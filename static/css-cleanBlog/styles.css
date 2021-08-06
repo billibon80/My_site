@@ -771,6 +771,9 @@ pre code {
   .card-answer {
     width: 90%;
   }
+  .message_pack: hover .inactive-link {
+    pointer-events: none;
+  }
 }
 
 @media (min-width: 576px) {
@@ -2140,6 +2143,7 @@ pre code {
   .table-responsive-sm > .table-bordered {
     border: 0;
   }
+
 }
 @media (max-width: 767.98px) {
   .table-responsive-md {

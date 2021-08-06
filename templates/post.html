@@ -260,7 +260,7 @@
                                  {% else %}
                                     {% set answer = 0 %}
                                  {% endif %}
-                                 <a  href="{{url_for('show_post',
+                                 <a class="inactive-link" href="{{url_for('show_post',
                                                  index=post.id,
                                                  msg_id=last_row,
                                                  answer = answer,
