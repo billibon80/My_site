@@ -523,7 +523,6 @@ def show_post(index):
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
     show = request.args.get('show')
 
-
     if show_message:
 
         if msg_id in msg_index:
@@ -536,10 +535,8 @@ def show_post(index):
     if further:
         if further == '0':
             return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
-                                   msg_index=msg_index[0] + 1, answer=answer, show=show, anchor_msg=0,
-                                   _anchor='newstring')
+                                   msg_index=msg_index[0] + 1, answer=answer, show=show, anchor_msg=0)
     if msg_id:
-
         msg_id = int(msg_id.replace('msg_', ''))
 
         if msg_index.index(msg_id) + 1 == len(msg_index):
@@ -558,9 +555,6 @@ def show_post(index):
         if answer:
             return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor,
                                     msg_index=msg_index, answer=int(answer)))
-        # _anchor = msg_index
-        # if further in ['3']:
-        #     _anchor = _anchor + 1
 
         return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor,
                                 msg_index=msg_index))
@@ -581,7 +575,7 @@ def show_post(index):
         db.session.add(comment)
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
-    print(_anchor)
+
     return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
                            msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor)
 
