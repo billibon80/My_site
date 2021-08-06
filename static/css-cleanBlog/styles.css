@@ -771,7 +771,7 @@ pre code {
   .card-answer {
     width: 90%;
   }
-  .message_pack: hover .inactive-link {
+  .message_pack:hover .inactive-link {
     pointer-events: none;
   }
 }
