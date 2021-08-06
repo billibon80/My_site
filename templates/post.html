@@ -20,6 +20,8 @@
                 </div>
             </div>
         </header>
+
+
         <!-- Post Content-->
         <article>
             <div class="container">
@@ -36,7 +38,7 @@
                          </div>
                         </div>
                             {% set all_rows_story = post["body"].split("\n") %}
-                            {% set show_msg_class = ['toast fade hide', 'fade show'] %}
+                            {% set show_msg_class = ['toast fade show hide', 'fade show'] %}
                             {% set last_row = msg_index %}
                             {% set anchor_msg_n = anchor_msg %}
                             {% for i in  range(msg_index) %}
@@ -322,5 +324,6 @@
                 {% endfor %}
               </ul>
             </div>
+
 <!--         Footer-->
  {% include 'footer.html' %}
