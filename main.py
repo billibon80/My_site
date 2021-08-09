@@ -210,7 +210,7 @@ def logout():
 @admin_only
 def add_stories():
     form = FormatStories()
-    button = "Add Story"
+    button = "Add Story & close"
     if request.method == "GET":
         if form.date.data is None:
             form.date.data = datetime.now().strftime('%Y-%m-%d')
@@ -242,7 +242,10 @@ def update_story():
     form = FormatStories()
     id = request.args.get('id')
     story = Stories.query.get(id)
-    button = "Update Story"
+    update = request.args.get('update')
+    button = "Update Story & Close"
+
+
     if request.method == "GET":
         form.date.data = story.date
         form.title.data = story.title
@@ -263,6 +266,8 @@ def update_story():
         story.main_img = form.main_img.data
         story.new_story = form.new_story.data
         db.session.commit()
+        if update:
+            return redirect(url_for('update_story', id=id))
         return redirect(url_for('admin_panel'))
     return render_template('add_stories_admin.html', form=form, button=button, function='update_story', id=id)
 
@@ -540,7 +545,9 @@ def show_post(index):
         msg_id = int(msg_id.replace('msg_', ''))
 
         if msg_index.index(msg_id) + 1 == len(msg_index):
-            if all_row.index(all_row[msg_index[msg_index.index(msg_id)]]) != len(all_row):
+            print(all_row, 'all row', all_row.index(all_row[msg_index[msg_index.index(msg_id)]]), "all_index",
+                  all_row[msg_index[msg_index.index(msg_id)]], "all row text")
+            if all_row.index(all_row[msg_index[msg_index.index(msg_id)]]) != len(all_row) - 1:
                 _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] + 1])
             else:
                 _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] - 1])

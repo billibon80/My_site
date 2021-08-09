@@ -17,7 +17,7 @@
 {% block content %}
 <div class="content">
     <h1 class="heading">{{ button }}</h1>
-    <form action="{{ url_for(function, id=id) }}" method="post" role="form" class="was-validate" novalidate>
+    <form id="{{ function }}" action="{{ url_for(function, id=id) }}" method="post" role="form" class="was-validate" novalidate>
         {{ form.hidden_tag() }}
         <input type="hidden" id="formName" value="story">
         <div class="container">
@@ -94,6 +94,10 @@
             <div class="col-6 col-md-4"> </div>
           </div>
             {{ form.submit(value=button) }}
+            {% if button == "Update Story & Close" %}
+            <button type='submit' form="{{function}}"  formaction="{{ url_for('update_story', id=id, update=1|int ) }}"
+                    class="btn btn-outline-primary" > Update Story </button>
+            {% endif %}
         </div>
     </form>
 </div>

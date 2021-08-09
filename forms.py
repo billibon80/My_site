@@ -15,7 +15,7 @@ class FormatStories(FlaskForm):
     img = StringField("Img for Story")
     main_img = StringField("Img for Chapter")
     new_story = BooleanField("It's New Story")
-    submit = SubmitField("Add Story")
+    submit = SubmitField("Add Story & Close")
 
 
 class FormatNovel(FlaskForm):
