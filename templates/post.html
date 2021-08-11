@@ -37,7 +37,8 @@
                             <span class="caption text-muted">{{ post['subtitle'] }}</span>
                          </div>
                         </div>
-                            {% set all_rows_story = post["body"].split("\n") %}
+
+                            {% set all_rows_story = post_body %}
                             {% set show_msg_class = ['toast fade show hide', 'fade show'] %}
                             {% set last_row = msg_index %}
                             {% set anchor_msg_n = anchor_msg %}
@@ -70,7 +71,7 @@
                                                                         <h1 class="m-0 font-weight-light h3">Уведомление!</h1>
                                                                         <p class="mb-1 small">{{button_text[0]|safe }}</p>
                                                                         <a href="{{ url_for('show_post',
-                                                                        index=post.id, msg_id='msg_' + msg_id|string, further=3) }}">{{button_text[1]|safe }} ...</a>
+                                                                        index=post.id, msg_id='msg_' + msg_id|string, further=3, answer=answer) }}">{{button_text[1]|safe }} ...</a>
 
                                                                     </div>
                                                                 </div>
@@ -87,22 +88,25 @@
                                                 </div>
                                             </div>
                                             {% elif '{input}' in text %}
-                                            {% macro input( name='form_action', value='', type='text', size=20) -%}
-                                                <input  id="input-field", type="{{ type }}" name="{{ name }}" value="{{
-                                                    value|e }}" size="{{ size }}" required>
-                                            {%- endmacro %}
 
-                                             <form id="form-box" method="post"  name="form-answer" role="form" action="{{ url_for('show_post',
-                                                                        index=post.id, msg_id='msg_' + msg_id|string, further=3) }}">
-                                                  <i id="prev-btn" class="fas fa-user"></i>
-                                                  <button type="submit" form="#form-box" id="next-btn" ></button>
-                                                      <div id="input-group">
-                                                        {{ input('username') }}
-                                                        <label id="input-label">Your questions</label>
-                                                        <div id="input-progress"></div>
-                                                      </div>
+                                            <form  id="form_answer" method="post" role="form" action="{{ url_for('show_post',
+                                                                        index=post.id, msg_id='msg_' + msg_id|string, answer=answer) }}" >
+                                                <div id="form-box">
+                                                {{ form.hidden_tag() }}
+                                                {{ wtf.form_errors(form_answer, hiddens='only') }}
+                                                 <i id="prev-btn" class="fas fa-user"></i>
+                                                 <button id="next-btn" type='submit' form="form_answer"  class="" >
+                                                     <i id="next-btn" class="fas fa-arrow-right"></i>
+                                                 </button>
+
+                                                  <div id="input-group">
+                                                    {{ form_answer.data_str(id="input-field", class='') }}
+                                                    <label id="input-label">Hallow</label>
+                                                    <div id="input-progress"></div>
+                                                  </div>
                                                   <div id="progress-bar"></div>
-                                             </form>
+                                                </div>
+                                            </form>
 
                                             {% else %}
                                             {% set buttons = text.replace('{message}', '').replace('{button}', '').split('|') %}
@@ -123,7 +127,7 @@
                                                     <p>{{answer[2]}}</p>
                                                     </div>
                                                         <a href="{{ url_for('show_post',
-                                                        index=post.id, msg_id='msg_' + msg_id|string, answer = buttons.index(button)) }}" class="stretched-link">
+                                                        index=post.id, msg_id='msg_'+msg_id|string, answer=buttons.index(button)|string+';'+i|string) }}" class="stretched-link">
 
                                                             <div class="team-back">
                                                             <p >
@@ -159,12 +163,13 @@
                                                          <a href="{{ url_for('show_post',
                                                          index=post.id,
                                                          msg_id='msg_' + msg_id|string,
-                                                         further=further) }}"
+                                                         further=further, answer=answer) }}"
                                                             class="btn btn-outlined btn-theme btn-lg"
                                                             data-wow-delay="0.7s">Продолжить </a>
                                                      </div>
                                                 </div>
                                                 <br>
+
                                             {% else %}
                                                 <div id="{{ msg_id }}" class="shadow card card-answer" >
                                                   <div class="card-body">
@@ -179,7 +184,7 @@
                                                          <a href="{{ url_for('show_post',
                                                          index=post.id,
                                                          msg_id='msg_' + msg_id|string,
-                                                         further=further) }}"
+                                                         further=further, answer=answer) }}"
                                                             class="btn btn-outlined btn-theme btn-lg"
                                                             data-wow-delay="0.7s">Продолжить </a>
                                                      </div>
@@ -215,7 +220,7 @@
 
                                         <a type="button" class="ml-2 mb-1 close" data-dismiss="toast"
                                                 aria-label="Close" href="{{ url_for('show_post',
-                                                index=post.id, msg_id='msg_' + msg_id |string) }}">
+                                                index=post.id, msg_id='msg_' + msg_id |string, answer=answer) }}">
                                             <span aria-hidden="true">>></span>
                                         </a>
                                     </div>
@@ -267,22 +272,22 @@
                                  {% if '{message_pack}' in text %}
                                     {% set text = text.replace('{message_pack}', '') %}
                                 {% if msg_id|int == show|int %}
-                                    {% set answer = (0 if answer|int == 1 else  1) %}
+                                    {% set msg_answer = (0 if msg_answer|int == 1 else  1) %}
                                     <div class="m-3 pt-3">
                                         <span id='newstring' class="{{['badge badge-primary', 'badge badge-primary'][answer|int]}}">
-                                            {{['Open letter', 'Read letter'][answer|int]}}</span>
+                                            {{['Open letter', 'Read letter'][msg_answer|int]}}</span>
                                     </div>
                                  {% elif anchor_msg_n|int == (i|int)  %}
                                     <div class="m-3 pt-3"><span id='newstring' class="badge badge-danger">New</span></div>
-                                    {% set answer = 0 %}
+                                    {% set msg_answer = 0 %}
                                  {% else %}
-                                    {% set answer = 0 %}
+                                    {% set msg_answer = 0 %}
                                  {% endif %}
                                  <a class="inactive-link" href="{{url_for('show_post',
                                                  index=post.id,
                                                  msg_id=last_row,
-                                                 answer = answer,
-                                                 show_message=msg_id)}}" title = "{{ 'открыть письмо' if answer|int == 0
+                                                 msg_answer = msg_answer,
+                                                 show_message=msg_id, answer=answer)}}" title = "{{ 'открыть письмо' if msg_answer|int == 0
                                                                                     else 'закрыть письмо' }}">
 
                                  <img  style='width: 10%; margin-bottom: 10px;' src="{{url_for('static', filename='/assets/img-stories/message.svg')}}"
@@ -291,7 +296,7 @@
 
 
 
-                                 <p  class="{{show_msg_class[answer|int]}} letter shadow-sm" >{{ text|safe }}</p>
+                                 <p  class="{{show_msg_class[msg_answer|int]}} letter shadow-sm" >{{ text|safe }}</p>
                                  {% else %}
                                  <p>{{ text|safe }}</p>
                                  {% endif %}

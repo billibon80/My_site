@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Length, URL, Email
 
 from flask_ckeditor import CKEditorField
@@ -63,3 +63,10 @@ class ContactForm(FlaskForm):
     phone = StringField()
     text = TextAreaField(validators=[DataRequired(), Length(min=5)])
     submit = SubmitField("Submit Message")
+
+
+class AnswerForm(FlaskForm):
+    data_str = StringField(" ", validators=[DataRequired()])
+    data_int = IntegerField(" ", validators=[DataRequired(), Length(min=1, max=5)])
+    data_select = SelectField(" ", validators=[DataRequired()])
+    submit = SubmitField("")

@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import date as dt
 from datetime import datetime
 from smpt import PostSomeself
-from forms import FormatStories, FormatNovel, FormatNews, LoginForm, RegisterForm, Comments, ContactForm
+from forms import FormatStories, FormatNovel, FormatNews, LoginForm, RegisterForm, Comments, ContactForm, AnswerForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
 from functools import wraps
@@ -517,16 +517,42 @@ def get_novel():
 @app.route('/post/<int:index>', methods=['POST', 'GET'])
 def show_post(index):
     form = Comments()
-    stories = Stories.query.get(index)
+    form_answer = AnswerForm()
     requested_post = Stories.query.get(index)
     msg_id = request.args.get('msg_id')
     answer = request.args.get('answer')
+    msg_answer = request.args.get('msg_answer')
     further = request.args.get('further')
     show_message = request.args.get('show_message')
     _anchor = request.args.get('anchor')
+    row_body = requested_post.body.split("\n")
     all_row = requested_post.body.split("\n")
+    choice_text = []
+    i = 1
+    for text in row_body:
+
+        if '{choice_start_'+str(i)+'}' in text:
+            start_i = row_body.index(text)
+
+            end_i = row_body.index('{choice_end_'+str(i)+'}\r')
+
+            choice_text.append(row_body[start_i+1:end_i])
+            [all_row.remove(row_body[k]) for k in range(start_i, end_i+1)]
+            i += 1
+
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
+    if answer:
+        ch_answer = answer.split(';')
+        [all_row.insert(int(ch_answer[1])+1, choice_text[int(ch_answer[0])][::-1][i]) for
+            i in range(len(choice_text[int(ch_answer[0])]))]
+        msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
+
+
+
     show = request.args.get('show')
+
+    if form_answer.validate_on_submit():
+        pass
 
     if show_message:
 
@@ -536,17 +562,16 @@ def show_post(index):
             msg_id = int(msg_id) - 1
 
         return redirect(url_for('show_post', index=index, _anchor='newstring', show=show_message,
-                                msg_index=msg_id, answer=int(answer), anchor=show_message))
+                                msg_index=msg_id, msg_answer=msg_answer, answer=answer, anchor=show_message))
     if further:
         if further == '0':
-            return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
-                                   msg_index=msg_index[0] + 1, answer=answer, show=show, anchor_msg=0)
+            return render_template('post.html', post=requested_post, post_body=all_row,
+                                   datetime=datetime, dt=dt, form=form, msg_index=msg_index[0] + 1,
+                                   answer=answer, show=show, anchor_msg=0)
     if msg_id:
         msg_id = int(msg_id.replace('msg_', ''))
 
         if msg_index.index(msg_id) + 1 == len(msg_index):
-            print(all_row, 'all row', all_row.index(all_row[msg_index[msg_index.index(msg_id)]]), "all_index",
-                  all_row[msg_index[msg_index.index(msg_id)]], "all row text")
             if all_row.index(all_row[msg_index[msg_index.index(msg_id)]]) != len(all_row) - 1:
                 _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] + 1])
             else:
@@ -559,11 +584,20 @@ def show_post(index):
         else:
             msg_index = len(all_row) - 1
 
-        if answer:
-            return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor,
-                                    msg_index=msg_index, answer=int(answer)))
+    # if answer:
+    #     print(int(answer))
+    #     if choice_text:
+    #         all_row = choice_text[int(answer)]
+    #         print(all_row)
+    #         return render_template('post.html', post=requested_post, post_body=all_row, datetime=datetime, dt=dt,
+    #                                form=form,
+    #                                msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor,
+    #                                form_answer=form_answer)
 
-        return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor,
+        # return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor,
+        #                         msg_index=msg_index, answer=int(answer)))
+
+        return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor, answer=answer,
                                 msg_index=msg_index))
     elif request.args.get('msg_index'):
         msg_index = int(request.args.get('msg_index')) + 1
@@ -573,18 +607,20 @@ def show_post(index):
             msg_index = msg_index[0] + 1
         else:
             msg_index = len(all_row)
+
     if form.validate_on_submit():
         comment = Comment(
             text=form.text.data,
             author_id=current_user.id,
-            stories_id=stories.id
+            stories_id=requested_post.id
         )
         db.session.add(comment)
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
 
-    return render_template('post.html', post=requested_post, datetime=datetime, dt=dt, form=form,
-                           msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor)
+    return render_template('post.html', post=requested_post, post_body=all_row, datetime=datetime, dt=dt, form=form,
+                           msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor, form_answer=form_answer,
+                           msg_answer=msg_answer)
 
 
 @app.route('/contact', methods=['POST', 'GET'])
