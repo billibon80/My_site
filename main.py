@@ -541,11 +541,20 @@ def show_post(index):
             i += 1
 
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
+
     if answer:
-        ch_answer = answer.split(';')
-        [all_row.insert(int(ch_answer[1])+1, choice_text[int(ch_answer[0])][::-1][i]) for
-            i in range(len(choice_text[int(ch_answer[0])]))]
-        msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
+        if choice_text:
+            ch_answer = answer.split(';')
+
+            for txt in all_row:
+                if '{import_answer}' in txt:
+                    ind_row = all_row.index(txt) #int(ch_answer[1])+1
+                    if int(all_row[ind_row].replace('{import_answer}', ''))-1 < len(ch_answer[0].split(',')):
+                        num_answer = int(ch_answer[0].split(',')[int(all_row[ind_row].replace('{import_answer}', ''))-1])-1
+                        all_row[ind_row] = all_row[ind_row].replace(txt, '')
+                        [all_row.insert(ind_row, choice_text[num_answer][::-1][i]) for i in
+                     range(len(choice_text[num_answer]))]
+            msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
 
 
 

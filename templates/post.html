@@ -56,7 +56,20 @@
                                     {% if msg_index - 1 == msg_id: %}
                                         {% set show_msg = 'toast fade hide' %}
                                         {% if '{button}' in text %}
-                                            {% if '{further}' in text %}
+                                            {% if '{end}' in text %}
+                                             <div id="{{ msg_id }}" class="shadow card card-answer" >
+
+                                                    <div class="col-sm button-msg" >
+                                                         <a href="{{ url_for('show_post',
+                                                         index=post.id,
+                                                         msg_id='msg_' + msg_id|string,
+                                                         further=0, answer=answer) }}"
+                                                            class="btn btn-outline-dark fontMark"
+                                                            data-wow-delay="0.7s">Конец Истории! </a>
+                                                     </div>
+                                                </div>
+                                                <br>
+                                            {% elif '{further}' in text %}
                                             {% set button_text = text.replace('{message}', '').replace('{button}', '').replace('{further}', '').split(';') %}
                                             <div id = "{{ msg_id }}" class="shadow container my-5 further">
                                                 <div class="row">
@@ -127,7 +140,7 @@
                                                     <p>{{answer[2]}}</p>
                                                     </div>
                                                         <a href="{{ url_for('show_post',
-                                                        index=post.id, msg_id='msg_'+msg_id|string, answer=buttons.index(button)|string+';'+i|string) }}" class="stretched-link">
+                                                        index=post.id, msg_id='msg_'+msg_id|string, answer=answer[4]|string+';'+i|string) }}" class="stretched-link">
 
                                                             <div class="team-back">
                                                             <p >
