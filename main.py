@@ -581,12 +581,7 @@ def show_post(index):
             msg_index = msg_id + [add_txt_answer.index(txt) + 1 for txt in add_txt_answer if '{message}' in txt][0]
         else:
             msg_index = len(all_row) + len(choice_text[int(num_link)-1]) - 1
-        # if msg_index[msg_index.index(msg_id)] == msg_index[-1]:
-        #     msg_index = len(all_row)
-        #     print(msg_index)
-        # else:
-        #     msg_index = msg_index[msg_index.index(msg_id)+1]
-        #     print(msg_index)
+
         return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=msg_id,
                                 msg_index=msg_index))
 
@@ -619,19 +614,6 @@ def show_post(index):
             msg_index = msg_index[msg_index.index(msg_id) + 1]
         else:
             msg_index = len(all_row) - 1
-
-    # if answer:
-    #     print(int(answer))
-    #     if choice_text:
-    #         all_row = choice_text[int(answer)]
-    #         print(all_row)
-    #         return render_template('post.html', post=requested_post, post_body=all_row, datetime=datetime, dt=dt,
-    #                                form=form,
-    #                                msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor,
-    #                                form_answer=form_answer)
-
-        # return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor,
-        #                         msg_index=msg_index, answer=int(answer)))
 
         return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor, answer=answer,
                                 msg_index=msg_index))
