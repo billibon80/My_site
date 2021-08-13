@@ -67,6 +67,6 @@ class ContactForm(FlaskForm):
 
 class AnswerForm(FlaskForm):
     data_str = StringField(" ", validators=[DataRequired()])
-    data_int = IntegerField(" ", validators=[DataRequired(), Length(min=1, max=5)])
-    data_select = SelectField(" ", validators=[DataRequired()])
+    # data_int = IntegerField(" ", validators=[DataRequired(), Length(min=1, max=5)])
+    # data_select = SelectField(" ", validators=[DataRequired()])
     submit = SubmitField("")

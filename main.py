@@ -525,6 +525,7 @@ def show_post(index):
     further = request.args.get('further')
     show_message = request.args.get('show_message')
     _anchor = request.args.get('anchor')
+    show = request.args.get('show')
     row_body = requested_post.body.split("\n")
     all_row = requested_post.body.split("\n")
     choice_text = []
@@ -558,10 +559,36 @@ def show_post(index):
 
 
 
-    show = request.args.get('show')
+
 
     if form_answer.validate_on_submit():
-        pass
+        msg_id = int(msg_id.replace('msg_', ''))
+        user_answer = form_answer.data_str.data
+        r_answer = request.form.get('r_answer')
+        num_link = request.form.get('num_link').split(',')
+        if r_answer:
+            user_answer = [txt for txt in user_answer.split() if txt.lower()
+                           in [txt.lower().replace(' ', '') for txt in r_answer.split(',')]]
+            if user_answer:
+                num_link = num_link[1].replace('\r\n', '')
+            else:
+                num_link = num_link[0].replace('\r\n', '')
+
+            answer = answer.split(';')[0] + ',' + num_link + ';' + answer.split(';')[1]
+        add_txt_answer = choice_text[int(num_link)-1]
+        if '{message}' in " ".join(add_txt_answer):
+
+            msg_index = msg_id + [add_txt_answer.index(txt) + 1 for txt in add_txt_answer if '{message}' in txt][0]
+        else:
+            msg_index = len(all_row) + len(choice_text[int(num_link)-1]) - 1
+        # if msg_index[msg_index.index(msg_id)] == msg_index[-1]:
+        #     msg_index = len(all_row)
+        #     print(msg_index)
+        # else:
+        #     msg_index = msg_index[msg_index.index(msg_id)+1]
+        #     print(msg_index)
+        return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=msg_id,
+                                msg_index=msg_index))
 
     if show_message:
 

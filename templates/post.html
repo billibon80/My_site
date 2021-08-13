@@ -103,12 +103,13 @@
                                             {% elif '{input}' in text %}
                                             {% set output = text.replace('{message}{button}{input}', '').split(';') %}
                                             <form  id="form_answer" method="post" role="form" action="{{ url_for('show_post',
-                                                                        index=post.id, msg_id='msg_' + msg_id|string, answer=answer) }}" >
+                                                                        index=post.id, msg_id='msg_' + msg_id|string,
+                                                                        answer=answer, num_row=i) }}" >
                                                 <div id="form-box">
                                                 {{ form.hidden_tag() }}
                                                 {{ wtf.form_errors(form_answer, hiddens='only') }}
                                                     <input  name="r_answer" type="hidden" value="{{ output[1] }}">
-                                                    <input  name="txt_answer" type="hidden" value="{{ output[2] }}">
+                                                    <input  name="num_link" type="hidden" value="{{ output[2] }}">
                                                  <i id="prev-btn" class="fas fa-user"></i>
                                                  <button id="next-btn" type='submit' form="form_answer"  class="" >
                                                      <i id="next-btn" class="fas fa-arrow-right"></i>
