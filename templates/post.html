@@ -45,7 +45,7 @@
                             {% for i in  range(msg_index) %}
                                 {% set text = all_rows_story[i] %}
                                 {% set msg_id = i %}
-                                {{ _anchor }}
+
                                 {% if (anchor_msg_n|int == (i|int) and '{old}' not in text)
                                     or (anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int]
                                             and '{message_pack}' not in all_rows_story[(i-1)|int]) %}
@@ -64,7 +64,7 @@
                                                          index=post.id,
                                                          msg_id='msg_' + msg_id|string,
                                                          further=0, answer=answer) }}"
-                                                            class="btn btn-outline-dark fontMark"
+                                                            class="btn btn-outline-secondary fontMark"
                                                             data-wow-delay="0.7s">Конец Истории! </a>
                                                      </div>
                                                 </div>
@@ -180,7 +180,7 @@
                                                          index=post.id,
                                                          msg_id='msg_' + msg_id|string,
                                                          further=further, answer=answer) }}"
-                                                            class="btn btn-outlined btn-theme btn-lg"
+                                                            class="btn btn-outlined btn-theme "
                                                             data-wow-delay="0.7s">Продолжить </a>
                                                      </div>
                                                 </div>
@@ -201,7 +201,7 @@
                                                          index=post.id,
                                                          msg_id='msg_' + msg_id|string,
                                                          further=further, answer=answer) }}"
-                                                            class="btn btn-outlined btn-theme btn-lg"
+                                                            class="btn btn-outlined btn-theme "
                                                             data-wow-delay="0.7s">Продолжить </a>
                                                      </div>
                                                 </div>
@@ -252,15 +252,27 @@
                                 </div>
                                 <br>
                             {% elif '{iframe}' in text: %}
-                                {% set link_iframe = text.replace('{iframe}', '') %}
+                                {% if '{video}' in text: %}
+                                {% set link_iframe = text.replace('{iframe}{video}', '').replace('\r', '').replace(' ', '') %}
                                 <div id="{{ msg_id }}" class="embed-responsive embed-responsive-16by9">
                                         <iframe class="embed-responsive-item"
-                                                src="{{ link_iframe }}?&start=0&loop=1&controls=0&showinfo=0&playlist={{link_iframe.split('/')[-1] }}"
+                                                src="{{ url_for('static', filename='assets/video/'
+                                                                                + link_iframe|string ) }}?autoplay=1&loop=1&autopause=0&controls=0"
                                                 frameborder="0" allow="accelerometer; autoplay; clipboard-write;
                                                 encrypted-media; gyroscope; picture-in-picture" allowfullscreen >
                                         </iframe>
                                 </div>
                                 <br>
+                                {% else %}
+                                {% set link_iframe = text.replace('{iframe}', '').split(';') %}
+                                <div id="{{ msg_id }}" class="embed-responsive embed-responsive-16by9">
+                                        <iframe class="embed-responsive-item"
+                                                src="{{ link_iframe[0] }}?&start={{ 0 if not link_iframe[1] else link_iframe[1] }}&loop=1&controls=0&showinfo=0&playlist={{link_iframe[0].split('/')[-1] }}"
+                                                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen >
+                                        </iframe>
+                                </div>
+                                <br>
+                                {% endif %}
                             {% elif '{media}' in text: %}
                                 {% set text_media = text.replace('{media}', '').split(';') %}
                                 <div id="{{ msg_id }}" class="shadow-lg card card-answer" >

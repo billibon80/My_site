@@ -309,7 +309,7 @@ textarea::placeholder {
 }
 
 .button-msg .btn {
-	letter-spacing: 1px;
+	/*letter-spacing: 1px;
 	text-decoration: none;
 	background: none;
     -moz-user-select: none;
@@ -326,7 +326,7 @@ textarea::placeholder {
 	font-weight:700;
 	text-transform:uppercase;
 	border: 3px solid;
-	padding:8px 20px;
+	padding:8px 20px;*/
 }
 .button-msg .btn-outlined {
     border-radius: 0;

@@ -544,6 +544,7 @@ def show_post(index):
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
 
     if answer:
+
         if choice_text:
             ch_answer = answer.split(';')
 
@@ -566,6 +567,9 @@ def show_post(index):
         user_answer = form_answer.data_str.data
         r_answer = request.form.get('r_answer')
         num_link = request.form.get('num_link').split(',')
+        num_row = request.args.get('num_row')
+        print(msg_index, 'msg_index')
+        print(num_row)
         if r_answer:
             user_answer = [txt for txt in user_answer.split() if txt.lower()
                            in [txt.lower().replace(' ', '') for txt in r_answer.split(',')]]
@@ -574,10 +578,33 @@ def show_post(index):
             else:
                 num_link = num_link[0].replace('\r\n', '')
 
-            answer = answer.split(';')[0] + ',' + num_link + ';' + answer.split(';')[1]
+            if answer:
+                if not num_link in answer.split(';')[0]:
+                   new_link = [txt for txt in answer.split(';')[0].split(',') if txt not in
+                               all_row[msg_id].split(';')[-1]]
+                   new_link.append(num_link)
+                   new_link = ','.join(new_link)
+                else:
+                    new_link = answer.split(';')[0]
+
+                if ";" in answer:
+                    answer = new_link + ';' + answer.split(';')[1]
+                else:
+                    answer = new_link
+            else:
+                answer = num_link
+        if int(num_link) == int(all_row[msg_id].split(';')[-1].split(',')[0]):
+            anchor = num_row
+            if choice_text[int(num_link) - 1][0] in all_row:
+                anchor = all_row.index(choice_text[int(num_link) - 1][0])
+                num_row = anchor + len(choice_text[int(num_link) - 1]) - 1
+            else:
+                num_row = int(num_row)+len(choice_text[int(num_link) - 1])
+            return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=anchor,
+                                    msg_index=num_row))
+
         add_txt_answer = choice_text[int(num_link)-1]
         if '{message}' in " ".join(add_txt_answer):
-
             msg_index = msg_id + [add_txt_answer.index(txt) + 1 for txt in add_txt_answer if '{message}' in txt][0]
         else:
             msg_index = len(all_row) + len(choice_text[int(num_link)-1]) - 1
