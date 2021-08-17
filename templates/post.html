@@ -42,6 +42,7 @@
                             {% set show_msg_class = ['toast fade show hide', 'fade show'] %}
                             {% set last_row = msg_index %}
                             {% set anchor_msg_n = anchor_msg %}
+
                             {% for i in  range(msg_index) %}
                                 {% set text = all_rows_story[i] %}
                                 {% set msg_id = i %}
@@ -74,7 +75,7 @@
                                             <div id = "{{ msg_id }}" class="shadow container my-5 further">
                                                 <div class="row">
                                                     <div class="col">
-                                                        <div class="card">
+                                                        <div class="card m-1">
                                                             <div class="card-body d-flex justify-content-between">
                                                                 <div class="content d-flex align-items-center justify-content-between">
                                                                     <div class="ico">
@@ -130,24 +131,26 @@
                                             	    <div id = "{{ msg_id }}" class="container">
                                                     <div class="row">
                                                     {% for button in buttons %}
-                                                        {% set answer = button.split(';') %}
+                                                        {% set data_card = button.split(';') %}
+                                                        {% set answer = data_card[4] %}
                                                     <!-- СardStart --->
                                                     <div class="col-lg-{{(12|int / buttons|length)|int}}">
                                                     <div class="shadow our-team-main">
 
                                                     <div class="team-front">
-                                                    {% set link = answer[0].replace('\r', '') %}
+                                                    {% set link = data_card[0].replace('\r', '') %}
                                                     <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
                                                                                 + link|string)}}" class="img-fluid"  alt="...">
-                                                    <h3>{{answer[1]}}</h3>
-                                                    <p>{{answer[2]}}</p>
+                                                    <h3>{{data_card[1]}}</h3>
+                                                    <p>{{data_card[2]}}</p>
+
                                                     </div>
                                                         <a href="{{ url_for('show_post',
-                                                        index=post.id, msg_id='msg_'+msg_id|string, answer=answer[4]|string+';'+i|string) }}" class="stretched-link">
+                                                        index=post.id, msg_id='msg_'+msg_id|string, answer=data_card[4]|string) }}" class="stretched-link">
 
                                                             <div class="team-back">
                                                             <p >
-                                                                {{answer[3]}}
+                                                                {{data_card[3]}}
                                                             </p>
                                                             </div>
                                                         </a>
