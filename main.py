@@ -544,6 +544,8 @@ def show_post(index):
 
     msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
 
+    print(answer)
+    print(msg_index, 'msg_index1')
     if answer:
 
         if choice_text:
@@ -554,7 +556,7 @@ def show_post(index):
 
                 if '{import_answer}' in txt:
                     num_answer = int(txt.replace('{import_answer}', ''))
-
+                    print(num_answer)
                     if num_answer <= len(ch_answer):
                         ind_row = int(replace_all_row.index(txt))
                         all_row[ind_row] = all_row[ind_row].replace(txt, '')
@@ -563,7 +565,7 @@ def show_post(index):
                             range(len(imp_text))]
 
             msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
-
+    print(msg_index)
     if form_answer.validate_on_submit():
         msg_id = int(msg_id.replace('msg_', ''))
         user_answer = form_answer.data_str.data
