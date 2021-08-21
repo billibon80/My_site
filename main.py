@@ -245,7 +245,6 @@ def update_story():
     update = request.args.get('update')
     button = "Update Story & Close"
 
-
     if request.method == "GET":
         form.date.data = story.date
         form.title.data = story.title
@@ -529,23 +528,25 @@ def show_post(index):
     row_body = requested_post.body.split("\n")
     all_row = requested_post.body.split("\n")
     choice_text = []
-    ind_row = None
+    print(msg_id)
+    def msg_index_create(list_all_row):
+        return [i for i in range(len(list_all_row)) if
+                [txt for txt in ['{message}', '{modal_end}'] if txt in list_all_row[i]]]
+
     i = 1
     for text in row_body:
 
-        if '{choice_start_'+str(i)+'}' in text:
+        if '{choice_start_' + str(i) + '}' in text:
             start_i = row_body.index(text)
 
-            end_i = row_body.index('{choice_end_'+str(i)+'}\r')
+            end_i = row_body.index('{choice_end_' + str(i) + '}\r')
 
-            choice_text.append(row_body[start_i+1:end_i])
-            [all_row.remove(row_body[k]) for k in range(start_i, end_i+1)]
+            choice_text.append(row_body[start_i + 1:end_i])
+            [all_row.remove(row_body[k]) for k in range(start_i, end_i + 1)]
             i += 1
 
-    msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
+    msg_index = msg_index_create(all_row)
 
-    print(answer)
-    print(msg_index, 'msg_index1')
     if answer:
 
         if choice_text:
@@ -556,21 +557,23 @@ def show_post(index):
 
                 if '{import_answer}' in txt:
                     num_answer = int(txt.replace('{import_answer}', ''))
-                    print(num_answer)
                     if num_answer <= len(ch_answer):
                         ind_row = int(replace_all_row.index(txt))
                         all_row[ind_row] = all_row[ind_row].replace(txt, '')
-                        imp_text = choice_text[ch_answer[num_answer-1]-1]
+                        imp_text = choice_text[ch_answer[num_answer - 1] - 1]
                         [all_row.insert(ind_row, imp_text[::-1][i]) for i in
-                            range(len(imp_text))]
+                         range(len(imp_text))]
 
-            msg_index = [i for i in range(len(all_row)) if '{message}' in all_row[i]]
+            msg_index.clear()
+            msg_index.extend(msg_index_create(all_row))
+
+    print(msg_id)
     print(msg_index)
     if form_answer.validate_on_submit():
         msg_id = int(msg_id.replace('msg_', ''))
         user_answer = form_answer.data_str.data
         r_answer = request.form.get('r_answer')
-        n_link = [int(i) for i in request.form.get('num_link').split(',')] #link to answer
+        n_link = [int(i) for i in request.form.get('num_link').split(',')]  # link to answer
         num_row = request.args.get('num_row')
 
         if r_answer:
@@ -599,17 +602,22 @@ def show_post(index):
                 anchor = all_row.index(choice_text[int(num_link) - 1][0])
                 num_row = anchor + len(choice_text[int(num_link) - 1]) - 1
             else:
-                num_row = int(num_row)+len(choice_text[int(num_link) - 1])
+                num_row = int(num_row) + len(choice_text[int(num_link) - 1])
 
             return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=anchor,
                                     msg_index=num_row))
 
-        add_txt_answer = choice_text[int(num_link)-1]
+        add_txt_answer = choice_text[int(num_link) - 1]
         if '{message}' in " ".join(add_txt_answer):
             msg_index = msg_id + [add_txt_answer.index(txt) + 1 for txt in add_txt_answer if '{message}' in txt][0]
         else:
-            msg_index = len(all_row) + len(choice_text[int(num_link)-1]) - 1
-
+            len_txt_choice = len(choice_text[int(num_link) - 1])
+            if msg_id == msg_index[-1]:
+                msg_index = len(all_row) + len_txt_choice
+            else:
+                if msg_id != int(num_row):
+                    len_txt_choice += 1
+                msg_index = msg_index[msg_index.index(msg_id) + 1] + len_txt_choice
         return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=msg_id,
                                 msg_index=msg_index))
 
@@ -624,7 +632,6 @@ def show_post(index):
                                 msg_index=msg_id, msg_answer=msg_answer, answer=answer, anchor=show_message))
     if further:
         if further == '0':
-
             return render_template('post.html', post=requested_post, post_body=all_row,
                                    datetime=datetime, dt=dt, form=form, msg_index=msg_index[0] + 1,
                                    answer=answer, show=show, anchor_msg=0)
@@ -665,9 +672,9 @@ def show_post(index):
         db.session.commit()
         return redirect(url_for('show_post', index=index, _anchor="submit"))
 
-
     if msg_index > len(all_row):
         msg_index = len(all_row)
+
     return render_template('post.html', post=requested_post, post_body=all_row, datetime=datetime, dt=dt, form=form,
                            msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor, form_answer=form_answer,
                            msg_answer=msg_answer)

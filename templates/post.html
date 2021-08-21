@@ -42,7 +42,7 @@
                             {% set show_msg_class = ['toast fade show hide', 'fade show'] %}
                             {% set last_row = msg_index %}
                             {% set anchor_msg_n = anchor_msg %}
-
+                            {% set btn_id_modal = [] %}
                             {% for i in  range(msg_index) %}
                                 {% set text = all_rows_story[i] %}
                                 {% set msg_id = i %}
@@ -50,7 +50,11 @@
                                 {% if (anchor_msg_n|int == (i|int) and '{old}' not in text)
                                     or (anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int]
                                             and '{message_pack}' not in all_rows_story[(i-1)|int]) %}
-                                        <div class="m-3 pt-3"><span id='newstring' class="badge badge-danger">New</span></div>
+                                        <div class="m-3 pt-3">
+                                            <span id='newstring' class="border border-danger shadow-sm badge badge-danger">
+                                                New
+                                            </span>
+                                        </div>
                                 {% endif %}
                                  {% set text = text.replace('{old}', '') %}
                              {% if "{message}" in text: %}
@@ -132,7 +136,8 @@
                                                     <div class="row">
                                                     {% for button in buttons %}
                                                         {% set data_card = button.split(';') %}
-                                                        {% set answer = data_card[4] %}
+                                                        {% set answer = data_card[4] if not answer else answer|string
+                                                        + ',' + data_card[4] %}
                                                     <!-- СardStart --->
                                                     <div class="col-lg-{{(12|int / buttons|length)|int}}">
                                                     <div class="shadow our-team-main">
@@ -146,7 +151,7 @@
 
                                                     </div>
                                                         <a href="{{ url_for('show_post',
-                                                        index=post.id, msg_id='msg_'+msg_id|string, answer=data_card[4]|string) }}" class="stretched-link">
+                                                        index=post.id, msg_id='msg_'+msg_id|string, answer=answer) }}" class="stretched-link">
 
                                                             <div class="team-back">
                                                             <p >
@@ -217,37 +222,36 @@
                                             {% endif %}
 
                                         {% else %}
-                                            {#% set show_msg = 'toast fade show' %#}
-                                            {% set split_text = text.replace('{message}','').split(';') %}
-                                                <div id="{{ msg_id }}" class="{{ show_msg }}"
-                                                     role="alert" aria-live="assertive" aria-atomic="true">
-                                                    <div class="toast-header">
-                                                        <img class="bd-placeholder-img rounded mr-2" width="20" height="20"
-                                                             src="{{ url_for('static',
-                                                             filename='assets/img-stories/' + split_text[0].replace(' ','')) }}"
-                                                             role="img" aria-label=" :
-                                                            " preserveAspectRatio="xMidYMid slice" focusable="false">
-                                                            <title></title>
-                                                            <rect width="100%" height="100%" fill="#007aff"></rect>
-                                                            <text x="50%" y="50%" fill="#dee2e6" dy=".3em"> </text>
-                                                        </img>
-                                                        <strong class="mr-auto">{{split_text[1]}}</strong>   <small>продолжим историю</small>
-
-                                                        <a type="button" class="ml-2 mb-1 close" data-dismiss="toast"
-                                                                aria-label="Close" href="{{ url_for('show_post',
-                                                                index=post.id, msg_id='msg_' + msg_id |string, answer=answer) }}">
-                                                            <span aria-hidden="true">>></span>
-                                                        </a>
-                                                    </div>
-                                                    <div class="toast-body">
-                                                        {{ split_text[2]|safe }}
-                                                     </div>
-                                                </div>
-
+                                            {% set show_msg = 'toast fade show' %}
                                         {% endif %}
                                     {% else %}
                                         {% set show_msg = 'toast fade hide' %}
                                     {% endif %}
+                            {% set split_text = text.replace('{message}','').split(';') %}
+                            <div id="{{ msg_id }}" class="{{ show_msg }}"
+                                 role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="toast-header">
+                                    <img class="bd-placeholder-img rounded mr-2" width="20" height="20"
+                                         src="{{ url_for('static',
+                                         filename='assets/img-stories/' + split_text[0].replace(' ','')) }}"
+                                         role="img" aria-label=" :
+                                        " preserveAspectRatio="xMidYMid slice" focusable="false">
+                                        <title></title>
+                                        <rect width="100%" height="100%" fill="#007aff"></rect>
+                                        <text x="50%" y="50%" fill="#dee2e6" dy=".3em"> </text>
+                                    </img>
+                                    <strong class="mr-auto">{{split_text[1]}}</strong>   <small>продолжим историю</small>
+
+                                    <a type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+                                            aria-label="Close" href="{{ url_for('show_post',
+                                            index=post.id, msg_id='msg_' + msg_id |string, answer=answer) }}">
+                                        <span aria-hidden="true"><i class="fas fa-angle-double-right" style="color: blue;"></i></span>
+                                    </a>
+                                </div>
+                                <div class="toast-body">
+                                    {{ split_text[2]|safe }}
+                                 </div>
+                            </div>
                             {% elif '{img}' in text: %}
                                                 {% set link = text.replace('{img}', '').replace(' ', '').replace('\r', '') %}
                                                 <div id="{{ msg_id }}" class="text-center img-fit">
@@ -257,26 +261,99 @@
                                                 <br>
                             {% elif '{iframe}' in text: %}
                                 {% if '{video}' in text: %}
-                                {% set link_iframe = text.replace('{iframe}{video}', '').replace('\r', '').replace(' ', '') %}
-                                <div id="{{ msg_id }}" class="embed-responsive embed-responsive-16by9">
-                                        <iframe class="embed-responsive-item"
-                                                src="{{ url_for('static', filename='assets/video/'
-                                                                                + link_iframe|string ) }}?autoplay=1&loop=1&autopause=0&controls=0"
-                                                frameborder="0" allow="accelerometer; autoplay; clipboard-write;
-                                                encrypted-media; gyroscope; picture-in-picture" allowfullscreen >
-                                        </iframe>
+                                {% set link_iframe = text.replace('{iframe}{video}', '').split(';') %}
+                                <div id="{{ msg_id }}" class="embed-responsive embed-responsive-16by9 video-player">
+                                     {% set link_dict = {'src': link_iframe[0].split('=')[1],
+                                                        'muted': link_iframe[1].split('=')[1],
+                                                        'controls': link_iframe[2].split('=')[1],
+                                                        'autoplay': link_iframe[3].split('=')[1],
+                                                        'loop': link_iframe[4].split('=')[1],} %}
+                                        <video class="embed-responsive-item " style="cursor: pointer;"
+                                              {{ link_dict.muted }}  {{ link_dict.controls }} {{link_dict.autoplay}}
+                                               {{link_dict.loop}} preload="auto">
+                                            <source src="{{ url_for('static', filename='assets/video/'
+                                            + link_dict.src|string ) }}">
+                                        </video>
                                 </div>
                                 <br>
                                 {% else %}
                                 {% set link_iframe = text.replace('{iframe}', '').split(';') %}
+
                                 <div id="{{ msg_id }}" class="embed-responsive embed-responsive-16by9">
-                                        <iframe class="embed-responsive-item"
-                                                src="{{ link_iframe[0] }}?&start={{ 0 if not link_iframe[1] else link_iframe[1] }}&loop=1&controls=0&showinfo=0&playlist={{link_iframe[0].split('/')[-1] }}"
+                                    <iframe class="embed-responsive-item youtube-video"
+                                        {% if '=' in link_iframe[0] -%}
+                                            {% set link_dict = {'src': link_iframe[0].split('=')[1],
+                                                    'start': link_iframe[1].split('=')[1],
+                                                    'end': link_iframe[2].split('=')[1],
+                                                    'autoplay': link_iframe[3].split('=')[1],
+                                                    'loop': link_iframe[4].split('=')[1],} %}
+
+                                                src="{{ link_dict.src }}?&enablejsapi=1&start={{ link_dict.start }}&end={{ link_dict.end }}&autoplay={{ link_dict.autoplay }}&loop={{ link_dict.loop }}&controls=0&showinfo=0&playlist={{link_iframe[0].split('/')[-1] }}"
                                                 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen >
-                                        </iframe>
+                                        {%- else -%}
+                                                src="{{ link_iframe[0] }}?&enablejsapi=1&start={{ 0 if not link_iframe[1] else link_iframe[1] }}&end={{ 400 if not link_iframe[2] else link_iframe[2]}}&autoplay={{ 0 if not link_iframe[3] else link_iframe[3]}}&loop={{ 1 if not link_iframe[4] else link_iframe[4]}}&controls=0&showinfo=0&playlist={{link_iframe[0].split('/')[-1] }}"
+                                                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen >
+
+                                        {%- endif -%}
+                                    </iframe>
                                 </div>
                                 <br>
                                 {% endif %}
+                            {% elif '{modal_start}' in text: %}
+                                        <!-- Button trigger modal -->
+
+                                        {%  if btn_id_modal.append('btn_' + msg_id|string) %}{% endif %}
+                                        {% set data_modal = text.split(';') %}
+
+                                        <button id="open_{{ btn_id_modal[-1]}}" type="button" class="btn btn-outline-secondary play-video" data-toggle="modal" data-target="#{{btn_id_modal[-1]}}">
+                                            Launch demo modal </button>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="{{btn_id_modal[-1]}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+
+                                                   <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                                        <button id="close_x_{{ btn_id_modal[-1]}}" type="button" class="close pause-video" data-dismiss="modal" aria-label="Close" data-target="#{{btn_id_modal[-1]}}">
+                                                            <i class="far fa-times-circle" style="color: red;"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+
+                            {% elif '{modal_end}' in text: %}
+                                                    </div>
+                                                        <div class="modal-footer">
+                                                            <button id="play_but_{{ btn_id_modal[-1]}}" type="button"
+                                                              class="btn btn-secondary play-video"
+                                                              data-target="#{{btn_id_modal[-1]}}">
+                                                                <i class="fas fa-play" style="color: white;"></i>
+                                                            </button>
+                                                            <button id="close_but_{{ btn_id_modal[-1]}}" type="button"
+                                                              class="btn btn-secondary pause-video"
+                                                              data-target="#{{btn_id_modal[-1]}}">
+                                                                <i class="fas fa-pause" style="color: white;"></i>
+                                                            </button>
+
+                                                            {% if msg_index - 1 == msg_id: %}
+                                                            <a id="close_submit_{{ btn_id_modal[-1]}}"
+                                                                    class="close pause-video"
+                                                                    data-target="#{{btn_id_modal[-1]}}"
+                                                                    type="button"
+                                                                    href="{{url_for('show_post',
+                                                                             index=post.id,
+                                                                             msg_id='msg_' + msg_id|string,
+                                                                             answer=answer)}}">
+                                                                <i class="far fa-arrow-alt-circle-right"
+                                                                   style="color: blue;
+                                                                   width: 4.6rem;
+                                                                   font-size: 2.9rem;"></i>
+                                                            </a>
+                                                            {% endif %}
+                                                        </div>
+                                                </div>
+                                            </div>
+                                        </div>
                             {% elif '{media}' in text: %}
                                 {% set text_media = text.replace('{media}', '').split(';') %}
                                 <div id="{{ msg_id }}" class="shadow-lg card card-answer" >
