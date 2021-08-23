@@ -53,7 +53,6 @@
                             {% for i in  range(msg_index) %}
                                 {% set text = all_rows_story[i] %}
                                 {% set msg_id = i %}
-
                                 {% if (anchor_msg_n|int == (i|int) and '{old}' not in text)
                                     or (anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int]
                                             and '{message_pack}' not in all_rows_story[(i-1)|int]) %}
@@ -114,6 +113,7 @@
                                             </div>
                                             {% elif '{input}' in text %}
                                             {% set output = text.replace('{message}{button}{input}', '').split(';') %}
+
                                             <form  id="form_answer" method="post" role="form" action="{{ url_for('show_post',
                                                                         index=post.id, msg_id='msg_' + msg_id|string,
                                                                         answer=answer, num_row=i) }}" >

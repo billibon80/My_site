@@ -548,7 +548,6 @@ def show_post(index):
     msg_index = msg_index_create(all_row)
 
     if answer:
-
         if choice_text:
             ch_answer = [int(i) for i in answer.split(',')]
 
@@ -563,19 +562,16 @@ def show_post(index):
                         imp_text = choice_text[ch_answer[num_answer - 1] - 1]
                         [all_row.insert(ind_row, imp_text[::-1][i]) for i in
                          range(len(imp_text))]
-
+            [all_row.pop(all_row.index(i)) for i in all_row if i == '']
             msg_index.clear()
             msg_index.extend(msg_index_create(all_row))
 
-    print(msg_id)
-    print(msg_index)
     if form_answer.validate_on_submit():
         msg_id = int(msg_id.replace('msg_', ''))
         user_answer = form_answer.data_str.data
         r_answer = request.form.get('r_answer')
         n_link = [int(i) for i in request.form.get('num_link').split(',')]  # link to answer
         num_row = request.args.get('num_row')
-
         if r_answer:
             user_answer = [txt for txt in user_answer.split() if txt.lower()
                            in [txt.lower().replace(' ', '') for txt in r_answer.split(',')]]
@@ -603,21 +599,27 @@ def show_post(index):
                 num_row = anchor + len(choice_text[int(num_link) - 1]) - 1
             else:
                 num_row = int(num_row) + len(choice_text[int(num_link) - 1])
-
             return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=anchor,
                                     msg_index=num_row))
 
         add_txt_answer = choice_text[int(num_link) - 1]
-        if '{message}' in " ".join(add_txt_answer):
-            msg_index = msg_id + [add_txt_answer.index(txt) + 1 for txt in add_txt_answer if '{message}' in txt][0]
+
+        if '{message}' in " ".join(add_txt_answer).strip() or '{modal_end}' in " ".join(add_txt_answer).strip():
+            len_txt = [add_txt_answer.index(txt) for txt in add_txt_answer if '{message}' in txt.strip()
+                       or '{modal_end}' in txt.strip()][0]
+            msg_index = msg_id + len_txt + 1
         else:
             len_txt_choice = len(choice_text[int(num_link) - 1])
             if msg_id == msg_index[-1]:
                 msg_index = len(all_row) + len_txt_choice
             else:
+                current_row = msg_index[msg_index.index(msg_id) + 1]
                 if msg_id != int(num_row):
-                    len_txt_choice += 1
-                msg_index = msg_index[msg_index.index(msg_id) + 1] + len_txt_choice
+                    len_txt_choice = msg_index[msg_index.index(current_row) + 1] - current_row - 1
+                else:
+                    len_txt_choice -= 1
+                msg_index = current_row + len_txt_choice
+
         return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=msg_id,
                                 msg_index=msg_index))
 
