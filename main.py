@@ -528,7 +528,7 @@ def show_post(index):
     row_body = requested_post.body.split("\n")
     all_row = requested_post.body.split("\n")
     choice_text = []
-    print(msg_id)
+
     def msg_index_create(list_all_row):
         return [i for i in range(len(list_all_row)) if
                 [txt for txt in ['{message}', '{modal_end}'] if txt in list_all_row[i]]]
@@ -632,9 +632,10 @@ def show_post(index):
                                 msg_index=msg_id, msg_answer=msg_answer, answer=answer, anchor=show_message))
     if further:
         if further == '0':
+            answer = None
             return render_template('post.html', post=requested_post, post_body=all_row,
                                    datetime=datetime, dt=dt, form=form, msg_index=msg_index[0] + 1,
-                                   answer=answer, show=show, anchor_msg=0)
+                                   answer=answer, show=show, anchor_msg=0, form_answer=form_answer)
     if msg_id:
         msg_id = int(msg_id.replace('msg_', ''))
 
