@@ -592,7 +592,7 @@ def show_post(index):
             else:
                 answer = num_link
 
-        if int(num_link) == int(all_row[msg_id].split(';')[-1].split(',')[0]):
+        if int(num_link) == int(all_row[msg_id].replace('choice_answer=', '').split(';')[-1].split(',')[0]):
             anchor = num_row
             if choice_text[int(num_link) - 1][0] in all_row:
                 anchor = all_row.index(choice_text[int(num_link) - 1][0])
