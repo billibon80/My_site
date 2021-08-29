@@ -25,6 +25,16 @@
         <!-- Post Content-->
         <article>
             <div class="container">
+                {% if code_word %}
+                    <div class="code_word shadow" >
+                        <a type="button" href="{{ url_for('show_post',
+                                                         index=post.id,
+                                                         further=0,
+                                                         ) }}" title="close word">
+                            <i class="fas fa-exclamation-circle" style="color: #ff000070;"></i>
+                        </a>
+                    </div>
+                {% endif %}
                 <div class="row">
                     <div class="col-lg-8 col-md-10 mx-auto">
                         <h2 class="section-heading">{{ post['title'] }}</h2>
@@ -80,7 +90,21 @@
                                                      </div>
                                                 </div>
                                                 <br>
-                                            {% elif '{further}' in text %}
+                                            {% elif '{next}' in text %}
+                                                <div class="container text-center">
+                                                    {% call(dict) dict_data(text, '{message}{button}{next}') %}
+                                                     {% set answer = dict.choice_start if not answer else answer|string
+                                                                        + ',' + dict.choice_start %}
+                                                        <a type="button" class="btn btn-outline-{{ dict.color }}
+                                                        btn-{{ dict.size }} btn-floating"  data-mdb-ripple-color="dark"
+                                                        href="{{ url_for('show_post', index=post.id,
+                                                        msg_id='msg_'+msg_id|string, answer=answer) }}">
+                                                                {{ dict.text }}
+                                                                <i class="fas {{dict.icon}}"></i>
+                                                        </a>
+                                                    {% endcall %}
+                                                </div>
+                                            {% elif '{further}' in text %}j
                                             {% set button_text = text.replace('{message}', '').replace('{button}', '').replace('{further}', '').split(';') %}
                                             <div id = "{{ msg_id }}" class="shadow container my-5 further">
                                                 <div class="row">
@@ -139,6 +163,8 @@
                                                 </div>
                                             </div>
                                             {% elif '{input}' in text %}
+                                                {% set type = 'password' if '{password}' in text else 'text' %}
+                                                {% set text = text.replace('{password}', '') %}
                                                 <form  id="form_answer" method="post" role="form" action="{{ url_for('show_post',
                                                                             index=post.id, msg_id='msg_' + msg_id|string,
                                                                             answer=answer, num_row=i) }}" >
@@ -154,14 +180,13 @@
                                                                          <i id="next-btn" class="fas fa-arrow-right"></i>
                                                                      </button>
                                                                       <div id="input-group">
-                                                                        {{ form_answer.data_str(id="input-field", class='') }}
+                                                                        {{ form_answer.data_str(id="input-field", class='', type=type) }}
                                                                         <label id="input-label">{{ dict.label }}</label>
                                                                         <div id="input-progress"></div>
                                                                       </div>
                                                                       <div id="progress-bar"></div>
                                                                 {% endcall %}
                                                             {% else %}
-                                                                {{ text }}
                                                                 {% set output = text.replace('{message}{button}{input}', '').split(';') %}
                                                                 <input  name="r_answer" type="hidden" value="{{ output[1] }}">
                                                                 <input  name="num_link" type="hidden" value="{{ output[2] }}">
@@ -170,7 +195,7 @@
                                                                      <i id="next-btn" class="fas fa-arrow-right"></i>
                                                                  </button>
                                                                   <div id="input-group">
-                                                                    {{ form_answer.data_str(id="input-field", class='') }}
+                                                                    {{ form_answer.data_str(id="input-field", class='', type=type) }}
                                                                     <label id="input-label">{{ output[0] }}</label>
                                                                     <div id="input-progress"></div>
                                                                   </div>
@@ -178,6 +203,31 @@
                                                             {% endif %}
                                                     </div>
                                                 </form>
+                                            {% elif '{cards}'  in text %}
+                                                <div id="{{ msg_id }}" class="container" >
+                                                    {% for card_txt in text.split('|') %}
+                                                        {% call(dict) dict_data(card_txt, '{message}{button}{cards}') %}
+                                                            {% set answer = dict.choice_start if not answer else answer|string
+                                                                        + ',' + dict.choice_start %}
+
+                                                                <div id="{{ msg_id|string }}_{{loop.index|string }}" class="card cards-gif" >
+                                                                    <a type="button"
+                                                                        href="{{ url_for('show_post', index=post.id,
+                                                                        msg_id='msg_'+msg_id|string, answer=answer) }}">
+                                                                        <img src="{{ url_for('static', filename='assets/img-stories/'+dict.src_img|string)}}" class="card-img-top display-img" alt="image cap">
+                                                                        <img src="{{ url_for('static', filename='assets/img-stories/'+dict.src_gif|string)}}" class="card-img-top display-gif" alt="image cap">
+                                                                      <div class="card-body">
+                                                                        <h5 class="card-title">{{dict.title}}</h5>
+                                                                        <p class="card-text">{{dict.text}}</p>
+
+                                                                      </div>
+                                                                    </a>
+                                                                </div>
+
+                                                            <br>
+                                                        {% endcall %}
+                                                    {% endfor %}
+                                                </div>
                                             {% else %}
                                             {% set buttons = text.replace('{message}', '').replace('{button}', '').split('|') %}
 
@@ -194,9 +244,9 @@
                                                                         <div class="shadow our-team-main">
                                                                         <div class="team-front">
                                                                         {% set link = dict.src_img %}
-                                                                            <div class="img-team-front">
+                                                                            <div class="{{'img-team-front' if not dict.class else dict.class}}">
                                                                                 <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
-                                                                                                    + link|string)}}" class="img-fluid"  alt="...">
+                                                                                                    + link|string)}}" class="img-fluid {{ dict.class_img if dict.class_img }}"  alt="...">
                                                                              </div>
                                                                         <h3>{{dict.title}}</h3>
                                                                         <p>{{dict.dictum}}</p>
@@ -311,30 +361,56 @@
                                     {% else %}
                                         {% set show_msg = 'toast fade hide' %}
                                     {% endif %}
-                            {% set split_text = text.replace('{message}','').split(';') %}
+
                             <div id="{{ msg_id }}" class="{{ show_msg }}"
                                  role="alert" aria-live="assertive" aria-atomic="true">
-                                <div class="toast-header">
-                                    <img class="bd-placeholder-img rounded mr-2" width="20" height="20"
-                                         src="{{ url_for('static',
-                                         filename='assets/img-stories/' + split_text[0].replace(' ','')) }}"
-                                         role="img" aria-label=" :
-                                        " preserveAspectRatio="xMidYMid slice" focusable="false">
-                                        <title></title>
-                                        <rect width="100%" height="100%" fill="#007aff"></rect>
-                                        <text x="50%" y="50%" fill="#dee2e6" dy=".3em"> </text>
-                                    </img>
-                                    <strong class="mr-auto">{{split_text[1]}}</strong>   <small>продолжим историю</small>
+                                {% if '=' in text: %}
+                                    {% call(dict) dict_data(text, '{message}') %}
+                                        {% if dict.img_src %}
+                                            {% set link = dict.img_src.replace(' ', '') %}
+                                        {% else %}
+                                            {% set link = '' %}
+                                        {% endif %}
+                                        <div class="toast-header">
+                                          <img src="{{ link if 'http' in link else  url_for('static', filename='assets/img-stories/' + link|string)}}"
+                                               class="bd-placeholder-img rounded mr-2" width="20" height="20"
+                                               role="img" aria-label=" : " preserveAspectRatio="xMidYMid slice"
+                                               focusable="false" alt="...">
+                                          <strong class="mr-auto">{{dict.title}}</strong>   <small>{{ dict.link_label }}</small>
+                                           <a type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+                                                aria-label="Close" href="{{ url_for('show_post',
+                                                index=post.id, msg_id='msg_' + msg_id |string, answer=answer) }}">
+                                            <span aria-hidden="true"><i class="fas fa-angle-double-right" style="color: blue;"></i></span>
+                                           </a>
+                                        </div>
+                                        <div class="toast-body">
+                                            {{ dict.text|safe }}
+                                        </div>
+                                    {% endcall %}
+                                {% else %}
+                                    {% set split_text = text.replace('{message}','').split(';') %}
+                                    <div class="toast-header">
+                                        <img class="bd-placeholder-img rounded mr-2" width="20" height="20"
+                                             src="{{ url_for('static',
+                                             filename='assets/img-stories/' + split_text[0].replace(' ','')) }}"
+                                             role="img" aria-label=" :
+                                            " preserveAspectRatio="xMidYMid slice" focusable="false">
+                                            <title></title>
+                                            <rect width="100%" height="100%" fill="#007aff"></rect>
+                                            <text x="50%" y="50%" fill="#dee2e6" dy=".3em"> </text>
+                                        </img>
+                                        <strong class="mr-auto">{{split_text[1]}}</strong>   <small>продолжим историю</small>
 
-                                    <a type="button" class="ml-2 mb-1 close" data-dismiss="toast"
-                                            aria-label="Close" href="{{ url_for('show_post',
-                                            index=post.id, msg_id='msg_' + msg_id |string, answer=answer) }}">
-                                        <span aria-hidden="true"><i class="fas fa-angle-double-right" style="color: blue;"></i></span>
-                                    </a>
-                                </div>
-                                <div class="toast-body">
-                                    {{ split_text[2]|safe }}
-                                 </div>
+                                        <a type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+                                                aria-label="Close" href="{{ url_for('show_post',
+                                                index=post.id, msg_id='msg_' + msg_id |string, answer=answer) }}">
+                                            <span aria-hidden="true"><i class="fas fa-angle-double-right" style="color: blue;"></i></span>
+                                        </a>
+                                    </div>
+                                    <div class="toast-body">
+                                        {{ split_text[2]|safe }}
+                                    </div>
+                                {% endif %}
                             </div>
                             {% elif '{img}' in text: %}
                                                 {% set link = text.replace('{img}', '').replace(' ', '').replace('\r', '') %}
@@ -384,8 +460,10 @@
                                         {% set x = modal_dict.__setitem__(k.split('=')[0].replace(' ', ''), k.split('=')[1])  %}
                                         {% endfor %}
                                         <!-- Button trigger modal -->
-                                       <button id="open_{{ btn_id_modal[-1]}}" type="button" class="btn btn-outline-secondary play-video" data-toggle="modal" data-target="#{{btn_id_modal[-1]}}">
-                                            {{modal_dict.buttonNameFront}} </button>
+                                        <diV class="container m-3">
+                                            <button id="open_{{ btn_id_modal[-1]}}" type="button" class="btn btn-outline-secondary play-video" data-toggle="modal" data-target="#{{btn_id_modal[-1]}}">
+                                                    {{modal_dict.buttonNameFront}} </button>
+                                        </diV>
                                         <!-- Modal -->
                                         <div class="modal fade" id="{{btn_id_modal[-1]}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
@@ -465,6 +543,7 @@
                                   {% endif %}
                                 </div>
                                 <br>
+
                             {% else %}
 
                              <div  id="{{ msg_id }} " class="{{ 'message_pack' if '{message_pack}' in text else ' ' }}">

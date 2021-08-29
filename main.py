@@ -45,6 +45,8 @@ story_page = 1
 # date.strftime('%b ru_RU.UTF-8')
 MAIL_CODE = os.environ.get("MAIL_CODE")
 app = Flask(__name__, static_folder='static')
+CODE_WORD_USER = None
+USER_CODE_ANSWER = None
 
 ##CONNECT TO DB
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
@@ -515,6 +517,8 @@ def get_novel():
 
 @app.route('/post/<int:index>', methods=['POST', 'GET'])
 def show_post(index):
+    global CODE_WORD_USER
+    global USER_CODE_ANSWER
     form = Comments()
     form_answer = AnswerForm()
     requested_post = Stories.query.get(index)
@@ -529,9 +533,34 @@ def show_post(index):
     all_row = requested_post.body.split("\n")
     choice_text = []
 
+    code_word = None
+
+    if '{code_word}' in requested_post.body:
+        code_word = row_body[0].strip().replace('{code_word}', '')
+            # generate_password_hash(row_body[0].strip().replace('{code_word}', ''),
+            #                               method='pbkdf2:sha256', salt_length=8)
+
+        if USER_CODE_ANSWER:
+            CODE_WORD_USER = check_password_hash(code_word, USER_CODE_ANSWER)
+        else:
+            CODE_WORD_USER = None
+        row_body.pop(0)
+        all_row.pop(0)
+    else:
+        CODE_WORD_USER = None
+
     def msg_index_create(list_all_row):
         return [i for i in range(len(list_all_row)) if
                 [txt for txt in ['{message}', '{modal_end}'] if txt in list_all_row[i]]]
+
+    def clear_code_row(list_row):
+        for txt_list in list_row:
+            if '{code_row}' in txt_list:
+                id_row = list_row.index(txt_list)
+                if not CODE_WORD_USER:
+                    list_row.pop(id_row)
+                else:
+                    list_row[id_row] = list_row[id_row].replace('{code_row}', '')
 
     i = 1
     for text in row_body:
@@ -545,7 +574,10 @@ def show_post(index):
             [all_row.remove(row_body[k]) for k in range(start_i, end_i + 1)]
             i += 1
 
+    clear_code_row(all_row)
     msg_index = msg_index_create(all_row)
+
+    row_body.clear()
 
     if answer:
         if choice_text:
@@ -562,8 +594,12 @@ def show_post(index):
                         imp_text = choice_text[ch_answer[num_answer - 1] - 1]
                         [all_row.insert(ind_row, imp_text[::-1][i]) for i in
                          range(len(imp_text))]
+
+            [all_row.pop(i) for i in [all_row.index(i) for i in all_row if '{import_answer}' in i][::-1]]
             [all_row.pop(all_row.index(i)) for i in all_row if i == '']
             msg_index.clear()
+            clear_code_row(all_row)
+
             msg_index.extend(msg_index_create(all_row))
 
     if form_answer.validate_on_submit():
@@ -573,8 +609,14 @@ def show_post(index):
         n_link = [int(i) for i in request.form.get('num_link').split(',')]  # link to answer
         num_row = request.args.get('num_row')
         if r_answer:
-            user_answer = [txt for txt in user_answer.split() if txt.lower()
+            if r_answer == '{code_word}':
+                USER_CODE_ANSWER = user_answer
+                CODE_WORD_USER = check_password_hash(code_word, user_answer)
+                user_answer = CODE_WORD_USER
+            else:
+                user_answer = [txt for txt in user_answer.split() if txt.lower()
                            in [txt.lower().replace(' ', '') for txt in r_answer.split(',')]]
+
             if user_answer:
                 num_link = n_link[1]
             else:
@@ -599,6 +641,7 @@ def show_post(index):
                 num_row = anchor + len(choice_text[int(num_link) - 1]) - 1
             else:
                 num_row = int(num_row) + len(choice_text[int(num_link) - 1])
+
             return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=anchor,
                                     msg_index=num_row))
 
@@ -635,15 +678,21 @@ def show_post(index):
     if further:
         if further == '0':
             answer = None
+            CODE_WORD_USER = None
+            USER_CODE_ANSWER = None
             return render_template('post.html', post=requested_post, post_body=all_row,
                                    datetime=datetime, dt=dt, form=form, msg_index=msg_index[0] + 1,
-                                   answer=answer, show=show, anchor_msg=0, form_answer=form_answer)
+                                   answer=answer, show=show, anchor_msg=0, form_answer=form_answer,
+                                   code_word=CODE_WORD_USER)
     if msg_id:
         msg_id = int(msg_id.replace('msg_', ''))
-
+        print(msg_index)
         if msg_index.index(msg_id) + 1 == len(msg_index):
             if all_row.index(all_row[msg_index[msg_index.index(msg_id)]]) != len(all_row) - 1:
-                _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] + 1])
+                try:
+                    _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] + 1])
+                except IndexError:
+                    _anchor = msg_index[-2] + 1
             else:
                 _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] - 1])
         else:
@@ -680,7 +729,7 @@ def show_post(index):
 
     return render_template('post.html', post=requested_post, post_body=all_row, datetime=datetime, dt=dt, form=form,
                            msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor, form_answer=form_answer,
-                           msg_answer=msg_answer)
+                           msg_answer=msg_answer, code_word=CODE_WORD_USER)
 
 
 @app.route('/contact', methods=['POST', 'GET'])
