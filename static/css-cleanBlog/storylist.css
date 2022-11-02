@@ -1,0 +1,68 @@
+ ul, li, dl {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.comics__list a, .comics__list a:hover {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+}
+
+.comics__list * {
+    font-family: "Roboto Condensed", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@keyframes img-rise {
+    0% {
+        transform: scale(2) translate(20%, 20%);
+    }
+    25% {
+        transform: scale(2) translate(-20%, 20%);
+    }
+    50% {
+        transform: scale(2) translate(-20%, -20%);
+    }
+    100% {
+        transform: scale(2) translate(20%, 20%);
+    }
+}
+
+.comics__text{position:absolute;top:20%;text-align:center;width:100%;color:white;z-index:10}
+.comics__text p{font-size:15px;margin:0 10px;text-align:justify;transform:scale(0);transition:1s ease-in-out;}
+.comics__item:hover .comics__text p{transform:scale(1)}
+.comics__list{max-width:1000px; margin: 0 auto; margin-top:45px; padding:40px 60px}
+.comics__grid{display:-ms-grid;display:grid;-ms-grid-columns:(225px)[auto-fill];grid-template-columns:repeat(auto-fill, 225px);-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;row-gap:55px}
+.comics__item{-webkit-transition:0.3s -webkit-transform;transition:0.3s -webkit-transform;transition:0.3s transform;transition:0.3s transform, 0.3s -webkit-transform; position: relative}
+.comics__item:hover .comics__item-img {animation: 10s linear 0s infinite alternate img-rise; filter: blur(1px)}
+.comics__item-img{width:225px;height:345px;transition:.5s}
+.comics__wrapper{position:relative;overflow:hidden;width:225px;height:345px;-webkit-box-shadow:5px 5px 10px rgba(0,0,0,0.25);box-shadow:5px 5px 10px rgba(0,0,0,0.25)}
+.comics__wrapper:before, .comics__wrapper:after {content:"";width:200px;height:200px;position:absolute;top:0;left:0;background:#000000;opacity:.1;transition:.5s}
+.comics__wrapper:before{transform:translateX(-120%) rotate(45deg);z-index:5;}
+.comics__wrapper:after{transform:translateX(134%) rotate(45deg);}
+.comics__item:hover .comics__wrapper:before {transform: translateX(89%) rotate(35deg) scale(2);transition:1s;opacity:.6}
+.comics__item:hover .comics__wrapper:after {transform: translateX(-15%) rotate(45deg) scale(2);transition:1s;opacity:.6}
+
+.comics__item:hover .comics__wrapper{box-shadow:0 5px 20px #9f0013; transform:translateY(-8px)}
+.comics__item-name{margin-top:10px;font-weight:bold;font-size:14px;line-height:18px}
+.comics__item-data{margin-top:5px;font-weight:bold;font-size:14px;line-height:18px;color:rgba(0,0,0,0.6);}
+.comics__item:hover{-webkit-transform:translateY(-5px);transform:translateY(-5px)}
+
+.button{min-width:101px;color:#fff;text-align:center;text-transform:uppercase;font-size:14px;-webkit-transition:0.3s -webkit-transform;transition:0.3s -webkit-transform;transition:0.3s transform;transition:0.3s transform, 0.3s -webkit-transform;border:none;background-color:transparent;cursor:pointer}
+.button__long{display:block;width:170px;margin:45px auto 0 auto}
+.button .inner{position:relative;background-color:#9F0013;line-height:18px;padding:0 18px;-webkit-transition:none;transition:none}
+.button .inner::before{border-color:#9F0013 transparent;border-style:solid;border-width:0 0 10px 10px;content:"";display:block;position:absolute;left:0;top:-10px;-webkit-transition:none;transition:none}
+.button .inner::after{border-color:#9F0013 transparent;border-style:solid;border-width:0 0 10px 10px;content:"";display:block;position:absolute;right:0;bottom:-10px;-webkit-transform:rotate(180deg);transform:rotate(180deg);-webkit-transition:none;transition:none}
+.button__main:hover,.button__secondary:hover{color:#fff}
+.button__secondary .inner{background-color:#5C5C5C}
+.button__secondary .inner::before{border-color:#5C5C5C transparent;-webkit-transition:none;transition:none}
+.button__secondary .inner::after{border-color:#5C5C5C transparent;-webkit-transition:none;transition:none}
+.button::before{content:'';display:block;height:10px;margin-left:10px;-webkit-transition:none;transition:none}
+.button::after{content:'';display:block;height:10px;margin-right:10px;-webkit-transition:none;transition:none}
+.button.button__main::before,.button.button__main::after{background-color:#9F0013}
+.button.button__secondary::before,.button.button__secondary::after{background-color:#5C5C5C}.button:hover{-webkit-transform:translateY(-5px);transform:translateY(-5px)}
+.button:disabled{-webkit-filter:grayscale(0.5);filter:grayscale(0.5);transform:translateY(-5px);cursor:default}
+/*# sourceMappingURL=button.min.css.map */

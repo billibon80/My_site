@@ -1,62 +1,49 @@
 @import url("https://fonts.googleapis.com/css?family=Caveat");
 @import url("https://fonts.googleapis.com/css?family=Ledger");
 
-#letter * {
-  box-sizing: border-box;
-}
-
-#letter,
-#letter button,
-#letter input {
-  font-family: "Ledger";
-}
-
-#letter body {
-  background-color: #3a736c;
-  overflow: hidden;
-}
-
-#letter #info {
+#info {
   position: absolute;
   font-family: Caveat;
   color: #F1CFA0;
   padding-top: 15px;
-  font-size: 5vh;
   opacity: 0.7;
 }
 
-#letter .shaker {
+.shaker {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  height: 30vh;
+  background-color: #3a736c;
+  overflow: hidden;
+  z-index: 0;
+  min-height: 230px;
 }
 
-#letter canvas {
+canvas {
   position: relative;
   top: 0;
   left: 0;
   z-index: -10;
 }
 
-#letter .dialog {
+.dialog {
   z-index: 10;
-  top: 30vh;
-  transform: translateY(30vh);
+  top: 9vh;
+  transform: translateY(9vh);
   margin: 0 auto;
   width: 30vw;
   background-color: #f1cfa0;
   text-align: center;
-  min-width: 200px;
+  width: 200px;
   box-shadow: 10px 10px #254f49;
 }
 
-#letter .dialog:after {
+.dialog:after {
   content: "";
   display: block;
   padding-bottom: 0;
 }
 
-#letter .shadow {
+.shaker .shadow {
   width: 100%;
   height: 0;
   padding-left: 50%;
@@ -64,7 +51,7 @@
   overflow: hidden;
 }
 
-#letter .shadow div {
+.shaker .shadow div {
   width: 0;
   height: 0;
   margin-left: -1000px;
@@ -75,7 +62,7 @@
   /*    box-shadow: 10px 10px #c98510;*/
 }
 
-#letter #stamp-envelope {
+#stamp-envelope {
   text-align: center;
   border-radius: 100%;
   -moz-border-radius: 50%;
@@ -102,26 +89,26 @@
 }
 
 @media screen and (max-height: 400px) {
-  #letter .dialog {
+  .dialog {
     top: 20vh;
     transform: translateY(20vh);
     width: 20vw;
   }
 
-  #letter .stamp.hvr-buzz p {
+  .stamp.hvr-buzz p {
     font-size: 2vw;
     margin-left: -2.2vw;
     margin-top: -2.8vw;
   }
 }
 
-#letter .stamp-wrapper {
+.stamp-wrapper {
   text-align: right;
   margin-bottom: 20px;
   margin-right: 20px;
 }
 
-#letter #stamp-footer {
+#stamp-footer {
   display: inline-block;
   padding: 16px 25px;
   color: #f2a71e;
@@ -143,42 +130,42 @@
   background-color: #d34f27;
 }
 
-#letter .stamp:hover {
+.stamp:hover {
   animation-name: hvr-buzz;
 }
 
-#letter .stamp:active {
+.stamp:active {
 }
 
 @-webkit-keyframes hvr-buzz {
-  #letter 50% {
+  50% {
     -webkit-transform: translateX(3px) rotate(2deg);
     transform: translateX(3px) rotate(2deg);
   }
-  #letter 100% {
+  100% {
     -webkit-transform: translateX(-3px) rotate(-2deg);
     transform: translateX(-3px) rotate(-2deg);
   }
 }
 @keyframes hvr-buzz {
-  #letter 50% {
+  50% {
     -webkit-transform: translateX(3px) rotate(2deg);
     transform: translateX(3px) rotate(2deg);
   }
-  #letter 100% {
+  100% {
     -webkit-transform: translateX(-3px) rotate(-2deg);
     transform: translateX(-3px) rotate(-2deg);
   }
 }
-#letter .hvr-buzz {
+.hvr-buzz {
   display: inline-block;
   vertical-align: middle;
   -webkit-transform: perspective(1px) translateZ(0);
   transform: perspective(1px) translateZ(0);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0);
 }
-#letter .hvr-buzz:hover,
-#letter .hvr-buzz:active {
+.hvr-buzz:hover,
+.hvr-buzz:active {
   -webkit-animation-name: hvr-buzz;
   animation-name: hvr-buzz;
   -webkit-animation-duration: 0.4s;
@@ -189,33 +176,38 @@
   animation-iteration-count: infinite;
 }
 
-#letter .message {
+.message {
   display: none;
   position: absolute;
-  width: 400px;
-  /*max-height: 65vh;*/
-  margin-left: -200px;
-  left: 50vw;
-  top: 47vh;
+  width: 80vw;
+  left: calc(50% - 40vw);
+  top: 31vh;
   margin-top: -30vh;
-  z-index: 2;
+  max-width: 652px;
 }
 
-#letter .part-one {
+@media (min-width: 800px) {
+    .message {
+        left: calc(50% - 326px);
+    }
+}
+
+.part-one {
   position: relative;
   background-color: #f1cfa0;
-  /*max-height: 65vh;*/
+  height: calc(30vh - 20px);
   overflow-y: auto;
   overflow-x: hidden;
+  min-height: 220px;
 }
 
-#letter .message-header {
+.message-header {
   width: inherit;
   height: 5vh;
   background-color: #f2a71e;
 }
 
-#letter .message-text {
+.message-text {
   padding: 40px 30px;
   padding-bottom: 0px;
   letter-spacing: 1px;
@@ -224,61 +216,49 @@
   color: #3a736c;
 }
 
-#letter .message-footer {
+.message-footer {
   /*    position: absolute;*/
   bottom: 0;
   background-color: #d34f27;
-  width: 400px;
   height: 5vh;
 }
 
-#letter #stamp-footer {
+#stamp-footer {
   /*    position: absolute;*/
   right: 30px;
   bottom: 60px;
   padding: 0 0;
-  padding-top: 10px;
+  padding-top: 1px;
   width: 60px;
   height: 60px;
   margin-top: -34px;
+  box-shadow: 2px 3px #93321a;
 }
 
-#letter #ui {
+.stamp-notice {
+    text-align: right;
+    padding-right: 5vw;
+}
+
+#ui {
   position: absolute;
   left: calc(50vw - 40px);
   top: calc(50vh - 40px);
 }
 
-#letter .dg.ac {
+.dg.ac {
   z-index: 1000 !important;
 }
 
 /* Scrollbar edit for chrome just for fun. */
-#letter #part-one-message::-webkit-scrollbar-track {
+#part-one-message::-webkit-scrollbar-track {
   background-color: #254f49;
 }
 
-#letter #part-one-message::-webkit-scrollbar {
+#part-one-message::-webkit-scrollbar {
   width: 10px;
 }
 
-#letter #part-one-message::-webkit-scrollbar-thumb {
+#part-one-message::-webkit-scrollbar-thumb {
   background-color: #427f77;
-}
-
-#letter .active {
-    display: block;
-}
-
-#letter button {
-    margin-right: 2%;
-    margin-top: 2%;
-}
-
-.masthead button {
-    margin: 0 10% 5% 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 1%;
-    right: 0;
 }

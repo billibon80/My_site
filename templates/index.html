@@ -13,38 +13,13 @@
                 </div>
 
             </div>
-            <button type="button" class="btn btn-outline-danger" id="letterOpenButton">Вам Письмо</button>
+
         </header>
         <!-- Main Content-->
-<!-- Letter For My Love -->
-	<div id="letter" class="shaker">
-		<div class="message">
-			<div class="part-one" id="part-one-message">
-				<div class="message-header">
-                    <button type="button" class="close" aria-label="Close" id="letterCloseButton">
-                    <span aria-hidden="true"><i class=" fas fa-times"></i></span>
-                    </button>
-                </div>
-				<div class="message-text">Дорогая Аня К.,
-                    <br><br>
-                    {% for row in letter.text.split('\n') %}
-                    {{row}} <br>
-                    {% endfor %}
-                    <br>
-                    Мне пора мой дорогой читатель,
-					<br><br> P.s. Я тоже тебя люблю,<br><br> ZhM 🙃
-                    {{dt.fromisoformat(letter.date).strftime('%d/%m/%Y')}}
-				</div>
-				<div class="stamp-wrapper">
-					<div class="stamp hvr-buzz" id="stamp-footer">H</div>
-				</div>
-				<div class="message-footer"></div>
-			</div>
 
-		</div>
-	</div>
-
-<!-- End of Letter -->
+        <!-- Letter For My Love -->
+            {% include 'letter.html' %}
+        <!-- End of Letter -->
 
 
 
@@ -53,39 +28,17 @@
         {% include 'news.html' %}
         <!-- ./"News block" -->
 
-        <div class="container">
-            <div class="row">
-                 {% for post in all_posts %}
-                <div class="col-lg-8 col-md-10 mx-auto" >
+        <!-- Story list -->
+        <div class="comics__list">
+             <div id="storyList">
+            {% include 'storyList.html' %}
 
-
-
-                        <div class="new-icon" style="background-image: url({{ url_for('static', filename='assets/img/new-icon.png') }})"></div>
-
-
-                    <div class="masthead post-preview" id="{{ post['id'] }}" style="background-image:linear-gradient( rgba(0 0 0 / 65%), rgba(0, 0, 0, 0.5) ), url({{ url_for('static', filename='assets/img-stories/' +  post['img']|string) }})">
-                        <a href="{{ url_for('show_post', index=post['id']) }}">
-                            <h2 class="post-title">{{ post['chapter'] + ' ' + post['title'] }}</h2>
-                            <h3 class="post-subtitle">{{ post['subtitle'] }}</h3>
-                        </a>
-                        <p class="post-meta">
-                            Posted
-                            on {{ dt.fromisoformat(post['date']).strftime('%B %d, %Y') }}
-                        </p>
-                    </div>
-                    <hr />
-
-                    <!-- Pager-->
-                </div>
-                 {% endfor %}
-
-            </div>
-        </div>
-        <div class="clearfix">
-            <a class="btn btn-primary float-right mr-4" href="{{ url_for('get_old_posts', index=story_page) }}">
-                {{ name_button }}</a>
+             </div>
+             <button id="addStories" class="button button__main button__long" >
+                <div class="inner" data-stories="3">Ранние истории</div>
+            </button>
         </div>
 
-        <hr />
+
         <!-- Footer-->
 {% include 'footer.html' %}
