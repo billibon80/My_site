@@ -37,6 +37,8 @@ function storyList () {
 
     }
 
+    storyCard();
+
 }
 
 export default storyList;

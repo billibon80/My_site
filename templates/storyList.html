@@ -5,29 +5,32 @@
 
 
             <li class="comics__item"
-                tabIndex=""
-                id="card{{ post['id'] }}"
-
-            >
+                tabIndex="" >
              {% if post.new_story %}
                  <div class="new-icon"
                       style="background-image: url({{ url_for('static', filename='assets/img/new-icon.png') }})">
 
                  </div>
              {% endif %}
-                <a href="{{ url_for('show_post', index=post['id']) }}">
-                    <div class="comics__wrapper">
+
+                    <div id="card{{ post['id'] }}"
+                         class="comics__wrapper">
                     <img src="{{ url_for('static', filename='assets/img-stories/' +  post['img']|string) }}"
                          style="object-fit:cover" alt="abyss"
                          class="comics__item-img"/>
                         <div class="comics__text">
                             <p>{{ post['subtitle'] }}</p>
                         </div>
+                        <button class="button-89">
+                            <a href="{{ url_for('show_post', index=post['id']) }}">
+                                Прочитать
+                            </a>
+                        </button>
                     </div>
 
                 <div class="comics__item-name">{{ post['chapter'] + ' ' + post['title'] }}</div>
                 <div class="comics__item-data">{{ dt.fromisoformat(post['date']).strftime('%B %d, %Y') }}</div>
-               </a>
+
             </li>
              {% endfor %}
         </ul>

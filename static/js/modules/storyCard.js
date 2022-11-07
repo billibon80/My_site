@@ -1,7 +1,7 @@
 function storyCard() {
-    document.querySelectorAll('.comics__item').forEach( (item) => {
+    document.querySelectorAll('.button-89').forEach( (item) => {
         item.addEventListener('click', (e) => {
-            sessionStorage.setItem('storiesCardId', item.getAttribute('id'));
+            sessionStorage.setItem('storiesCardId', item.parentElement.getAttribute('id'));
         })
     });
 }

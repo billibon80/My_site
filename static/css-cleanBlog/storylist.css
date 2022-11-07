@@ -30,8 +30,11 @@
         transform: scale(2) translate(20%, 20%);
     }
 }
-.blueShadow{-webkit-box-shadow:5px 5px 10px rgba(37,51,149,0.50);box-shadow:5px 5px 10px rgba(37,51,149,0.50)}
+
+
+.blueShadow{-webkit-box-shadow:5px 5px 10px rgba(37,51,149,0.90) !important;box-shadow:5px 5px 10px rgba(37,51,149,0.90) !important}
 .comics__item:hover {-webkit-box-shadow:none;box-shadow:none}
+.comics__item:hover .button-89 {z-index: 15;opacity: 1;padding: 20px;}
 .comics__text{position:absolute;top:20%;text-align:center;width:100%;color:white;z-index:10}
 .comics__text p{font-size:15px;margin:0 10px;text-align:justify;transform:scale(0);transition:1s ease-in-out;}
 .comics__item:hover .comics__text p{transform:scale(1)}

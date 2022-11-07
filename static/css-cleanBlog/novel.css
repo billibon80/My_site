@@ -114,12 +114,12 @@
 	 color: white;
 }
 
- .glide__bgc:hover .caption{
+ .glide__bgc:hover .caption-novel{
     opacity:1;
  }
 
 
- .caption {
+ .caption-novel {
     overflow: hidden;
 	 display: block;
 	 position: absolute;
@@ -135,17 +135,18 @@
 	 opacity: 0;
 	 transition: opacity 1.3s ease, transform 2.7s ease;
 	 text-align: justify;
+	 padding: 10px;
 	 padding-top: 30px;
 }
 
-.glide__bgc:hover .caption::after{
+.glide__bgc:hover .caption-novel::after{
     opacity:.5;
     transform: rotate(20deg) translateX(-19%);
     border: 1px solid red;
     transition: .5s ease-out;
  }
 
-.caption::after {
+.caption-novel::after {
 	 content: '';
 	 width: 130%;
 	 height: 130%;
@@ -196,6 +197,7 @@
   bottom: 20px;
   left: calc(50% - 44px);
   opacity: 0;
+  z-index: -1;
 
    transition: .3s linear, color 0s, background-color 0s, opacity 3s;
 }
@@ -210,10 +212,13 @@
 .button-89:active {
   background: var(--color);
   color: #000;
+
 }
 
 .glide__bgc:hover .button-89{
     opacity: .9;
+    z-index: 5;
+    padding:20px;
 }
  .glide__bgc:hover .oh{
 	 opacity: 0;
