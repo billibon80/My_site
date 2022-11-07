@@ -1,0 +1,10 @@
+ <div class="text-novel-container" style="background: url({{ url_for('static', filename='assets/img-novel/' + novel.img) }})">
+        <div class="text-novel-subtitle">{{ novel.subtitle }}</div>
+            <div class="text-novel-inside">
+
+                {% for row in novel.body.split('\n') %}
+                    <p> {{ row }} </p>
+                {% endfor %}
+            </div>
+         <button class="btn-close-novel">X</button>
+ </div>

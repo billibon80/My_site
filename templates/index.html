@@ -1,44 +1,6 @@
 {% include 'header.html' %}
-        <!-- Page Header-->
-        <header class="masthead" style="background-image: url({{ url_for('static', filename='assets/img/home-bg.jpg') }})">
-            <div class="overlay"></div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-md-10 mx-auto">
-                        <div class="site-heading">
-                            <h1>My Blog</h1>
-                            <span class="subheading">Story For My Love</span>
-                        </div>
-                    </div>
-                </div>
 
-            </div>
-
-        </header>
-        <!-- Main Content-->
-
-        <!-- Letter For My Love -->
-            {% include 'letter.html' %}
-        <!-- End of Letter -->
-
-
-
-
-        <!-- Team "News block" -->
-        {% include 'news.html' %}
-        <!-- ./"News block" -->
-
-        <!-- Story list -->
-        <div class="comics__list">
-             <div id="storyList">
-            {% include 'storyList.html' %}
-
-             </div>
-             <button id="addStories" class="button button__main button__long" >
-                <div class="inner" data-stories="3">Ранние истории</div>
-            </button>
-        </div>
-
+    {% include 'homepage.html' %}
 
         <!-- Footer-->
 {% include 'footer.html' %}

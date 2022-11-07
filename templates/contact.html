@@ -8,8 +8,8 @@
                 <div class="row">
                     <div class="col-lg-8 col-md-10 mx-auto">
                         <div class="page-heading">
-                                <h1>Contact Me</h1>
-                            <span class="subheading">Have questions? I have answers.</span>
+                                <h1>Напиши Мне</h1>
+                            <span class="subheading">есть вопросы? я отвечу</span>
                         </div>
                     </div>
                 </div>
@@ -25,22 +25,22 @@
                         {{ form.hidden_tag() }}
                         <div class="control-group">
                             <div class="form-group floating-label-form-group controls">
-                                {{ wtf.form_field(form.name, class="form-control", placeholder="Name") }}
+                                {{ wtf.form_field(form.name, class="form-control", placeholder="Имя") }}
                             </div>
                         </div>
                         <div class="control-group">
                             <div class="form-group floating-label-form-group controls">
-                                {{ wtf.form_field(form.email, class="form-control", placeholder="Email") }}
+                                {{ wtf.form_field(form.email, class="form-control", placeholder="Емайл") }}
                             </div>
                         </div>
                         <div class="control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
-                               {{ wtf.form_field(form.phone, class="form-control", placeholder="Phone") }}
+                               {{ wtf.form_field(form.phone, class="form-control", placeholder="Телефон") }}
                             </div>
                         </div>
                         <div class="control-group">
                             <div class="form-group floating-label-form-group controls">
-                                {{ wtf.form_field(form.text, class="form-control", placeholder="Message") }}
+                                {{ wtf.form_field(form.text, class="form-control", placeholder="Сообщение") }}
                             </div>
                         </div>
                         <br />
@@ -48,7 +48,7 @@
                         {% with messages = get_flashed_messages() %}
                             <p class="help-block">{{ messages[0] }}</p>
                         {% endwith %}
-                        <button class="btn btn-primary" id="sendMessageButton" type="submit">Send</button>
+                        <button class="btn btn-primary" id="sendMessageButton" type="submit">Отправить</button>
                     </form>
                 </div>
             </div>

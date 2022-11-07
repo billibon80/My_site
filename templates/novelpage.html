@@ -1,0 +1,53 @@
+
+        <!-- Page Header-->
+        <header class="masthead"
+                style="background-image: url({{ url_for('static', filename='assets/img-novel/main-novel.jpg') }});
+                       margin-bottom: 0px;">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="site-heading">
+                            <h1>Стихи Для Тебя</h1>
+                            <span class="subheading">я все еще тебя люблю моя маленькая принцесса</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+         <!-- Novel Content-->
+        <div class="novel-wrapper">
+        <div class="main-novel">
+           <ul>
+        {% if novels %}
+            {% for novel in novels %}
+                 <li class="glide__slide" id="{{ novel.id }}">
+                    <div class="glide__bg frame l_rotate" style="background-image: url({{ novel.gif }})">
+                        <div class="glide__bgc">
+                          <span class="oh fw-bold">{{ novel.title }}</span>
+                          <span class="caption">{{ novel.subtitle }}</span>
+                            <button class="button-89">Прочитать</button>
+                        </div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </li>
+            {% endfor %}
+        {% endif %}
+               <li style="width: 245px; position: relative; height:300px;">
+                   <div id="btn_novel_list" class="novel__btn novel__btn_icon" disabled="{{ btnFade }}">
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    РАННИЕ СТИХИ
+                    </div>
+               </li>
+    </ul>
+
+        </div>
+            <div class="text-novel absolute">
+                {% include 'templateNovel.html' %}
+            </div>
+
+
+    </div>
+

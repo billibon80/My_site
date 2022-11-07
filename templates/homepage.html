@@ -1,0 +1,41 @@
+ <!-- Page Header-->
+        <header class="masthead" style="background-image: url({{ url_for('static', filename='assets/img/home-bg.jpg') }})">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="site-heading">
+                            <h1>Все Только Начинается</h1>
+                            <span class="subheading">истории для моей принцессы</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+        <!-- Main Content-->
+
+        <!-- Letter For My Love -->
+            {% include 'letter.html' %}
+        <!-- End of Letter -->
+
+
+
+
+        <!-- Team "News block" -->
+        {% include 'news.html' %}
+        <!-- ./"News block" -->
+
+        <!-- Story list -->
+        <h5 id="storiesTitle" class="section-title h1">СКАЗКИ ДЛЯ ТЕБЯ</h5>
+        <div class="comics__list">
+
+             <div id="storyList">
+            {% include 'storyList.html' %}
+
+             </div>
+             <button id="addStories" class="button button__main button__long" >
+                <div class="inner" data-stories="3">Ранние сказки</div>
+            </button>
+        </div>

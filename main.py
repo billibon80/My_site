@@ -497,6 +497,23 @@ def get_new_posts():
     return render_template("index.html", all_posts=posts, dt=dt, name_button=name_button,
                            story_page=posts_id, datetime=datetime, news=news[:3], letter=letter, btFade=False)
 
+@app.route('/homepage')
+def get_homepage():
+    global name_button
+    global story_page
+    global show_story
+
+    posts_id = 0
+    news = db.session.query(News).order_by(db.desc(News.date)).all()
+    # posts = Stories.query.filter_by(new_story=True).order_by(db.desc(Stories.date)).all()
+    posts = Stories.query.order_by(db.desc(Stories.date)).all()[:3]
+    if posts:
+        posts_id = posts[-1].id - 1
+    letter = Letter.query.order_by(db.desc(Letter.date)).first()
+    name_button = "Older Story →"
+    return render_template("homepage.html", all_posts=posts, dt=dt, name_button=name_button,
+                           story_page=posts_id, datetime=datetime, news=news[:3], letter=letter, btFade=False)
+
 
 @app.route('/getStories/<int:lastNum>')
 def get_old_stories(lastNum):
@@ -526,8 +543,36 @@ def get_about():
 
 @app.route('/novel')
 def get_novel():
+    novels = db.session.query(Novel).order_by(db.desc(Novel.date)).all()[:2]
+    return render_template('novel.html', novels=novels, datetime=datetime, dt=dt)
+
+
+@app.route('/novel/<int:id>')
+def get_novel_list(id=2):
     novels = db.session.query(Novel).order_by(db.desc(Novel.date)).all()
-    return render_template('novel_1.html', novels=novels, datetime=datetime, dt=dt)
+    btFade = False
+    if id >= len(novels):
+        id = len(novels)
+        btFade = True
+
+    return render_template('novelpage.html', novels=novels[:id],
+                                             datetime=datetime,
+                                             dt=dt,
+                                             btnFade=btFade)
+
+
+@app.route('/getNovel/<int:id>')
+def get_novel_text(id):
+    novel = Novel.query.filter_by(id=id).first()
+
+    return render_template('novel_text.html',
+                           novel=novel,
+                           dt=dt)
+
+
+@app.route('/getTemplateNovel')
+def get_template_novel():
+    return render_template('templateNovel.html')
 
 
 @app.route('/post/<int:index>', methods=['POST', 'GET'])

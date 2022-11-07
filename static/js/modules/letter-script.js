@@ -12,7 +12,7 @@
 
 
 
-document.addEventListener('DOMContentLoaded', () => {
+function letterScript () {
 
     // Function for Particle
         var _createClass = (function() {
@@ -305,4 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loop();
 
 
-})
+}
+
+
+export default letterScript;
