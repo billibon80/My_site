@@ -58,6 +58,7 @@ function novel() {
                      document.querySelector('body').style.overflow = 'auto';
                      checkResize ();
                      checkPosition();
+                     button89();
                     })
                 })
             })
