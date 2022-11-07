@@ -19,7 +19,8 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
      try {
-        novel();
+        if (document.querySelector('#novel'))
+            novel();
     }catch(e) {
         console.log('novel error', e)
     }
