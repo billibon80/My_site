@@ -154,7 +154,6 @@ function novel() {
 
     if (sessionStorage.getItem('novels')) {
         addListNovel(parseInt(sessionStorage.getItem('novels')) );
-        button89();
     }
 
     window.addEventListener('resize', () => {
@@ -163,7 +162,7 @@ function novel() {
     })
 
 
-
+    button89();
     checkPosition();
 }
 
