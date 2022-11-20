@@ -62,7 +62,7 @@
  }
 
 .img-team-front {
-    width: 7rem;
+    width: 10rem;
     margin: auto;
     height: 7rem;
     margin-bottom: 20px;
@@ -98,11 +98,14 @@ h1.logo {
 #form-box {
   background: #fff;
   position: relative;
-  width: 600px;
+  width: 90%;
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
   box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.1), 0 6px 10px 5px rgba(0, 0, 0, 0.1), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
-  transition: transform 0.1s ease-in-out; }
+  transition: transform 0.1s ease-in-out;
+  margin: 0 auto;
+  max-width: 500px;
+  }
 #form-box button {
 border: 0;
 margin: 0;
@@ -118,7 +121,7 @@ padding: 0;
   transition: 0.8s ease-in-out;
   box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0); }
 
-#next-btn {
+#next-btn-i, #next-btn {
   position: absolute;
   right: 20px;
   bottom: 10px;
@@ -167,7 +170,8 @@ padding: 0;
     pointer-events: none;
     top: 32px;
     left: 20px;
-    font-size: 1.1rem;
+    font-size: 65%;
+    line-height: 1;
     font-weight: bold;
     transition: 0.2s ease-in-out;
      color: #9e9e9e;
@@ -215,22 +219,64 @@ padding: 0;
 /* End Fance form */
 .modal-body p {
     margin: 5px 0;
-    font-size: 1.1rem;
+    font-size: 15px;
 }
 .message_pack {
-    display:unset;
+    position: relative;
+    width: 50px;
+    height:50px;
+    cursor: pointer;
 }
+
+@keyframes frame_message {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+.message_pack {
+    --animation: unset;
+}
+.message_pack::after {
+     position: absolute;
+     background: #ffffff70;
+     top: 0;
+     left: 0;
+     content: "";
+     width: 50px;
+     height: 50px;
+     border: 2px solid red;
+     /*animation: frame_message 2s 6 normal;*/
+     animation: var(--animation);
+     transition: .7s;
+     opacity: 0;
+}
+
 .message_pack:hover .toast.hide {
     display: block;
 }
+.message_pack:hover .toast {
+    opacity: 1;
+    z-index: 5;
+    transform: translateX(78px);
+    margin: 0;
+
+}
 .message_pack .inactive-link {
     /*pointer-events: none;
-    cursor: pointer;*/
-    width: 10%;
+    cursor: pointer;
+    width: 10%;*/
+    width:100%;
+    height:100%;
   }
 .message_pack img {
     width: 100%;
-    margin-bottom: 10px;
+    height: 100%;
+    object-fit: cover;
 }
 .letter {
 
@@ -251,7 +297,10 @@ padding: 0;
 	overflow:hidden;
 	position:relative;
 	transition:0.5s;
-	margin-bottom:28px;
+	max-width: 340px;
+    margin: 0 auto;
+    max-height: 436px;
+}
 
 }
 
@@ -373,20 +422,31 @@ padding: 0;
 .card-answer {
     margin: auto;
     width: 60%;
-
+    max-width: 330px;
 }
 
 
 .card-answer img {
-    max-height: 12rem;
+    /*max-height: 12rem;*/
+    cursor: pointer;
     object-fit: cover;
-     transition: 0.8s ease-in-out;
+    width: 90%;
+    margin: 0 auto;
+    transition: 1.4s ease-in-out, border 0.5s, box-shadow .3s;
+    margin-top: 20px;
+    object-position: top;
 }
 
 .card-answer img:hover {
-    transform: scale(2);
+   /* transform: scale(2);
     cursor: pointer;
-    transition: 0.9s cubic-bezier(0.4, 0, 1, 1);
+    transition: 0.9s cubic-bezier(0.4, 0, 1, 1); */
+}
+
+.card-answer-transform {
+    transform: scale(1.5);
+    box-shadow: 2px 2px 5px #001680;
+    border: 2px solid #ff000099;
 }
 
 textarea::placeholder {
@@ -923,8 +983,11 @@ mark,
 }
 
 .img-fluid {
-  max-width: 100%;
+  width: 100%;
   height: auto;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
 }
 
 .img-thumbnail {
@@ -994,6 +1057,7 @@ pre code {
 .container-lg,
 .container-md,
 .container-sm {
+  position: relative;
   width: 100%;
   padding-right: 15px;
   padding-left: 15px;
@@ -4860,6 +4924,7 @@ input[type=button].btn-block {
   flex: 1 1 auto;
   min-height: 1px;
   padding: 1.25rem;
+  text-align: center;
 }
 
 .card-title {
@@ -4875,7 +4940,8 @@ input[type=button].btn-block {
   margin-bottom: 0;
 }
 .card-text {
-    line-height: 1.3
+    line-height: 1.3;
+    font-size: 15px;
 }
 
 .card-link:hover {
@@ -5831,6 +5897,11 @@ a.close.disabled {
 }
 
 .toast {
+  position: absolute;
+  background-color: white;
+  width: 65vw;
+  max-width: 350px;
+  top:0;
   flex-basis: 350px;
   max-width: 350px;
   font-size: 0.875rem;
@@ -5840,6 +5911,8 @@ a.close.disabled {
   box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
   opacity: 0;
   border-radius: 0.25rem;
+  transition: 0.5s;
+  z-index: -1;
 }
 .toast:not(:last-child) {
   margin-bottom: 0.75rem;
@@ -5883,21 +5956,31 @@ a.close.disabled {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1050;
-  display: none;
+  z-index: -1;
   width: 100%;
   height: 100%;
   overflow: hidden;
   outline: 0;
+  background: #80808085;
+  opacity: 0;
+  transition: .6s ease-in;
+}
+
+.modal.show {
+    z-index: 20;
+    opacity: 1;
+
 }
 
 .modal-dialog {
   position: relative;
-  width: auto;
-  margin: 0.5rem;
+  width:100%;
+  height: 100%;
   pointer-events: none;
+  max-width: 500px;
+  margin: 0 auto;
 }
-.modal.fade .modal-dialog {
+/*.modal.fade .modal-dialog {
   transition: transform 0.3s ease-out;
   transform: translate(0, -50px);
 }
@@ -5952,7 +6035,7 @@ a.close.disabled {
 }
 .modal-dialog-centered.modal-dialog-scrollable::before {
   content: none;
-}
+}*/
 
 .modal-content {
   position: relative;
@@ -7029,6 +7112,9 @@ button.bg-dark:focus {
   width: 100%;
   padding: 0;
   overflow: hidden;
+  height: 200px;
+  max-width: 515px;
+  margin: 0 auto;
 }
 .embed-responsive::before {
   display: block;

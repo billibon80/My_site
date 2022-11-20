@@ -1,0 +1,12 @@
+    {% set dict = data_video[video_id.index] %}
+    {% set video_id.index = video_id.index + 1 %}
+    <!-- block VIDEO -->
+     <div id="{{ msg_id }}" class="embed-responsive embed-responsive-16by9 video-player">
+
+            <video class="embed-responsive-item " style="cursor: pointer;"
+                  {{ dict.muted }}  {{ dict.controls }} {{dict.autoplay}}
+                   {{ dict.loop }} preload="auto">
+                <source src="{{ url_for('static', filename='assets/video/'
+                + dict.src|string ) }}">
+            </video>
+    </div>

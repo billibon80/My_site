@@ -149,7 +149,7 @@ def admin_only(f):
 @app.route('/admin')
 def admin_panel():
     if current_user.is_authenticated:
-        if current_user.id == 1:
+        if current_user.id == True:
             global name_button
             global story_page
             global show_story
@@ -488,7 +488,7 @@ def get_new_posts():
 
     posts_id = 0
     news = db.session.query(News).order_by(db.desc(News.date)).all()
-    #posts = Stories.query.filter_by(new_story=True).order_by(db.desc(Stories.date)).all()
+    # posts = Stories.query.filter_by(new_story=True).order_by(db.desc(Stories.date)).all()
     posts = Stories.query.order_by(db.desc(Stories.date)).all()[:3]
     if posts:
         posts_id = posts[-1].id - 1
@@ -496,6 +496,7 @@ def get_new_posts():
     name_button = "Older Story →"
     return render_template("index.html", all_posts=posts, dt=dt, name_button=name_button,
                            story_page=posts_id, datetime=datetime, news=news[:3], letter=letter, btFade=False)
+
 
 @app.route('/homepage')
 def get_homepage():
@@ -556,9 +557,9 @@ def get_novel_list(id=2):
         btFade = True
 
     return render_template('novelpage.html', novels=novels[:id],
-                                             datetime=datetime,
-                                             dt=dt,
-                                             btnFade=btFade)
+                           datetime=datetime,
+                           dt=dt,
+                           btnFade=btFade)
 
 
 @app.route('/getNovel/<int:id>')
@@ -574,221 +575,343 @@ def get_novel_text(id):
 def get_template_novel():
     return render_template('templateNovel.html')
 
+# #
+# @app.route('/post_admin/<int:index>', methods=['POST', 'GET'])
+# def show_post(index):
+#     global CODE_WORD_USER
+#     global USER_CODE_ANSWER
+#     form = Comments()
+#     form_answer = AnswerForm()
+#     requested_post = Stories.query.get(index)
+#     msg_id = request.args.get('msg_id')
+#     answer = request.args.get('answer')
+#     msg_answer = request.args.get('msg_answer')
+#     further = request.args.get('further')
+#     show_message = request.args.get('show_message')
+#     _anchor = request.args.get('anchor')
+#     show = request.args.get('show')
+#     row_body = requested_post.body.split("\n")
+#     all_row = requested_post.body.split("\n")
+#     choice_text = []
+#
+#     code_word = None
+#
+#     if '{code_word}' in requested_post.body:
+#         code_word = row_body[0].strip().replace('{code_word}', '')
+#         # generate_password_hash(row_body[0].strip().replace('{code_word}', ''),
+#         #                               method='pbkdf2:sha256', salt_length=8)
+#
+#         if USER_CODE_ANSWER:
+#             CODE_WORD_USER = check_password_hash(code_word, USER_CODE_ANSWER)
+#         else:
+#             CODE_WORD_USER = None
+#         row_body.pop(0)
+#         all_row.pop(0)
+#     else:
+#         CODE_WORD_USER = None
+#
+#     def msg_index_create(list_all_row):
+#         return [i for i in range(len(list_all_row)) if
+#                 [txt for txt in ['{message}', '{modal_end}'] if txt in list_all_row[i]]]
+#
+#     def clear_code_row(list_row):
+#         for txt_list in list_row:
+#             if '{code_row}' in txt_list:
+#                 id_row = list_row.index(txt_list)
+#                 if not CODE_WORD_USER:
+#                     list_row.pop(id_row)
+#                 else:
+#                     list_row[id_row] = list_row[id_row].replace('{code_row}', '')
+#
+#     i = 1
+#     for text in row_body:
+#
+#         if '{choice_start_' + str(i) + '}' in text:
+#             start_i = row_body.index(text)
+#
+#             end_i = row_body.index('{choice_end_' + str(i) + '}\r')
+#
+#             choice_text.append(row_body[start_i + 1:end_i])
+#             [all_row.remove(row_body[k]) for k in range(start_i, end_i + 1)]
+#             i += 1
+#
+#     clear_code_row(all_row)
+#     msg_index = msg_index_create(all_row)
+#
+#     row_body.clear()
+#
+#     if answer:
+#         if choice_text:
+#             ch_answer = [int(i) for i in answer.split(',')]
+#
+#             replace_all_row = all_row
+#             for txt in replace_all_row:
+#
+#                 if '{import_answer}' in txt:
+#                     num_answer = int(txt.replace('{import_answer}', ''))
+#                     if num_answer <= len(ch_answer):
+#                         ind_row = int(replace_all_row.index(txt))
+#                         all_row[ind_row] = all_row[ind_row].replace(txt, '')
+#                         imp_text = choice_text[ch_answer[num_answer - 1] - 1]
+#                         [all_row.insert(ind_row, imp_text[::-1][i]) for i in
+#                          range(len(imp_text))]
+#
+#             [all_row.pop(i) for i in [all_row.index(i) for i in all_row if '{import_answer}' in i][::-1]]
+#             [all_row.pop(all_row.index(i)) for i in all_row if i == '']
+#             msg_index.clear()
+#             clear_code_row(all_row)
+#
+#             msg_index.extend(msg_index_create(all_row))
+#
+#     if form_answer.validate_on_submit():
+#         msg_id = int(msg_id.replace('msg_', ''))
+#         user_answer = form_answer.data_str.data
+#         r_answer = request.form.get('r_answer')
+#         n_link = [int(i) for i in request.form.get('num_link').split(',')]  # link to answer
+#         num_row = request.args.get('num_row')
+#         if r_answer:
+#             if r_answer == '{code_word}':
+#                 USER_CODE_ANSWER = user_answer
+#                 CODE_WORD_USER = check_password_hash(code_word, user_answer)
+#                 user_answer = CODE_WORD_USER
+#             else:
+#                 user_answer = [txt for txt in user_answer.split() if txt.lower()
+#                                in [txt.lower().replace(' ', '') for txt in r_answer.split(',')]]
+#
+#             if user_answer:
+#                 num_link = n_link[1]
+#             else:
+#                 num_link = n_link[0]
+#
+#             if answer:
+#                 if int(answer.split(',')[-1]) in n_link:
+#                     msg_id = msg_index[msg_index.index(msg_id) - 1]
+#                 new_answer = [int(i) for i in answer.split(',') if int(i) not in n_link]
+#                 if new_answer:
+#                     new_answer.append(num_link)
+#                     answer = ', '.join(map(str, new_answer))
+#                 else:
+#                     answer = num_link
+#             else:
+#                 answer = num_link
+#
+#         if int(num_link) == int(all_row[msg_id].replace('choice_answer=', '').split(';')[-1].split(',')[0]):
+#             anchor = num_row
+#             if choice_text[int(num_link) - 1][0] in all_row:
+#                 anchor = all_row.index(choice_text[int(num_link) - 1][0])
+#                 num_row = anchor + len(choice_text[int(num_link) - 1]) - 1
+#             else:
+#                 num_row = int(num_row) + len(choice_text[int(num_link) - 1])
+#
+#             return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=anchor,
+#                                     msg_index=num_row))
+#
+#         add_txt_answer = choice_text[int(num_link) - 1]
+#
+#         if '{message}' in " ".join(add_txt_answer).strip() or '{modal_end}' in " ".join(add_txt_answer).strip():
+#             len_txt = [add_txt_answer.index(txt) for txt in add_txt_answer if '{message}' in txt.strip()
+#                        or '{modal_end}' in txt.strip()][0]
+#             msg_index = msg_id + len_txt + 1
+#         else:
+#             len_txt_choice = len(choice_text[int(num_link) - 1])
+#             if msg_id == msg_index[-1]:
+#                 msg_index = len(all_row) + len_txt_choice
+#             else:
+#                 current_row = msg_index[msg_index.index(msg_id) + 1]
+#                 if msg_id != int(num_row):
+#                     len_txt_choice = msg_index[msg_index.index(current_row) + 1] - current_row - 1
+#                 else:
+#                     len_txt_choice -= 1
+#                 msg_index = current_row + len_txt_choice
+#
+#         return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=msg_id,
+#                                 msg_index=msg_index))
+#
+#     if show_message:
+#
+#         if msg_id in msg_index:
+#             msg_id = msg_index[msg_index.index(int(msg_id))]
+#         else:
+#             msg_id = int(msg_id) - 1
+#
+#         return redirect(url_for('show_post', index=index, _anchor='newstring', show=show_message,
+#                                 msg_index=msg_id, msg_answer=msg_answer, answer=answer, anchor=show_message))
+#     if further:
+#         if further == '0':
+#             answer = None
+#             CODE_WORD_USER = None
+#             USER_CODE_ANSWER = None
+#             return render_template('post.html', post=requested_post, post_body=all_row,
+#                                    datetime=datetime, dt=dt, form=form, msg_index=msg_index[0] + 1,
+#                                    answer=answer, show=show, anchor_msg=0, form_answer=form_answer,
+#                                    code_word=CODE_WORD_USER)
+#     if msg_id:
+#         msg_id = int(msg_id.replace('msg_', ''))
+#
+#         if msg_index.index(msg_id) + 1 == len(msg_index):
+#             if all_row.index(all_row[msg_index[msg_index.index(msg_id)]]) != len(all_row) - 1:
+#                 try:
+#                     _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] + 1])
+#                 except IndexError:
+#                     _anchor = msg_index[-2] + 1
+#             else:
+#                 _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] - 1])
+#         else:
+#             _anchor = msg_index[msg_index.index(msg_id) + 1] - (msg_index[msg_index.index(msg_id) + 1] - msg_id) + 1
+#
+#         if msg_index[-1] != msg_id:
+#             msg_index = msg_index[msg_index.index(msg_id) + 1]
+#         else:
+#             msg_index = len(all_row) - 1
+#
+#         return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor, answer=answer,
+#                                 msg_index=msg_index))
+#     elif request.args.get('msg_index'):
+#         msg_index = int(request.args.get('msg_index')) + 1
+#     else:
+#
+#         if msg_index:
+#             msg_index = msg_index[0] + 1
+#         else:
+#             msg_index = len(all_row)
+#
+#     if form.validate_on_submit():
+#         comment = Comment(
+#             text=form.text.data,
+#             author_id=current_user.id,
+#             stories_id=requested_post.id
+#         )
+#         db.session.add(comment)
+#         db.session.commit()
+#         return redirect(url_for('show_post', index=index, _anchor="submit"))
+#
+#     if msg_index > len(all_row):
+#         msg_index = len(all_row)
+#
+#     return render_template('post.html', post=requested_post, post_body=all_row, datetime=datetime, dt=dt, form=form,
+#                            msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor, form_answer=form_answer,
+#                            msg_answer=msg_answer, code_word=CODE_WORD_USER)
 
 @app.route('/post/<int:index>', methods=['POST', 'GET'])
-def show_post(index):
-    global CODE_WORD_USER
-    global USER_CODE_ANSWER
+@app.route('/post_content/<int:index>', methods=['POST', 'GET'])
+def show_post_content(index):
     form = Comments()
     form_answer = AnswerForm()
     requested_post = Stories.query.get(index)
-    msg_id = request.args.get('msg_id')
-    answer = request.args.get('answer')
-    msg_answer = request.args.get('msg_answer')
-    further = request.args.get('further')
-    show_message = request.args.get('show_message')
-    _anchor = request.args.get('anchor')
-    show = request.args.get('show')
-    row_body = requested_post.body.split("\n")
-    all_row = requested_post.body.split("\n")
-    choice_text = []
+    # num id element in list_index_message
+    msg_id = int(request.args.get('msg_id')) if request.args.get('msg_id') else 0
+    answer = ""
+    show = ""
+    _anchor = ""
+    msg_answer = ""
+
+    if request.args:
+        answer = [answer for answer in request.args.get('answer').split(',') if answer != ""]
+        msg_answer = request.args.get('msg_answer')
+        further = request.args.get('further')
+        show_message = request.args.get('show_message')
+        _anchor = request.args.get('anchor')
+        show = request.args.get('show')
+    row_body = requested_post.body.splitlines()
+    new_text = []
 
     code_word = None
 
-    if '{code_word}' in requested_post.body:
-        code_word = row_body[0].strip().replace('{code_word}', '')
-            # generate_password_hash(row_body[0].strip().replace('{code_word}', ''),
-            #                               method='pbkdf2:sha256', salt_length=8)
 
-        if USER_CODE_ANSWER:
-            CODE_WORD_USER = check_password_hash(code_word, USER_CODE_ANSWER)
-        else:
-            CODE_WORD_USER = None
-        row_body.pop(0)
-        all_row.pop(0)
+    def selectionBySelector(data, anchor):
+        return [i for i in range(0, len(data)) if data[i].find(anchor) != -1]
+
+    mapped_row = row_body[1:] if row_body[0].find('{code_word}') != -1 else row_body
+    choice_start = selectionBySelector(mapped_row, '{choice_start_')
+    choice_end = selectionBySelector(mapped_row, '{choice_end_')
+    choice_text = [mapped_row[choice_start[i] + 1:choice_end[i]] for i in range(0, len(choice_start))]
+
+
+   # loop for delete choice_tex from mapped_row
+    for i in range(len(choice_start) - 1, -1, -1):
+        del mapped_row[choice_start[i]:choice_end[i]+1]
+
+    # replace {import_answer} to choice_txt
+    # list_index_answer = [i for i in range(0, len(mapped_row)) if mapped_row[i].find('{import_answer}') != -1]
+    if len(answer) > 0:
+        for i in range(0, len(answer)):
+            # ind_answer = list_index_answer[int(answer[i])-1]
+            print(answer)
+            if len(choice_text) > 0:
+                txt_answer = choice_text[int(answer[i])-1]
+
+                # mapped_row = [*mapped_row[:ind_answer], *txt_answer, *mapped_row[ind_answer + 1:]]
+                # list_index_answer = list_index_answer[:i+1] + [il + len(txt_answer) - 1 for il in list_index_answer[i + 1:]]
+                mapped_row = [*mapped_row, *txt_answer]
+
+    mapped_row = [mapped_row[i] for i in range(0, len(mapped_row)) if mapped_row[i].find('{import_answer}') == -1]
+    #clreate list of index row with text {message}
+    list_index_message = selectionBySelector(mapped_row, '{message}')
+
+    if not list_index_message:
+        list_index_message.append(0)
+
+
+    text_message = (list(map(lambda x: x.replace('{message}', ''), [mapped_row[i] for i in list_index_message])))
+
+    # create dict data for html selector
+    msg_id = msg_id if msg_id < len(list_index_message) else len(list_index_message) - 1
+    try:
+        data_message = text_message[msg_id].split('}')[-1].split('|')
+        data_message = [{i.split('=')[0].replace(' ', ''): i.split('=')[1] for i in row.split(';')} for row in data_message]
+        # data_message = {i.split('=')[0].replace(' ', ''): i.split('=')[1] for i in data_message.split('}')[-1].split(';')}
+    except IndexError:
+        data_message = [{'src_img':'', 'title':'', 'dictum':'', 'text': ''}]
+
+    # # insert new_strins for anchor to text insted last {message} row
+    if len(list_index_message) > 1 and msg_id != 0:
+        mapped_row[list_index_message[msg_id - 1]] = 'newstring'
     else:
-        CODE_WORD_USER = None
+        mapped_row.insert(0, 'newstring')
 
-    def msg_index_create(list_all_row):
-        return [i for i in range(len(list_all_row)) if
-                [txt for txt in ['{message}', '{modal_end}'] if txt in list_all_row[i]]]
+    len_text = list_index_message[msg_id] if list_index_message[msg_id] > 0 else len(mapped_row)
+    [new_text.append(row) for row in mapped_row[: len_text] if row.find('{message}') == -1]
 
-    def clear_code_row(list_row):
-        for txt_list in list_row:
-            if '{code_row}' in txt_list:
-                id_row = list_row.index(txt_list)
-                if not CODE_WORD_USER:
-                    list_row.pop(id_row)
-                else:
-                    list_row[id_row] = list_row[id_row].replace('{code_row}', '')
 
-    i = 1
-    for text in row_body:
+    #add row with text {message} without args
+    new_text.append(text_message[msg_id])
 
-        if '{choice_start_' + str(i) + '}' in text:
-            start_i = row_body.index(text)
+    def splitTags (data, anchor):
+        try:
+            return [{i.split('=')[0].replace(' ', ''): i.split('=')[1].replace('~', '=')
+                     for i in row.replace(anchor, '').split(';')}
+                     for row in data if row.find(anchor) >= 0]
 
-            end_i = row_body.index('{choice_end_' + str(i) + '}\r')
+        except IndexError:
+            return []
 
-            choice_text.append(row_body[start_i + 1:end_i])
-            [all_row.remove(row_body[k]) for k in range(start_i, end_i + 1)]
-            i += 1
+    # create dict for media html
+    data_media = splitTags(new_text, '{media}')
 
-    clear_code_row(all_row)
-    msg_index = msg_index_create(all_row)
+    # create dict for video html
+    data_video = splitTags(new_text, '{video}')
 
-    row_body.clear()
+    # create dict for modal html
+    data_modal = splitTags(new_text, '{modal_start}')
 
-    if answer:
-        if choice_text:
-            ch_answer = [int(i) for i in answer.split(',')]
+    # create dict for message_pack html
+    data_message_pack = splitTags(new_text, '{message_pack}')
 
-            replace_all_row = all_row
-            for txt in replace_all_row:
+    # create dict for iframe html
+    data_iframe = splitTags(new_text, '{iframe}')
 
-                if '{import_answer}' in txt:
-                    num_answer = int(txt.replace('{import_answer}', ''))
-                    if num_answer <= len(ch_answer):
-                        ind_row = int(replace_all_row.index(txt))
-                        all_row[ind_row] = all_row[ind_row].replace(txt, '')
-                        imp_text = choice_text[ch_answer[num_answer - 1] - 1]
-                        [all_row.insert(ind_row, imp_text[::-1][i]) for i in
-                         range(len(imp_text))]
+    # create dict for next html
+    data_next = splitTags(new_text, '{next}')
 
-            [all_row.pop(i) for i in [all_row.index(i) for i in all_row if '{import_answer}' in i][::-1]]
-            [all_row.pop(all_row.index(i)) for i in all_row if i == '']
-            msg_index.clear()
-            clear_code_row(all_row)
+    # upset message id for next row {message}
+    msg_id = msg_id + 1 if msg_id + 1 <= len(list_index_message) else len(list_index_message)
 
-            msg_index.extend(msg_index_create(all_row))
+    answer = ','.join(answer)
 
-    if form_answer.validate_on_submit():
-        msg_id = int(msg_id.replace('msg_', ''))
-        user_answer = form_answer.data_str.data
-        r_answer = request.form.get('r_answer')
-        n_link = [int(i) for i in request.form.get('num_link').split(',')]  # link to answer
-        num_row = request.args.get('num_row')
-        if r_answer:
-            if r_answer == '{code_word}':
-                USER_CODE_ANSWER = user_answer
-                CODE_WORD_USER = check_password_hash(code_word, user_answer)
-                user_answer = CODE_WORD_USER
-            else:
-                user_answer = [txt for txt in user_answer.split() if txt.lower()
-                           in [txt.lower().replace(' ', '') for txt in r_answer.split(',')]]
-
-            if user_answer:
-                num_link = n_link[1]
-            else:
-                num_link = n_link[0]
-
-            if answer:
-                if int(answer.split(',')[-1]) in n_link:
-                    msg_id = msg_index[msg_index.index(msg_id) - 1]
-                new_answer = [int(i) for i in answer.split(',') if int(i) not in n_link]
-                if new_answer:
-                    new_answer.append(num_link)
-                    answer = ', '.join(map(str, new_answer))
-                else:
-                    answer = num_link
-            else:
-                answer = num_link
-
-        if int(num_link) == int(all_row[msg_id].replace('choice_answer=', '').split(';')[-1].split(',')[0]):
-            anchor = num_row
-            if choice_text[int(num_link) - 1][0] in all_row:
-                anchor = all_row.index(choice_text[int(num_link) - 1][0])
-                num_row = anchor + len(choice_text[int(num_link) - 1]) - 1
-            else:
-                num_row = int(num_row) + len(choice_text[int(num_link) - 1])
-
-            return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=anchor,
-                                    msg_index=num_row))
-
-        add_txt_answer = choice_text[int(num_link) - 1]
-
-        if '{message}' in " ".join(add_txt_answer).strip() or '{modal_end}' in " ".join(add_txt_answer).strip():
-            len_txt = [add_txt_answer.index(txt) for txt in add_txt_answer if '{message}' in txt.strip()
-                       or '{modal_end}' in txt.strip()][0]
-            msg_index = msg_id + len_txt + 1
-        else:
-            len_txt_choice = len(choice_text[int(num_link) - 1])
-            if msg_id == msg_index[-1]:
-                msg_index = len(all_row) + len_txt_choice
-            else:
-                current_row = msg_index[msg_index.index(msg_id) + 1]
-                if msg_id != int(num_row):
-                    len_txt_choice = msg_index[msg_index.index(current_row) + 1] - current_row - 1
-                else:
-                    len_txt_choice -= 1
-                msg_index = current_row + len_txt_choice
-
-        return redirect(url_for('show_post', index=index, _anchor='newstring', answer=answer, anchor=msg_id,
-                                msg_index=msg_index))
-
-    if show_message:
-
-        if msg_id in msg_index:
-            msg_id = msg_index[msg_index.index(int(msg_id))]
-        else:
-            msg_id = int(msg_id) - 1
-
-        return redirect(url_for('show_post', index=index, _anchor='newstring', show=show_message,
-                                msg_index=msg_id, msg_answer=msg_answer, answer=answer, anchor=show_message))
-    if further:
-        if further == '0':
-            answer = None
-            CODE_WORD_USER = None
-            USER_CODE_ANSWER = None
-            return render_template('post.html', post=requested_post, post_body=all_row,
-                                   datetime=datetime, dt=dt, form=form, msg_index=msg_index[0] + 1,
-                                   answer=answer, show=show, anchor_msg=0, form_answer=form_answer,
-                                   code_word=CODE_WORD_USER)
-    if msg_id:
-        msg_id = int(msg_id.replace('msg_', ''))
-        print(msg_index)
-        if msg_index.index(msg_id) + 1 == len(msg_index):
-            if all_row.index(all_row[msg_index[msg_index.index(msg_id)]]) != len(all_row) - 1:
-                try:
-                    _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] + 1])
-                except IndexError:
-                    _anchor = msg_index[-2] + 1
-            else:
-                _anchor = all_row.index(all_row[msg_index[msg_index.index(msg_id)] - 1])
-        else:
-            _anchor = msg_index[msg_index.index(msg_id) + 1] - (msg_index[msg_index.index(msg_id) + 1] - msg_id) + 1
-
-        if msg_index[-1] != msg_id:
-            msg_index = msg_index[msg_index.index(msg_id) + 1]
-        else:
-            msg_index = len(all_row) - 1
-
-        return redirect(url_for('show_post', index=index, _anchor='newstring', anchor=_anchor, answer=answer,
-                                msg_index=msg_index))
-    elif request.args.get('msg_index'):
-        msg_index = int(request.args.get('msg_index')) + 1
-    else:
-
-        if msg_index:
-            msg_index = msg_index[0] + 1
-        else:
-            msg_index = len(all_row)
-
-    if form.validate_on_submit():
-        comment = Comment(
-            text=form.text.data,
-            author_id=current_user.id,
-            stories_id=requested_post.id
-        )
-        db.session.add(comment)
-        db.session.commit()
-        return redirect(url_for('show_post', index=index, _anchor="submit"))
-
-    if msg_index > len(all_row):
-        msg_index = len(all_row)
-
-    return render_template('post.html', post=requested_post, post_body=all_row, datetime=datetime, dt=dt, form=form,
-                           msg_index=msg_index, answer=answer, show=show, anchor_msg=_anchor, form_answer=form_answer,
+    return render_template('postContent_new.html'if request.args else 'post.html', post=requested_post, post_body=new_text, datetime=datetime, dt=dt,
+                           form=form, data_media=data_media, data_video=data_video, data_modal=data_modal,
+                           data_message_pack=data_message_pack, data_iframe=data_iframe, data_next=data_next,
+                           msg_id=msg_id, answer=answer, data_message=data_message, anchor_msg=_anchor, form_answer=form_answer,
                            msg_answer=msg_answer, code_word=CODE_WORD_USER)
 
 

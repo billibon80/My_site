@@ -1,32 +1,42 @@
 import storyList from './modules/storyList.js';
 import letterScript from './modules/letter-script.js';
 import novel from './modules/novel.js';
+import post from './modules/post.js';
+
+
+export function bodyOverflowHidden (value) {
+        document.querySelector('body').style.overflow =  value;
+    }
+
 
 window.addEventListener("DOMContentLoaded", () => {
-
 
     try {
         if (document.querySelector('#stories'))
             storyList();
     }catch(e) {
-        console.log('storyList error', e)
+        console.log('storyList error', e);
     }
 
     try {
         letterScript();
     }catch(e) {
-        console.log('letterScript error', e)
+        console.log('letterScript error', e);
     }
 
      try {
         if (document.querySelector('#novel'))
             novel();
     }catch(e) {
-        console.log('novel error', e)
+        console.log('novel error', e);
     }
 
-
-
+    try {
+        if (document.querySelector('#postContent'))
+            post();
+    }catch(e) {
+        console.log('stories content error', e);
+    }
 
 
     document.querySelector('#stories').addEventListener('click', (e)=> {

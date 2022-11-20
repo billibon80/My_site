@@ -1,0 +1,554 @@
+ {% import 'bootstrap/wtf.html' as wtf %}
+{% if code_word %}
+        <div class="code_word shadow" >
+            <a type="button" href="{{ url_for('show_post_content',
+                                             index=post.id,
+                                             further=0,
+                                             ) }}" title="close word">
+                <i class="fas fa-exclamation-circle" style="color: #ff000070;"></i>
+            </a>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <h2 class="section-heading" id="postNum" data-postNum="{{ post['id'] }}">{{ post['title'] }}</h2>
+            <div class="row">
+             <div class="col-lg-6 col-md-12 mx-auto">
+                <img class="img-fluid" src="{{ url_for('static', filename='assets/img-stories/'
+                + post['img']|string)}}" alt="..." />
+             </div>
+             <div class="col-lg-6 col-md-12 mx-auto">
+                <span class="caption text-muted">{{ post['subtitle'] }}</span>
+             </div>
+            </div>
+                {# create dict for replace in body html #}
+                {% macro dict_data(txt, replace_txt='') -%}
+                    {% set dict = {} %}
+                    {%- for k in txt.replace(replace_txt, '').split(';') %}
+                    {% set x = dict.__setitem__(k.split('=')[0].replace(' ', ''), k.split('=', 1)[1])  %}
+                    {%- endfor %}
+                    {{ caller(dict) }}
+                {%- endmacro %}
+                {% set all_rows_story = post_body %}
+                {% set show_msg_class = ['toast fade show hide', 'fade show'] %}
+                {% set last_row = msg_index %}
+                {% set anchor_msg_n = anchor_msg %}
+                {% set btn_id_modal = [] %}
+                {% for i in  range(msg_index) %}
+                    {% set text = all_rows_story[i] %}
+                    {% set msg_id = i %}
+                    {% if (anchor_msg_n|int == (i|int) and '{old}' not in text)
+                        or (anchor_msg_n|int + 1 == (i)|int and '{old}' in all_rows_story[(i-1)|int]
+                                and '{message_pack}' not in all_rows_story[(i-1)|int]) %}
+                            <div class="m-3 pt-3">
+                                <span id='newstrings' class="border border-danger shadow-sm badge badge-danger">
+                                    New
+                                </span>
+                            </div>
+                    {% endif %}
+                     {% set text = text.replace('{old}', '') %}
+                 {% if "{message}" in text: %}
+                        {% if msg_index - 1 == msg_id: %}
+                            {% set show_msg = 'toast fade hide' %}
+                            {% if '{button}' in text %}
+                                {% if '{end}' in text %}
+                                 <div id="{{ msg_id }}" class="shadow card card-answer" >
+
+                                        <div class="col-sm button-msg" >
+                                             <a href="{{ url_for('show_post_content',
+                                             index=post.id,
+                                             msg_id=msg_id|string,
+                                             further=0, answer=answer) }}"
+                                                class="btn btn-outline-secondary fontMark"
+                                                data-wow-delay="0.7s">Конец Истории! </a>
+                                         </div>
+                                    </div>
+                                    <br>
+                                {% elif '{next}' in text %}
+                                    <div class="container text-center">
+                                        {% call(dict) dict_data(text, '{message}{button}{next}') %}
+                                         {% set answer = dict.choice_start if not answer else answer|string
+                                                            + ',' + dict.choice_start %}
+                                            <a type="button" class="btn btn-outline-{{ dict.color }}
+                                            btn-{{ dict.size }} btn-floating"  data-mdb-ripple-color="dark"
+                                            href="{{ url_for('show_post_content', index=post.id,
+                                            msg_id=msg_id|string, answer=answer) }}">
+                                                    {{ dict.text }}
+                                                    <i class="fas {{dict.icon}}"></i>
+                                            </a>
+                                        {% endcall %}
+                                    </div>
+                                {% elif '{further}' in text %}
+                                {% set button_text = text.replace('{message}', '').replace('{button}', '').replace('{further}', '').split(';') %}
+                                <div id = "{{ msg_id }}" class="shadow container my-5 further">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="card m-1">
+                                                <div class="card-body d-flex justify-content-between">
+                                                    {% if '=' in text %}
+                                                        {% call(dict) dict_data(text, '{message}{button}{further}') %}
+                                                            <div class="content d-flex align-items-center justify-content-between">
+                                                                <div class="ico">
+                                                                    {% set link = dict.ico_src.replace(' ','').replace('\r','') %}
+                                                                            <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                            + link|string)}}" class="img-fluid"  alt="...">
+                                                                </div>
+                                                                <div class="main ml-3">
+                                                                    <h1 class="m-0 font-weight-light h5">{{ dict.title }}</h1>
+                                                                    <p class="mb-1 small">{{dict.text|safe }}</p>
+                                                                    <a href="{{ url_for('show_post_content',
+                                                                    index=post.id, msg_id=msg_id|string, further=3, answer=answer) }}">{{ dict.link_text }} ...</a>
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="action border-left pl-3 d-flex align-items-center " >
+                                                                <div>
+                                                                    {% set link = dict.img_src.replace(' ','').replace('\r','') %}
+                                                                            <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                            + link|string)}}" class="img-fluid"  alt="...">
+                                                                </div>
+                                                            </div>
+                                                        {% endcall %}
+                                                   {% else %}
+                                                        <div class="content d-flex align-items-center justify-content-between">
+
+                                                            <div class="ico">
+                                                                <img class="img-fluid" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBoZWlnaHQ9IjUxMnB4IiB2aWV3Qm94PSItMjAgMCA1MTIgNTEyLjAwMTAyIiB3aWR0aD0iNTEycHgiPjxwYXRoIGQ9Im00MjYuNDkyMTg4IDM1Ni40ODQzNzVoLTM4MS45MTAxNTdjMTcuNSAwIDI3LjM5NDUzMS05LjE1NjI1IDMzLjAxMTcxOS0yNC4zMzIwMzEgMjcuMTY3OTY5LTczLjI4NTE1Ni00NS4xOTkyMTktMjg2Ljg1MTU2MyAxNTcuOTQ5MjE5LTI4Ni44NTE1NjMgMjAzLjE0NDUzMSAwIDEzMC43NjU2MjUgMjEzLjU2NjQwNyAxNTcuOTM3NSAyODYuODUxNTYzIDUuNjI1IDE1LjE3NTc4MSAxNS41MjM0MzcgMjQuMzMyMDMxIDMzLjAxMTcxOSAyNC4zMzIwMzF6bTAgMCIgZmlsbD0iI2Y3ZDM2MCIvPjxwYXRoIGQ9Im00NjMuNDY4NzUgMzkzLjQ1NzAzMWMwIDIwLjQyMTg3NS0xNi41NTg1OTQgMzYuOTc2NTYzLTM2Ljk3NjU2MiAzNi45NzY1NjNoLTM4MS45MTAxNTdjLTEwLjIxMDkzNyAwLTE5LjQ1NzAzMS00LjEzNjcxOS0yNi4xNDg0MzctMTAuODI4MTI1LTYuNjkxNDA2LTYuNjkxNDA3LTEwLjgyODEyNS0xNS45Mzc1LTEwLjgyODEyNS0yNi4xNDg0MzggMC0yMC40MTc5NjkgMTYuNTU0Njg3LTM2Ljk3MjY1NiAzNi45NzY1NjItMzYuOTcyNjU2aDM4MS45MTAxNTdjMTAuMjEwOTM3IDAgMTkuNDU3MDMxIDQuMTM2NzE5IDI2LjE0ODQzNyAxMC44MjgxMjVzMTAuODI4MTI1IDE1LjkzNzUgMTAuODI4MTI1IDI2LjE0NDUzMXptMCAwIiBmaWxsPSIjZTU4ZTEzIi8+PHBhdGggZD0ibTM5My40ODA0NjkgMzMyLjE1MjM0NGgtMTk4LjVjLTIxLjM5ODQzOCAwLTM4LjUxMTcxOS0xNy43MTQ4NDQtMzcuODQ3NjU3LTM5LjEwNTQ2OSAyLjc5Njg3Ni05MC41LTExLjYzNjcxOC0yNDYuMDI3MzQ0IDc2LjkyMTg3Ni0yNDcuNzM4MjgxLTI0My4wOTM3NSAxLjI1NzgxMi04Ny42OTkyMTkgMzExLjE3NTc4MS0xODkuNDY4NzUgMzExLjE3NTc4MWgzODEuOTA2MjVjLTE3LjQ4ODI4MiAwLTI3LjM4NjcxOS05LjE1NjI1LTMzLjAxMTcxOS0yNC4zMzIwMzF6bTAgMCIgZmlsbD0iI2U1OGUxMyIvPjxwYXRoIGQ9Im00NjMuNDY4NzUgMzkzLjQ1NzAzMWMwIDIwLjQyMTg3NS0xNi41NTg1OTQgMzYuOTc2NTYzLTM2Ljk3NjU2MiAzNi45NzY1NjNoLTI3NS4wNjI1Yy0xMC4yMDcwMzIgMC0xOS40NTMxMjYtNC4xMzY3MTktMjYuMTQ0NTMyLTEwLjgyODEyNS02LjY5MTQwNi02LjY5MTQwNy0xMC44MjgxMjUtMTUuOTM3NS0xMC44MjgxMjUtMjYuMTQ4NDM4IDAtMjAuNDE3OTY5IDE2LjU1NDY4OC0zNi45NzI2NTYgMzYuOTcyNjU3LTM2Ljk3MjY1NmgyNzUuMDYyNWMxMC4yMTA5MzcgMCAxOS40NTcwMzEgNC4xMzY3MTkgMjYuMTQ4NDM3IDEwLjgyODEyNXMxMC44MjgxMjUgMTUuOTM3NSAxMC44MjgxMjUgMjYuMTQ0NTMxem0wIDAiIGZpbGw9IiNmN2QzNjAiLz48cGF0aCBkPSJtMzA5LjQ5MjE4OCA0MzAuNDMzNTk0YzAgMzQuMDAzOTA2LTIyLjk0NTMxMyA2Mi42MzY3MTgtNTQuMTc5Njg4IDcxLjI4NTE1Ni02LjI5Njg3NSAxLjc0MjE4OC0xMi45MjU3ODEgMi42NzU3ODEtMTkuNzY5NTMxIDIuNjc1NzgxLTQwLjg1MTU2MyAwLTczLjk2MDkzOC0zMy4xMTMyODEtNzMuOTYwOTM4LTczLjk2MDkzN3ptMCAwIiBmaWxsPSIjZTU4ZTEzIi8+PHBhdGggZD0ibTMwNS45MTQwNjIgNDUzLjI0NjA5NGMtNy42MTMyODEgMjMuNS0yNi42NzU3ODEgNDEuODUxNTYyLTUwLjYwMTU2MiA0OC40NzI2NTYtMTUuMDQyOTY5LTQuMTYwMTU2LTI4LjE2MDE1Ni0xMi45NTMxMjUtMzcuNzIyNjU2LTI0Ljc0NjA5NC03LjcwNzAzMi05LjUwNzgxMi0uNzUzOTA2LTIzLjcyNjU2MiAxMS40ODQzNzUtMjMuNzI2NTYyem0wIDAiIGZpbGw9IiNmN2QzNjAiLz48cGF0aCBkPSJtMjczLjEyNSA0OC4xMjg5MDZjLjA4MjAzMS0uOTMzNTk0LjExMzI4MS0xLjg3NS4xMTMyODEtMi44MjgxMjUgMC0yMC44MTY0MDYtMTYuODgyODEyLTM3LjY5NTMxMi0zNy42OTUzMTItMzcuNjk1MzEyLTIwLjgyODEyNSAwLTM3LjY5NTMxMyAxNi44Nzg5MDYtMzcuNjk1MzEzIDM3LjY5NTMxMiAwIC45NTMxMjUuMDI3MzQ0IDEuODk0NTMxLjEwOTM3NSAyLjgyODEyNSIgZmlsbD0iI2U1OGUxMyIvPjxwYXRoIGQ9Im00MjYuNDkyMTg4IDM0OC44NzVoLS4wMzEyNWMtMTQuNzIyNjU3LS4wMDc4MTItMjMuMDM1MTU3LTcuNjQ4NDM4LTI3Ljc5Mjk2OS0yNS41MzEyNS00Ljg2MzI4MS0xOC4yODkwNjItNS4wMjczNDQtNDQuODEyNS01LjE5OTIxOS03Mi44OTQ1MzEtLjIwNzAzMS0zNC4wMjM0MzgtLjQ0MTQwNi03Mi41ODU5MzgtOC44OTg0MzgtMTA3LjA3NDIxOS0xLTQuMDc4MTI1LTUuMTIxMDkzLTYuNTc0MjE5LTkuMTk5MjE4LTUuNTc0MjE5LTQuMDc0MjE5IDEtNi41NzAzMTMgNS4xMTcxODgtNS41NzQyMTkgOS4xOTUzMTMgOC4wMzUxNTYgMzIuNzUgOC4yNjE3MTkgNzAuMzYzMjgxIDguNDY0ODQ0IDEwMy41NDY4NzUuMTc5Njg3IDI5LjA3ODEyNS4zNDM3NSA1Ni41NDI5NjkgNS43MDcwMzEgNzYuNzA3MDMxIDIuMzMyMDMxIDguNzY5NTMxIDUuNjc1NzgxIDE1Ljk3NjU2MiA5Ljk5NjA5NCAyMS42MjVoLTMxNi44NTU0NjljNC4zMjAzMTMtNS42NDg0MzggNy42NjQwNjMtMTIuODU1NDY5IDkuOTk2MDk0LTIxLjYyNSA1LjM2MzI4MS0yMC4xNjQwNjIgNS41MzEyNS00Ny42Mjg5MDYgNS43MDcwMzEtNzYuNzA3MDMxLjI2OTUzMS00NC4zOTQ1MzEuNTc4MTI1LTk0LjcxMDkzOCAxOC43NDIxODgtMTMzLjIxODc1IDIwLjQ0NTMxMi00My4zNDc2NTcgNjEtNjQuNDIxODc1IDEyMy45ODQzNzQtNjQuNDIxODc1IDM0LjU4OTg0NCAwIDYyLjg5NDUzMiA2LjUgODQuMTI1IDE5LjMyNDIxOCAxOC40MTAxNTcgMTEuMTE3MTg4IDMxLjkyNTc4MiAyNi45MTc5NjkgNDEuMzIwMzEzIDQ4LjMwNDY4OCAxLjY4NzUgMy44NDM3NSA2LjE3NTc4MSA1LjU5Mzc1IDEwLjAxOTUzMSAzLjkwMjM0NCAzLjg0Mzc1LTEuNjg3NSA1LjU5Mzc1LTYuMTcxODc1IDMuOTA2MjUtMTAuMDE5NTMyLTEwLjU1MDc4MS0yNC4wMTU2MjQtMjYuNDkyMTg3LTQyLjU4OTg0My00Ny4zODI4MTItNTUuMjA3MDMxLTEzLjMzNTkzOC04LjA1NDY4Ny0yOC45OTYwOTQtMTMuODYzMjgxLTQ2LjgzMjAzMi0xNy40MDIzNDMtMS43OTY4NzQtMjMuMzQ3NjU3LTIxLjM1NTQ2OC00MS44MDQ2ODgtNDUuMTU2MjUtNDEuODA0Njg4LTIzLjgwMDc4MSAwLTQzLjM2MzI4MSAxOC40NjA5MzgtNDUuMTQ4NDM3IDQxLjgxMjUtMTcuMDE1NjI1IDMuMzcxMDk0LTMyLjA1ODU5NCA4LjgwNDY4OC00NC45Njg3NSAxNi4yODUxNTYtMjAuNzczNDM3IDEyLjAzOTA2My0zNi43OTY4NzUgMjkuNzg1MTU2LTQ3LjYyNSA1Mi43MzgyODItMTkuNTkzNzUgNDEuNTQyOTY4LTE5LjkxNDA2MyA5My42NDQ1MzEtMjAuMTkxNDA2IDEzOS42MTMyODEtLjE3MTg3NSAyOC4wODIwMzEtLjMzMjAzMSA1NC42MDU0NjktNS4xOTkyMTkgNzIuODk0NTMxLTQuNzU3ODEyIDE3Ljg4MjgxMi0xMy4wNzAzMTIgMjUuNTIzNDM4LTI3Ljc5Mjk2OSAyNS41MzEyNWgtLjAzMTI1Yy0yNC41ODIwMzEgMC00NC41ODIwMzEgMjAtNDQuNTgyMDMxIDQ0LjU4NTkzOCAwIDI0LjU4MjAzMSAyMCA0NC41ODIwMzEgNDQuNTgyMDMxIDQ0LjU4MjAzMWg0OC4xMjg5MDdjNC4xOTkyMTggMCA3LjYwNTQ2OC0zLjQwNjI1IDcuNjA1NDY4LTcuNjA1NDY5cy0zLjQwNjI1LTcuNjAxNTYyLTcuNjA1NDY4LTcuNjAxNTYyaC00OC4xMjg5MDdjLTE2LjE5NTMxMiAwLTI5LjM3NS0xMy4xNzk2ODgtMjkuMzc1LTI5LjM3NSAwLTE2LjE5NTMxMyAxMy4xNzU3ODEtMjkuMzcxMDk0IDI5LjM3MTA5NC0yOS4zNzVoLjAwMzkwNi4wMjczNDQgMzgxLjg1MTU2My4wMjczNDMuMDA3ODEzYzE2LjE5MTQwNi4wMDM5MDYgMjkuMzY3MTg3IDEzLjE3OTY4NyAyOS4zNjcxODcgMjkuMzc1IDAgMTYuMTk1MzEyLTEzLjE3OTY4NyAyOS4zNzUtMjkuMzc1IDI5LjM3NWgtMzAzLjM1OTM3NWMtNC4xOTkyMTggMC03LjYwMTU2MiAzLjQwMjM0My03LjYwMTU2MiA3LjYwMTU2MnMzLjQwMjM0NCA3LjYwNTQ2OSA3LjYwMTU2MiA3LjYwNTQ2OWgzMS4yMTQ4NDRjMy44NDc2NTYgNDEuNDIxODc1IDM4Ljc4NTE1NiA3My45NTcwMzEgODEuMTk1MzEyIDczLjk1NzAzMSA0Mi40MDYyNSAwIDc3LjM0Mzc1LTMyLjUzNTE1NiA4MS4xOTE0MDctNzMuOTU3MDMxaDEwOS43NjE3MTljMjQuNTgyMDMxIDAgNDQuNTgyMDMxLTIwIDQ0LjU4MjAzMS00NC41ODIwMzEgMC0yNC41ODU5MzgtMjAtNDQuNTg1OTM4LTQ0LjU4MjAzMS00NC41ODU5Mzh6bS0xOTAuOTUzMTI2LTMzMy42Njc5NjljMTQuNTYyNSAwIDI2Ljc0MjE4OCAxMC40MDIzNDQgMjkuNTAzOTA3IDI0LjE2NDA2My05LjMzNTkzOC0xLjEwMTU2My0xOS4xNjQwNjMtMS42NzU3ODItMjkuNTAzOTA3LTEuNjc1NzgyLTEwLjMzOTg0MyAwLTIwLjE2Nzk2OC41NzAzMTMtMjkuNSAxLjY3MTg3NiAyLjc2MTcxOS0xMy43NjE3MTkgMTQuOTM3NS0yNC4xNjAxNTcgMjkuNS0yNC4xNjAxNTd6bTAgNDgxLjU4NTkzOGMtMzQuMDE1NjI0IDAtNjIuMTIxMDkzLTI1LjczNDM3NS02NS45MDYyNS01OC43NWgxMzEuODA4NTk0Yy0zLjc4NTE1NiAzMy4wMTU2MjUtMzEuODkwNjI1IDU4Ljc1LTY1LjkwMjM0NCA1OC43NXptMCAwIi8+PHBhdGggZD0ibTM1Ny42MzI4MTIgNDcuNzIyNjU2Yy4xMzY3MTkuMDc0MjE5IDEzLjY3NTc4MiA3LjgwMDc4MiAyNi45OTYwOTQgMjUuNzUgMTcuODQzNzUgMjQuMDM5MDYzIDI2Ljg4NjcxOSA1NC4wNzAzMTMgMjYuODg2NzE5IDg5LjI2MTcxOSAwIDQuMTk5MjE5IDMuNDA2MjUgNy42MDU0NjkgNy42MDU0NjkgNy42MDU0NjkgNC4xOTkyMTggMCA3LjYwNTQ2OC0zLjQwNjI1IDcuNjA1NDY4LTcuNjA1NDY5IDAtNDguNDQ1MzEzLTE2LjU0Mjk2OC04MC42MDE1NjMtMzAuNDIxODc0LTk5LjA0Mjk2OS0xNS4yNS0yMC4yNjU2MjUtMzAuNjQ0NTMyLTI4LjkxMDE1Ni0zMS4yOTI5NjktMjkuMjY5NTMxLTMuNjY3OTY5LTIuMDIzNDM3LTguMjY5NTMxLS42OTUzMTMtMTAuMzA4NTk0IDIuOTYwOTM3LTIuMDM5MDYzIDMuNjYwMTU3LS43MjI2NTYgOC4yODUxNTcgMi45Mjk2ODcgMTAuMzM5ODQ0em0wIDAiLz48cGF0aCBkPSJtNDE1LjAwMzkwNiA1MC41MTE3MTljMS4yMjI2NTYuODAwNzgxIDI5Ljk2ODc1IDIwLjA5Mzc1IDI5Ljk2ODc1IDY4LjYzMjgxMiAwIDQuMTk5MjE5IDMuNDA2MjUgNy42MDE1NjMgNy42MDU0NjkgNy42MDE1NjNzNy42MDE1NjMtMy40MDIzNDQgNy42MDE1NjMtNy42MDE1NjNjMC01Ny4yNS0zNS40NjQ4NDQtODAuNDgwNDY5LTM2Ljk3NjU2My04MS40NDE0MDYtMy41MjczNDQtMi4yNDYwOTQtOC4xOTE0MDYtMS4yMDcwMzEtMTAuNDU3MDMxIDIuMzEyNS0yLjI2NTYyNSAzLjUxNTYyNS0xLjI0NjA5NCA4LjIxMDkzNyAyLjI1NzgxMiAxMC40OTYwOTR6bTAgMCIvPjxwYXRoIGQ9Im01MS45NDkyMTkgMTcwLjMzOTg0NGM0LjE5OTIxOSAwIDcuNjA1NDY5LTMuNDA2MjUgNy42MDU0NjktNy42MDU0NjkgMC0zNS4xOTE0MDYgOS4wNDY4NzQtNjUuMjIyNjU2IDI2Ljg4NjcxOC04OS4yNjE3MTkgMTMuMjM4MjgyLTE3LjgzNTkzNyAyNi42OTUzMTMtMjUuNTc4MTI1IDI2Ljk5MjE4OC0yNS43NSAzLjY2MDE1Ni0yLjAzNTE1NiA0Ljk4ODI4MS02LjY1MjM0NCAyLjk2MDkzNy0xMC4zMjAzMTItMi4wMzUxNTYtMy42NzU3ODItNi42NjAxNTYtNS4wMDc4MTMtMTAuMzM1OTM3LTIuOTgwNDY5LS42NDg0MzguMzU5Mzc1LTE2LjA0Mjk2OSA5LjAwMzkwNi0zMS4yOTI5NjkgMjkuMjY5NTMxLTEzLjg3NSAxOC40NDE0MDYtMzAuNDE3OTY5IDUwLjU5NzY1Ni0zMC40MTc5NjkgOTkuMDQyOTY5IDAgNC4xOTkyMTkgMy40MDIzNDQgNy42MDU0NjkgNy42MDE1NjMgNy42MDU0Njl6bTAgMCIvPjxwYXRoIGQ9Im0xOC40OTYwOTQgMTI2Ljc0NjA5NGM0LjE5OTIxOCAwIDcuNjAxNTYyLTMuNDAyMzQ0IDcuNjAxNTYyLTcuNjAxNTYzIDAtNDguNSAyOC43MDMxMjUtNjcuODA0Njg3IDI5Ljk2ODc1LTY4LjYyODkwNiAzLjUxNTYyNS0yLjI2MTcxOSA0LjU0Njg3NS02Ljk0NTMxMyAyLjMwMDc4Mi0xMC40NzY1NjMtMi4yNTM5MDctMy41NDI5NjgtNi45NTMxMjYtNC41ODU5MzctMTAuNS0yLjMzMjAzMS0xLjUwNzgxMy45NjA5MzgtMzYuOTc2NTYzIDI0LjE4NzUtMzYuOTc2NTYzIDgxLjQzNzUgMCA0LjE5OTIxOSAzLjQwNjI1IDcuNjAxNTYzIDcuNjA1NDY5IDcuNjAxNTYzem0wIDAiLz48L3N2Zz4K" />
+                                                            </div>
+                                                            <div class="main ml-3">
+                                                                <h1 class="m-0 font-weight-light h5">Уведомление!</h1>
+                                                                <p class="mb-1 small">{{button_text[0]|safe }}</p>
+                                                                <a href="{{ url_for('show_post_content',
+                                                                index=post.id, msg_id=msg_id|string, further=3, answer=answer) }}">{{button_text[1]|safe }} ...</a>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="action border-left pl-3 d-flex align-items-center " >
+                                                            <div>
+                                                                {% set link = button_text[2].replace(' ','').replace('\r','') %}
+                                                                        <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                        + link|string)}}" class="img-fluid"  alt="...">
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% elif '{input}' in text %}
+                                    {% set type = 'password' if '{password}' in text else 'text' %}
+                                    {% set text = text.replace('{password}', '') %}
+                                    <form  id="form_answer" method="post" role="form" action="{{ url_for('show_post_content',
+                                                                index=post.id, msg_id=msg_id|string,
+                                                                answer=answer, num_row=i) }}" >
+                                        <div id="form-box">
+                                            {{ form.hidden_tag() }}
+                                            {{ wtf.form_errors(form_answer, hiddens='only') }}
+                                                {% if '=' in text %}
+                                                    {% call(dict) dict_data(text, '{message}{button}{input}') %}
+                                                        <input  name="r_answer" type="hidden" value="{{ dict.r_answer }}">
+                                                        <input  name="num_link" type="hidden" value="{{ dict.choice_answer }}">
+                                                         <i id="prev-btn" class="fas fa-user"></i>
+                                                         <button id="next-btn" type='submit' form="form_answer"  class="" >
+                                                             <i id="next-btn" class="fas fa-arrow-right"></i>
+                                                         </button>
+                                                          <div id="input-group">
+                                                            {{ form_answer.data_str(id="input-field", class='', type=type) }}
+                                                            <label id="input-label">{{ dict.label }}</label>
+                                                            <div id="input-progress"></div>
+                                                          </div>
+                                                          <div id="progress-bar"></div>
+                                                    {% endcall %}
+                                                {% else %}
+                                                    {% set output = text.replace('{message}{button}{input}', '').split(';') %}
+                                                    <input  name="r_answer" type="hidden" value="{{ output[1] }}">
+                                                    <input  name="num_link" type="hidden" value="{{ output[2] }}">
+                                                     <i id="prev-btn" class="fas fa-user"></i>
+                                                     <button id="next-btn" type='submit' form="form_answer"  class="" >
+                                                         <i id="next-btn" class="fas fa-arrow-right"></i>
+                                                     </button>
+                                                      <div id="input-group">
+                                                        {{ form_answer.data_str(id="input-field", class='', type=type) }}
+                                                        <label id="input-label">{{ output[0] }}</label>
+                                                        <div id="input-progress"></div>
+                                                      </div>
+                                                      <div id="progress-bar"></div>
+                                                {% endif %}
+                                        </div>
+                                    </form>
+                                {% elif '{cards}'  in text %}
+                                    <div id="{{ msg_id }}" class="container" >
+                                        {% for card_txt in text.split('|') %}
+                                            {% call(dict) dict_data(card_txt, '{message}{button}{cards}') %}
+                                                {% set answer = dict.choice_start if not answer else answer|string
+                                                            + ',' + dict.choice_start %}
+
+                                                    <div id="{{ msg_id|string }}_{{loop.index|string }}" class="card cards-gif" >
+                                                        <a type="button"
+                                                            href="{{ url_for('show_post_content', index=post.id,
+                                                            msg_id=msg_id|string, answer=answer) }}">
+                                                            <img src="{{ url_for('static', filename='assets/img-stories/'+dict.src_img|string)}}" class="card-img-top display-img" alt="image cap">
+                                                            <img src="{{ url_for('static', filename='assets/img-stories/'+dict.src_gif|string)}}" class="card-img-top display-gif" alt="image cap">
+                                                          <div class="card-body">
+                                                            <h5 class="card-title">{{dict.title}}</h5>
+                                                            <p class="card-text">{{dict.text}}</p>
+
+                                                          </div>
+                                                        </a>
+                                                    </div>
+
+                                                <br>
+                                            {% endcall %}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                {% set buttons = text.replace('{message}', '').replace('{button}', '').split('|') %}
+
+                                        <div id = "{{ msg_id }}" class="container">
+                                            <div class="row">
+
+                                                {% for button in buttons %}
+                                                    {% if '=' in text %}
+                                                        {% call(dict) dict_data(button) %}
+                                                          {% set answer = dict.choice_start if not answer else answer|string
+                                                            + ',' + dict.choice_start %}
+                                                            <!-- СardStart --->
+                                                            <div class="col-lg-{{(12|int / buttons|length)|int}}">
+                                                            <div class="shadow our-team-main">
+                                                            <div class="team-front">
+                                                            {% set link = dict.src_img %}
+                                                                <div class="{{'img-team-front' if not dict.class else dict.class}}">
+                                                                    <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                                        + link|string)}}" class="img-fluid {{ dict.class_img if dict.class_img }}"  alt="...">
+                                                                 </div>
+                                                            <h3>{{dict.title}}</h3>
+                                                            <p>{{dict.dictum}}</p>
+
+                                                            </div>
+                                                                <a href="{{ url_for('show_post_content',
+                                                                index=post.id, msg_id=msg_id|string, answer=answer) }}" class="stretched-link">
+
+                                                                    <div class="team-back">
+                                                                    <p >
+                                                                        {{dict.text|safe}}
+                                                                    </p>
+                                                                    </div>
+                                                                </a>
+                                                                </div>
+                                                            </div>
+                                                            <!--EndCard--->
+                                                        {% endcall %}
+                                                    {% else %}
+                                                        {% set data_card = button.split(';') %}
+                                                        {% set answer = data_card[4] if not answer else answer|string
+                                                        + ',' + data_card[4] %}
+                                                        <!-- СardStart --->
+                                                        <div class="col-lg-{{(12|int / buttons|length)|int}}">
+                                                        <div class="shadow our-team-main">
+
+                                                        <div class="team-front">
+                                                            <div class="img-team-front">
+                                                        {% set link = data_card[0].replace('\r', '') %}
+                                                        <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                                    + link|string)}}" class="img-fluid"  alt="...">
+                                                            </div>
+                                                        <h3>{{data_card[1]}}</h3>
+                                                        <p>{{data_card[2]}}</p>
+
+                                                        </div>
+                                                            <a href="{{ url_for('show_post_content',
+                                                            index=post.id, msg_id=msg_id|string, answer=answer) }}" class="stretched-link">
+
+                                                                <div class="team-back">
+                                                                <p >
+                                                                    {{data_card[3]}}
+                                                                </p>
+                                                                </div>
+                                                            </a>
+                                                            </div>
+                                                        </div>
+                                                        <!--EndCard--->
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                {% endif %}
+                            {% elif '{answer}' in text %}
+                                {% set answer_msg = text.replace('{message}', '').replace('{answer}', '').split('|')[answer|int] %}
+                                {% if '{media}' in answer_msg: %}
+                                    {% set text_media = answer_msg.replace('{media}', '').replace('{end}', '').split(';') %}
+                                    <div id="{{ msg_id }}" class="shadow card card-answer" >
+                                        {% set link = text_media[0].replace(' ','') %}
+                                      <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                    + link|string)}}" class="img-fluid"  alt="...">
+                                      <div class="card-body">
+                                        {% if '{end}' in answer_msg %}
+                                        <h5 class="card-title">Конец Путешествия</h5>
+                                          {% set further = 0 %}
+                                         {% endif %}
+                                        <p class="card-text">
+                                          {{text_media[1]|safe }}
+                                        </p>
+                                      </div>
+                                         <div class="col-sm button-msg" >
+                                             <a href="{{ url_for('show_post_content',
+                                             index=post.id,
+                                             msg_id=msg_id|string,
+                                             further=further, answer=answer) }}"
+                                                class="btn btn-outlined btn-theme "
+                                                data-wow-delay="0.7s">Продолжить </a>
+                                         </div>
+                                    </div>
+                                    <br>
+
+                                {% else %}
+                                    <div id="{{ msg_id }}" class="shadow card card-answer" >
+                                      <div class="card-body">
+                                        {% if '{end}' in answer_msg %}
+                                        <h5 class="card-title">Конец Путешествия</h5>
+                                         {% endif %}
+                                        <p class="card-text">
+                                          {{answer_msg.replace('{end}', '')|safe }}
+                                        </p>
+                                      </div>
+                                        <div class="col-sm button-msg" >
+                                             <a href="{{ url_for('show_post_content',
+                                             index=post.id,
+                                             msg_id=msg_id|string,
+                                             further=further, answer=answer) }}"
+                                                class="btn btn-outlined btn-theme "
+                                                data-wow-delay="0.7s">Продолжить </a>
+                                         </div>
+                                    </div>
+                                    <br>
+                                {% endif %}
+                                {% if '{end}' in answer_msg %}
+                                    {% set further = 0 %}
+                                {% else %}
+                                    {% set further = 1 %}
+                                {% endif %}
+
+                            {% else %}
+                                {% set show_msg = 'toast fade show' %}
+                            {% endif %}
+                        {% else %}
+                            {% set show_msg = 'toast fade hide' %}
+                        {% endif %}
+
+                <div id="{{ msg_id }}" class="{{ show_msg }}"
+                     role="alert" aria-live="assertive" aria-atomic="true">
+                    {% if '=' in text: %}
+                        {% call(dict) dict_data(text, '{message}') %}
+                            {% if dict.img_src %}
+                                {% set link = dict.img_src.replace(' ', '') %}
+                            {% else %}
+                                {% set link = '' %}
+                            {% endif %}
+                            <div class="toast-header">
+                              <img src="{{ link if 'http' in link else  url_for('static', filename='assets/img-stories/' + link|string)}}"
+                                   class="bd-placeholder-img rounded mr-2" width="20" height="20"
+                                   role="img" aria-label=" : " preserveAspectRatio="xMidYMid slice"
+                                   focusable="false" alt="...">
+                              <strong class="mr-auto">{{dict.title}}</strong>   <small>{{ dict.link_label }}</small>
+                               <a type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+                                    aria-label="Close" href="{{ url_for('show_post_content',
+                                    index=post.id, msg_id=msg_id |string, answer=answer) }}">
+                                <span aria-hidden="true"><i class="fas fa-angle-double-right" style="color: blue;"></i></span>
+                               </a>
+                            </div>
+                            <div class="toast-body">
+                                {{ dict.text|safe }}
+                            </div>
+                        {% endcall %}
+                    {% else %}
+                        {% set split_text = text.replace('{message}','').split(';') %}
+                        <div class="toast-header">
+                            <img class="bd-placeholder-img rounded mr-2" width="20" height="20"
+                                 src="{{ url_for('static',
+                                 filename='assets/img-stories/' + split_text[0].replace(' ','')) }}"
+                                 role="img" aria-label=" :
+                                " preserveAspectRatio="xMidYMid slice" focusable="false">
+                                <title></title>
+                                <rect width="100%" height="100%" fill="#007aff"></rect>
+                                <text x="50%" y="50%" fill="#dee2e6" dy=".3em"> </text>
+                            </img>
+                            <strong class="mr-auto">{{split_text[1]}}</strong>   <small>продолжим историю</small>
+
+                            <a type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+                                    aria-label="Close" href="{{ url_for('show_post_content',
+                                    index=post.id, msg_id=msg_id |string, answer=answer) }}">
+                                <span aria-hidden="true"><i class="fas fa-angle-double-right" style="color: blue;"></i></span>
+                            </a>
+                        </div>
+                        <div class="toast-body">
+                            {{ split_text[2]|safe }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% elif '{img}' in text: %}
+                                    {% set link = text.replace('{img}', '').replace(' ', '').replace('\r', '') %}
+                                    <div id="{{ msg_id }}" class="text-center img-fit">
+                                    <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                                    + link|string)}}" class="img-fluid"  alt="...">
+                                    </div>
+                                    <br>
+                {% elif '{iframe}' in text: %}
+                    {% if '{video}' in text: %}
+                    {% set link_iframe = text.replace('{iframe}{video}', '').split(';') %}
+                    <div id="{{ msg_id }}" class="embed-responsive embed-responsive-16by9 video-player">
+                        {% set dict = ({}) %}
+                        {% for k in link_iframe %}
+                        {% set x = dict.__setitem__(k.split('=')[0].replace(' ', ''), k.split('=')[1]|string)  %}
+                        {% endfor %}
+                            <video class="embed-responsive-item " style="cursor: pointer;"
+                                  {{ dict.muted }}  {{ dict.controls }} {{dict.autoplay}}
+                                   {{ dict.loop }} preload="auto">
+                                <source src="{{ url_for('static', filename='assets/video/'
+                                + dict.src|string ) }}">
+                            </video>
+                    </div>
+                    <br>
+                    {% else %}
+                    <div id="{{ msg_id }}" class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item youtube-video"
+                            {% if '=' in text %}
+                                {% call(dict) dict_data(text, '{iframe}') %}
+                                    src="{{ dict.src }}?&enablejsapi=1&start={{ dict.start }}&end={{ dict.end }}&autoplay={{ dict.autoplay }}&loop={{ dict.loop }}&controls={{ dict.controls }}&showinfo=0&playlist={{dict.src.split('/')[-1] }}"
+                                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen >
+                                {% endcall %}
+                            {% else %}
+                                {% set link_iframe = text.replace('{iframe}', '').split(';') %}
+                                src="{{ link_iframe[0] }}?&enablejsapi=1&start={{ 0 if not link_iframe[1] else link_iframe[1] }}&end={{ 400 if not link_iframe[2] else link_iframe[2]}}&autoplay={{ 0 if not link_iframe[3] else link_iframe[3]}}&loop={{ 1 if not link_iframe[4] else link_iframe[4]}}&controls=0&showinfo=0&playlist={{link_iframe[0].split('/')[-1] }}"
+                                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen >
+
+                            {%- endif %}
+                        </iframe>
+                    </div>
+                    <br>
+                    {% endif %}
+                {% elif '{modal_start}' in text: %}
+                            {%  if btn_id_modal.append('btn_' + msg_id|string) %}{% endif %}
+                            {% set modal_dict = {} %}
+                            {% for k in text.replace('{modal_start}', '').split(';') %}
+                            {% set x = modal_dict.__setitem__(k.split('=')[0].replace(' ', ''), k.split('=')[1])  %}
+                            {% endfor %}
+                            <!-- Button trigger modal -->
+                            <diV class="container m-3">
+                                <button id="open_{{ btn_id_modal[-1]}}" type="button" class="btn btn-outline-secondary play-video" data-toggle="modal" data-target="#{{btn_id_modal[-1]}}">
+                                        {{modal_dict.buttonNameFront}} </button>
+                            </diV>
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{btn_id_modal[-1]}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+
+                                       <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">{{modal_dict.titleModal}}</h5>
+                                            <button id="close_x_{{ btn_id_modal[-1]}}" type="button" class="close pause-video" data-dismiss="modal" aria-label="Close" data-target="#{{btn_id_modal[-1]}}">
+                                                <i class="far fa-times-circle" style="color: red;"></i>
+                                            </button>
+                                        </div>
+
+                                        <div class="modal-body">
+
+                {% elif '{modal_end}' in text: %}
+                                        </div>
+                                            <div class="modal-footer">
+                                                <button id="play_but_{{ btn_id_modal[-1]}}" type="button"
+                                                  class="btn btn-secondary play-video"
+                                                  data-target="#{{btn_id_modal[-1]}}">
+                                                    <i class="fas fa-play" style="color: white;"></i>
+                                                </button>
+                                                <button id="close_but_{{ btn_id_modal[-1]}}" type="button"
+                                                  class="btn btn-secondary pause-video"
+                                                  data-target="#{{btn_id_modal[-1]}}">
+                                                    <i class="fas fa-pause" style="color: white;"></i>
+                                                </button>
+
+                                                {% if msg_index - 1 == msg_id: %}
+                                                <a id="close_submit_{{ btn_id_modal[-1]}}"
+                                                        class="close pause-video"
+                                                        data-target="#{{btn_id_modal[-1]}}"
+                                                        type="button"
+                                                        href="{{url_for('show_post_content',
+                                                                 index=post.id,
+                                                                 msg_id=msg_id|string,
+                                                                 answer=answer)}}">
+                                                    <i class="far fa-arrow-alt-circle-right"
+                                                       style="color: blue;
+                                                       width: 4.6rem;
+                                                       font-size: 2.9rem;"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                {% elif '{media}' in text: %}
+                    <div id="{{ msg_id }}" class="shadow-lg card card-answer" >
+                      {% if '=' in text %}
+                        {% call(dict) dict_data(text, '{media}') %}
+                            {% set link = dict.img_src.replace(' ','') %}
+                              <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                            + link|string)}}" class="img-fluid"  alt="...">
+                              <div class="card-body">
+                                <h5 class="card-title">{{dict.title}}</h5>
+                                <p class="card-text" >{{dict.text|safe}}</p>
+                              </div>
+                        {% endcall %}
+                      {% else %}
+                        {% set text_media = text.replace('{media}', '').split(';') %}
+                        {% set link = text_media[0].replace(' ','') %}
+                          <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                                        + link|string)}}" class="img-fluid"  alt="...">
+                          <div class="card-body">
+                            {% if '{title}' in text_media[1] %}
+                            <h5 class="card-title">{{text_media[1].replace('{title}', '')}}</h5>
+                                  <p class="card-text">
+                                        {{text_media[2]|safe }}
+                                  </p>
+                             {% else %}
+                                <p class="card-text">
+                                  {{text_media[1]|safe }}
+                                </p>
+                              {% endif %}
+                          </div>
+                      {% endif %}
+                    </div>
+                    <br>
+
+                {% else %}
+
+                 <div  id="{{ msg_id }} " class="{{ 'message_pack' if '{message_pack}' in text else ' ' }}">
+                     {% if '{message_pack}' in text %}
+                        {% if anchor_msg_n|int == (i|int)  %}
+                            <div class="m-3 pt-3"><span id='newstrings' class="badge badge-danger">New</span></div>
+                        {% endif %}
+                        {% if '=' in text %}
+                            {% call(dict) dict_data(text, '{message_pack}') %}
+                                 <a type="button" class="inactive-link" >
+                                    <img  src="{{url_for('static', filename='/assets/img-stories/'+dict.img_src)}}">
+                                 </a>
+                                 <p  class="toast fade show hide letter shadow-sm" >
+                                     <small>
+                                         <b>{{ dict.title }}</b><br>
+                                         <span>{{ dict.text_body|safe }}</span>
+                                     </small>
+                                 </p>
+
+                            {% endcall %}
+                        {% else %}
+                             <a type="button" class="inactive-link" >
+                             <img  src="{{url_for('static', filename='/assets/img-stories/message.svg')}}">
+                              </a>
+                             <p  class="toast fade show hide letter shadow-sm" >{{ text.replace('{message_pack}', '')|safe }}</p>
+                        {% endif %}
+                     {% else %}
+                        <p>{{ text|safe }}</p>
+                     {% endif %}
+                 </div>
+                {% endif %}
+                {% endfor %}
+        </div>
+    </div>

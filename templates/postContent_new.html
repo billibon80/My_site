@@ -1,0 +1,253 @@
+ {% import 'bootstrap/wtf.html' as wtf %}
+{% if code_word %}
+        <div class="code_word shadow" >
+            <a type="button" href="{{ url_for('show_post_content',
+                                             index=post.id,
+                                             further=0,
+                                             ) }}" title="close word">
+                <i class="fas fa-exclamation-circle" style="color: #ff000070;"></i>
+            </a>
+        </div>
+ {% endif %}
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <h2 class="section-heading" id="postNum" data-postNum="{{ post['id'] }}">{{ post['title'] }}</h2>
+            <div class="row">
+                 <div class="col-lg-6 col-md-12 mx-auto">
+                    <img class="img-fluid" src="{{ url_for('static', filename='assets/img-stories/'
+                    + post['img']|string)}}" alt="..." />
+                 </div>
+                 <div class="col-lg-6 col-md-12 mx-auto">
+                    <span class="caption text-muted">{{ post['subtitle'] }}</span>
+                 </div>
+            </div>
+
+        </div>
+    </div>
+            {% set media_id = namespace(index=0) %}
+            {% set video_id = namespace(index=0) %}
+            {% set modal_id = namespace(index=0) %}
+            {% set message_pack_id = namespace(index=0) %}
+            {% set iframe_id = namespace(index=0) %}
+        {% for line in post_body %}
+
+            {% if '{input}' in line %}
+                <!-- block INPUT -->
+               <form  id="form_answer" method="post" role="form" action="{{ url_for('show_post_content',
+                                                                index=post.id, msg_id=msg_id,
+                                                                answer=answer, num_row=i) }}" >
+                    <div id="form-box">
+                        {{ form.hidden_tag() }}
+                        {{ wtf.form_errors(form_answer, hiddens='only') }}
+
+
+                        <input  name="r_answer" type="hidden" value="{{data_message[0].r_answer}}">
+                        <input  name="num_link" type="hidden" value="{{data_message[0].choice_answer}}">
+                         <i id="prev-btn" class="fas fa-user"></i>
+                         <button id="next-btn" type='submit' form="form_answer"  class="input" >
+                             <i id="next-btn-i" class="fas fa-arrow-right"></i>
+                         </button>
+                          <div id="input-group">
+                            {{ form_answer.data_str(id="input-field", class='', type=type) }}
+                            <label id="input-label">{{data_message[0].label}}</label>
+                            <div id="input-progress"></div>
+                          </div>
+                          <div id="progress-bar"></div>
+
+
+                    </div>
+                </form>
+            {% elif '{card}' in line %}
+                <div class="row">
+                    {% for dict in data_message %}
+                        <!-- block СardStart --->
+                        <div class="col-lg-{{(12|int / data_message|length)|int}}">
+                        <div class="shadow our-team-main">
+                        <div class="team-front">
+                            {% set link = dict.src_img %}
+                            <div class="{{'img-team-front' if not dict.class else dict.class}}">
+                                <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                    + link|string)}}" class="img-fluid {{ dict.class_img if dict.class_img }}"  alt="...">
+                             </div>
+                        <h3>{{dict.title}}</h3>
+                        <p>{{dict.dictum}}</p>
+
+                        </div>
+                            <a href="{{ url_for('show_post_content',
+                            index=post.id, msg_id=msg_id, answer=answer) }}" class="stretched-link" data-choice="{{dict.choice_start}}">
+
+                                <div class="team-back">
+                                <p >
+                                    {{dict.text|safe}}
+                                </p>
+                                </div>
+                            </a>
+                            </div>
+                        </div>
+                        <!--EndCard--->
+                    {% endfor %}
+                </div>
+
+            {% elif '{media}' in line %}
+                {% set dict = data_media[media_id.index] %}
+                {% set media_id.index = media_id.index + 1 %}
+                <!-- block MEDIA -->
+                <div class="shadow card card-answer" >
+                     {% set link = dict.img_src %}
+                      <img src="{{link if ('http' in  link)  else url_for('static', filename='assets/img-stories/'
+                                                    + link|string)}}" class="img-fluid"  alt="...">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ dict.title }}</h5>
+                    <p class="card-text">
+                        {{ dict.text|safe }}
+                    </p>
+                  </div>
+
+                </div>
+                <br>
+
+            {% elif '{video}' in line %}
+                <!-- block VIDEO -->
+                {% include 'video.html' %}
+
+            {% elif '{modal_start}' in line %}
+                {% set dict = data_modal[modal_id.index] %}
+                {% set modal_id.index = modal_id.index + 1 %}
+                 <!-- Block Modal -->
+                <!-- Button trigger modal -->
+                <div class="modalblock">
+                <diV class="container m-3 btn-outside">
+                    <button
+                            type="button"
+                            class="btn btn-outline-secondary play-video"
+                            data-toggle="modal"
+                            data-target="">
+                            {{dict.buttonNameFront}} </button>
+                </diV>
+
+                <div class="modal"
+                     tabindex=""
+                     aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                           <div class="modal-header">
+                                <h5 class="modal-title" >{{dict.titleModal}}</h5>
+                                <button
+                                        type="button"
+                                        class="close pause-video"
+                                        data-btnName="close-modal"
+                                        aria-label="Close"
+                                        data-target="">
+                                    <i class="far fa-times-circle" style="color: red;"></i>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+            {% elif '{modal_end}' in line %}
+                            </div>
+                                <div class="modal-footer">
+                                    <button
+                                            type="button"
+                                            class="btn btn-secondary play-video"
+                                            data-btnName="btn-play-video">
+                                        <i class="fas fa-play" style="color: white;"></i>
+                                    </button>
+                                    <button id="close_but_{{loop.index}}" type="button"
+                                            class="btn btn-secondary pause-video"
+                                            data-btnName="btn-pause-video">
+                                        <i class="fas fa-pause" style="color: white;"></i>
+                                    </button>
+
+                                </div>
+                        </div>
+                    </div>
+                </div>
+               </div>
+            {% elif '{message_pack}' in line %}
+                <!-- block MESSAGE_PACK -->
+                {% set dict = data_message_pack[message_pack_id.index] %}
+                {% set message_pack_id.index = message_pack_id.index + 1 %}
+                <div  class="message_pack">
+                     <a type="button" class="inactive-link" >
+                        <img  src="{{url_for('static', filename='/assets/img-stories/'+dict.img_src)}}">
+                     </a>
+                     <p  class="toast letter shadow-sm" >
+                         <small>
+                             <b>{{ dict.title }}</b><br>
+                             <span>{{ dict.text_body|safe }}</span>
+                         </small>
+                     </p>
+                </div>
+            {% elif '{button_arrow}' in line %}
+                     <a
+                            class="close pause-video"
+                            data-btnName="arrow-btn"
+                            type="button"
+                            href="{{url_for('show_post_content',
+                                     index=post.id,
+                                     msg_id=msg_id|string,
+                                     answer=answer)}}">
+                        <i class="far fa-arrow-alt-circle-right"
+                           style="color: blue;
+                           width: 4.6rem;
+                           font-size: 2.9rem;"></i>
+                    </a>
+
+            {% elif '{iframe}' in line %}
+                <!-- block IFRAME -->
+                {% set dict = data_iframe[iframe_id.index] %}
+                {% set iframe_id.index = iframe_id.index + 1 %}
+             <div  class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item youtube-video"
+                        src="{{ dict.src }}?&enablejsapi=1&start={{ dict.start }}&end={{ dict.end }}&autoplay={{ dict.autoplay }}&loop={{ dict.loop }}&controls={{ dict.controls }}&showinfo=0 }}"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen >
+
+                </iframe>
+            </div>
+            <br>
+            {% elif '{end}' in line %}
+                <!-- block END -->
+                <div class="shadow card card-answer" >
+                    <div class="col-sm button-msg" >
+                         <a href="{{ url_for('show_post_content',
+                         index=post.id,
+                         msg_id=0|string,
+                         further=0, answer='') }}"
+                            class="btn btn-outline-secondary fontMark"
+                            data-wow-delay="0.7s">Конец Истории! </a>
+                     </div>
+                </div>
+            {% elif '{next}' in line %}
+                 {% set dict = data_next[0] %}
+                <div class="container text-center">
+
+                    <a type="button" class="btn btn-outline-{{ dict.color }}
+                    btn-{{ dict.size }} btn-floating"  data-choice="{{ dict.choice_start }}"
+                    href="{{ url_for('show_post_content', index=post.id,
+                    msg_id=msg_id|string, answer=answer) }}">
+                            {{ dict.text }}
+                            <i class="fas {{dict.icon}}"></i>
+                    </a>
+
+                </div>
+            {% elif '{further}' in line %}
+
+            {% elif line == 'newstring' %}
+                <!-- block NEW -->
+                <div class="m-3 pt-3">
+                    <span id='{{line}}' class="border border-danger shadow-sm badge badge-danger">
+                        New
+                    </span>
+                </div>
+
+            {% else %}
+                <p>{{ line }}</p>
+            {% endif %}
+
+
+        {% endfor %}
