@@ -5,7 +5,7 @@
 
             <video class="embed-responsive-item " style="cursor: pointer;"
                   {{ dict.muted }}  {{ dict.controls }} {{dict.autoplay}}
-                   {{ dict.loop }} preload="metadata">
+                   {{ dict.loop }} preload="metadata" controls>
                 <source src="{{ url_for('static', filename='assets/video/'
                 + dict.src|string ) }}">
             </video>
