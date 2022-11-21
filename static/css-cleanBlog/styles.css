@@ -10961,3 +10961,35 @@ header.masthead .post-heading .meta a {
     font-size: 36px;
   }
 }
+.btn-outside {
+    position: relative;
+    width:60px;
+    height: 40px;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.clapper::after, .clapper::before {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 60px;
+    height: 40px;
+}
+.clapper::after, .clapper::before {
+     content: '';
+     background-size: cover !important;
+     transition: .7s;
+}
+
+.clapper::after {
+    background: url('/static/assets/img-stories/clapper-bottom.png');
+}
+.btn-outside:hover .clapper::before {
+    transform: rotate(-19deg) translate(7px, -9px);
+}
+.clapper::before {
+    transform: rotate(4deg) translate(-1px, -2px);
+    background: url('/static/assets/img-stories/clapper-top.png');
+
+}
