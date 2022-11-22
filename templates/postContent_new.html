@@ -9,7 +9,8 @@
             </a>
         </div>
  {% endif %}
-    <div class="row">
+    <div id="postContent_body">
+        <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
             <h2 class="section-heading" id="postNum" data-postNum="{{ post['id'] }}">{{ post['title'] }}</h2>
             <div class="row">
@@ -253,3 +254,5 @@
 
 
         {% endfor %}
+
+    </div>

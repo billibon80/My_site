@@ -1,11 +1,13 @@
 import postModule from './postModule.js'
 import fadeFrame from './fadeFrame.js'
 import imgZoom from './imgZoom.js'
+import spinner from './spinner.js'
 
 function post() {
     const idPost = document.querySelector('#postNum').dataset.postnum;
 
     function changedArrArgs(arr, args, value) {
+                    document.querySelector('#postContent_body').insertAdjacentHTML("afterend", spinner());
                     arr.forEach((item, index) => {
                         if( item.includes(args)) {
                             let nItem = item.split('=');
