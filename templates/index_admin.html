@@ -69,7 +69,7 @@
                     {% for post in all_posts %}
 
                     <div class="masthead post-preview" id="{{ post['id'] }}" style="background-image:linear-gradient( rgba(0 0 0 / 65%), rgba(0, 0, 0, 0.5) ), url({{ url_for('static', filename='assets/img-stories/' +  post['img']|string) }})">
-                        <a href="{{ url_for('show_post', index=post['id']) }}">
+                        <a href="{{ url_for('show_post_content', index=post['id']) }}">
                             <h2 class="post-title">{{ post['chapter'] + ' ' + post['title'] }}</h2>
                             <h3 class="post-subtitle">{{ post['subtitle'] }}</h3>
                         </a>

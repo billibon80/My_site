@@ -1,5 +1,9 @@
 
 @charset "UTF-8";
+@font-face {
+    font-family: 'Paddis';
+    src: url('fonts/PaddisHandwritten43Medium.ttf');
+}
 /*!
 * Start Bootstrap - Clean Blog v5.1.0 (https://startbootstrap.com/theme/clean-blog)
 * Copyright 2013-2021 Start Bootstrap
@@ -10961,6 +10965,8 @@ header.masthead .post-heading .meta a {
     font-size: 36px;
   }
 }
+
+
 .btn-outside {
     position: relative;
     width:60px;
@@ -10974,7 +10980,7 @@ header.masthead .post-heading .meta a {
     top:0;
     left:0;
     width: 60px;
-    height: 40px;
+    height: 50px;
 }
 .clapper::after, .clapper::before {
      content: '';
@@ -10992,4 +10998,28 @@ header.masthead .post-heading .meta a {
     transform: rotate(4deg) translate(-1px, -2px);
     background: url('/static/assets/img-stories/clapper-top.png');
 
+}
+.clapper-txt {
+    z-index: 10;
+    font-size: 20px;
+    position: absolute;
+    color: white;
+    font-family: 'Paddis';
+    top: 10px;
+    left: 5px;
+    overflow: hidden;
+    width: 50px;
+    height: 50px;
+    line-height: 0.5;
+    padding-top: 5px;
+    word-break: break-word;
+}
+
+.spinner {
+    position: absolute;
+    margin: 0 auto;
+    background: none;
+    display: block;
+    z-index: 20;
+    left: calc(50% - 50px);
 }

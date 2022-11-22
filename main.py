@@ -176,7 +176,7 @@ def login():
                     return redirect(url_for("admin_panel"))
                 page = request.args.get('page')
                 if page:
-                    return redirect(url_for('show_post', index=page[page.find('/') + 1:], _anchor='text'))
+                    return redirect(url_for('show_post_content', index=page[page.find('/') + 1:], _anchor='text'))
                 return redirect(url_for('get_new_posts'))
             flash("Invalid password")
         else:
@@ -435,7 +435,7 @@ def delete_comment(index):
     comment = Comment.query.get(id)
     db.session.delete(comment)
     db.session.commit()
-    return redirect(url_for('show_post', index=index, _anchor='submit'))
+    return redirect(url_for('show_post_content', index=index, _anchor='submit'))
 
 
 @app.route('/letter_add', methods=['GET', 'POST'])

@@ -9,7 +9,7 @@
             </a>
         </div>
  {% endif %}
-    <div id="postContent_body">
+    <div id="postContent_body" style="position: relative;">
         <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
             <h2 class="section-heading" id="postNum" data-postNum="{{ post['id'] }}">{{ post['title'] }}</h2>
@@ -118,7 +118,9 @@
                 <!-- Button trigger modal -->
                 <div class="modalblock">
                     <div class="btn-outside">
-                        <div class="container m-3  clapper"></div>
+                        <div class="container m-3  clapper">
+                            <span class="clapper-txt">{{dict.buttonNameFront}}</span>
+                        </div>
                     </div>
 <!--                    <button-->
 <!--                            type="button"-->
