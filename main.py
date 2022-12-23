@@ -1,6 +1,6 @@
 import smtplib
 
-from flask import Flask, render_template, request, url_for, redirect, abort, flash, Response
+from flask import Flask, render_template, request, url_for, redirect, abort, flash, Response, cli
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_ckeditor import CKEditor
@@ -16,6 +16,7 @@ from functools import wraps
 import os
 import urllib
 
+cli.load_dotenv()
 # import sqlite3
 #
 #
@@ -43,14 +44,14 @@ story_page = 1
 
 # date = datetime.date.fromisoformat('2021-05-16')
 # date.strftime('%b ru_RU.UTF-8')
-MAIL_CODE = os.environ.get("MAIL_CODE")
+MAIL_CODE = os.getenv("MAIL_CODE")
 app = Flask(__name__, static_folder='static')
 CODE_WORD_USER = None
 USER_CODE_ANSWER = None
 
 ##CONNECT TO DB
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 ckeditor = CKEditor(app)
 Bootstrap(app)
